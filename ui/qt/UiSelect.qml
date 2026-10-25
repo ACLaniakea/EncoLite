@@ -66,7 +66,7 @@ Item {
         implicitHeight: Math.min(300, root.choices.length*35+(root.searchable?46:0)+12)
         padding: 6; closePolicy: Popup.CloseOnEscape|Popup.CloseOnPressOutsideParent
         focus: true
-        background: Rectangle { color: Theme.card; border.color: Theme.line; radius: 9 }
+        background: Rectangle { color: Theme.material(Theme.card,0.97,root.Window.window); border.color: Theme.line; radius: 9 }
         contentItem: ColumnLayout {
             spacing: 5
             TextField {

@@ -1,6 +1,9 @@
 pragma Singleton
 import QtQuick
 QtObject {
+    function material(color, opacity, window) {
+        return window && window.nativeGlass ? Qt.rgba(color.r,color.g,color.b,opacity) : color;
+    }
     readonly property bool dark: backend ? !!backend.state.dark : false
     readonly property bool motion: backend ? backend.motion : false
     readonly property var palette: backend ? (backend.state.palette||{}) : ({})

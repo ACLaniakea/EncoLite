@@ -53,9 +53,12 @@ class Controller(AdvancedController):
             self._executor=ThreadPoolExecutor(max_workers=1,thread_name_prefix="EncoLite-Control")
         from .preferences import read_preferences
         self.preference_data=read_preferences(preferences)
-        from .appearance import saved_theme_mode,read_system_appearance,saved_accent,read_system_accent,DEFAULT_ACCENT
+        from .appearance import saved_theme_mode,read_system_appearance,saved_accent,read_system_accent,read_system_transparency,DEFAULT_ACCENT
         self.theme_mode=saved_theme_mode(self.preference_data)
         self.system_dark,self.system_motion=read_system_appearance()
+        self.system_transparency=read_system_transparency()
+        value=self.preference_data.get('glass_effect',True)
+        self.glass_effect=value if type(value) is bool else True
         self.accent_mode,self.accent_color=saved_accent(self.preference_data)
         self.system_accent=read_system_accent() if self.accent_mode=='system' else DEFAULT_ACCENT
         self.dark=self.system_dark if self.theme_mode=='system' else self.theme_mode=='dark'
@@ -155,7 +158,7 @@ class Controller(AdvancedController):
         w.noise=s.noise
         w.anc_level=self.anc_level
         w.dark=self.dark
-        for key in ('theme_mode','system_dark','system_motion','fast_mode','fast_launch','quick_topmost','quick_auto_hide','quick_idle_seconds','accent_mode','accent_color','system_accent'):
+        for key in ('theme_mode','system_dark','system_motion','system_transparency','glass_effect','fast_mode','fast_launch','quick_topmost','quick_auto_hide','quick_idle_seconds','accent_mode','accent_color','system_accent'):
             if hasattr(w,key):setattr(w,key,getattr(self,key))
         if hasattr(w,'palette'):
             from .appearance import accent_palette
@@ -421,6 +424,12 @@ class Controller(AdvancedController):
         self.save_preferences(theme_mode=mode,dark=self.dark)
         self.sync()
 
+    def change_glass_effect(self,enabled):
+        if type(enabled) is not bool:raise ValueError('玻璃效果需要开关值')
+        self.glass_effect=enabled
+        self.save_preferences(glass_effect=enabled)
+        self.sync()
+
     def change_fast_mode(self,enabled):
         if type(enabled) is not bool:raise ValueError('极速模式需要开关值')
         self.fast_mode=enabled
@@ -466,10 +475,12 @@ class Controller(AdvancedController):
         self.sync()
 
     def refresh_system_appearance(self):
-        from .appearance import read_system_appearance,read_system_accent
+        from .appearance import read_system_appearance,read_system_accent,read_system_transparency
         dark,motion=read_system_appearance()
+        transparency=read_system_transparency()
         accent=read_system_accent() if self.accent_mode=='system' else self.system_accent
-        if (dark,motion,accent)==(self.system_dark,self.system_motion,self.system_accent):return
+        if (dark,motion,accent,transparency)==(self.system_dark,self.system_motion,self.system_accent,self.system_transparency):return
+        self.system_transparency=transparency
         self.system_dark,self.system_motion=dark,motion
         self.system_accent=accent
         if self.theme_mode=='system':self.dark=dark

@@ -129,3 +129,24 @@ def read_system_appearance():
             if function(0x1042,0,C.byref(enabled),0):motion=bool(enabled.value)
         except OSError:pass
     return dark,motion
+
+
+def read_system_transparency():
+    if sys.platform!='win32':return True
+    import winreg
+    import ctypes as C
+    from ctypes import wintypes as W
+    enabled=True
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER,r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize') as key:
+            value,_=winreg.QueryValueEx(key,'EnableTransparency');enabled=value!=0
+    except OSError:pass
+    try:
+        class HighContrast(C.Structure):
+            _fields_=[('size',W.UINT),('flags',W.DWORD),('scheme',W.LPWSTR)]
+        value=HighContrast();value.size=C.sizeof(value)
+        fn=C.WinDLL('user32').SystemParametersInfoW
+        fn.argtypes=[W.UINT,W.UINT,C.c_void_p,W.UINT];fn.restype=W.BOOL
+        if fn(0x42,value.size,C.byref(value),0) and value.flags&1:return False
+    except OSError:pass
+    return enabled

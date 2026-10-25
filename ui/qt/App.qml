@@ -8,6 +8,8 @@ Window {
     id: win
     property string kind: "main"
     property int page: 0
+    property bool nativeGlass: false
+    property bool materialChanging: false
     property bool restoreMaximized: false
     property bool closingUi: false
     property bool presented: false
@@ -15,8 +17,8 @@ Window {
     property int openDuration: 320
     property int closeDuration: 220
     readonly property bool transitioning: openAnimation.running||closeAnimation.running
-    readonly property real surfaceScale: Theme.motion?1-(kind==='main'?0.02:0.05)*(1-reveal):1
-    readonly property real surfaceOffset: Theme.motion?(1-reveal)*Math.min(kind==='main'?6:kind==='quick'?8:4,height*(kind==='main'?0.02:0.05)*0.45):0
+    readonly property real surfaceScale: Theme.motion&&!nativeGlass?1-(kind==='main'?0.02:0.05)*(1-reveal):1
+    readonly property real surfaceOffset: Theme.motion&&!nativeGlass?(1-reveal)*Math.min(kind==='main'?6:kind==='quick'?8:4,height*(kind==='main'?0.02:0.05)*0.45):0
     readonly property bool quickMenuOpen:quickSound.menuOpen
     property bool maximized: visibility===Window.Maximized
     readonly property int sectionPage: page===5?1:page
@@ -53,6 +55,11 @@ Window {
         openAnimation.stop();closingUi=true;closeMenus();confirmPopup.close();hotkeyPopup.close();
         if(Theme.motion){closeDuration=Math.max(90,Math.round((kind==='main'?220:200)*reveal));closeAnimation.restart();}
         else finishedClosing();
+    }
+    function finishStalledEntrance() {
+        if(presented&&!closingUi&&openAnimation.running&&reveal===0){
+            openAnimation.stop();opacity=1;reveal=1;
+        }
     }
     function navigate(index) { closeMenus();if(index!==page){page=index;} }
     function ask(title,description,name,args) {
@@ -91,13 +98,13 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized?0:12;color:Theme.bg;antialiasing:true
+        id:frame;anchors.fill:parent;radius:win.maximized?0:(win.nativeGlass?8:12);color:Theme.material(Theme.bg,Theme.dark?0.58:0.46,win);antialiasing:true
         objectName:'windowSurface'
         transform:[
             Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
             Translate{y:win.surfaceOffset}
         ]
-        Behavior on color {ColorAnimation{duration:Theme.motion?150:0}}
+        Behavior on color {enabled:!win.materialChanging;ColorAnimation{duration:Theme.motion?150:0}}
         ColumnLayout {
             anchors.fill:parent;anchors.margins:1;spacing:0
             Item {
@@ -131,7 +138,7 @@ Window {
                 sourceComponent:Component { RowLayout {
                 anchors.fill:parent;spacing:0
                 Rectangle {
-                    color:Theme.sidebar;bottomLeftRadius:Math.max(0,frame.radius-1)
+                    color:Theme.material(Theme.sidebar,Theme.dark?0.66:0.60,win);bottomLeftRadius:Math.max(0,frame.radius-1)
                     Layout.preferredWidth:164;Layout.fillHeight:true
                     ColumnLayout {
                         anchors.fill:parent;anchors.margins:11;spacing:5
@@ -246,7 +253,7 @@ Window {
         id:confirmPopup;parent:Overlay.overlay;popupType:Popup.Item;modal:true;focus:true
         anchors.centerIn:parent;width:Math.min(360,parent?parent.width-30:360);padding:22
         property string heading:'';property string description:'';property string actionName:'';property var arguments:[]
-        background:Rectangle{radius:12;color:Theme.card;border.color:Theme.line}
+        background:Rectangle{radius:12;color:Theme.material(Theme.card,0.96,win);border.color:Theme.line}
         contentItem:ColumnLayout {
             spacing:15
             Text{text:confirmPopup.heading;font.pixelSize:18;font.weight:Font.DemiBold;color:Theme.text}
@@ -264,7 +271,7 @@ Window {
         property string request:''
         property bool hadCapture:false
         onClosed:backend.action('end_hotkey_capture',[])
-        background:Rectangle{radius:12;color:Theme.card;border.color:Theme.line}
+        background:Rectangle{radius:12;color:Theme.material(Theme.card,0.96,win);border.color:Theme.line}
         contentItem:ColumnLayout {
             spacing:15
             Text{text:hotkeyPopup.item.title||'设置快捷键';font.pixelSize:18;font.weight:Font.DemiBold;color:Theme.text;Layout.fillWidth:true;wrapMode:Text.Wrap}

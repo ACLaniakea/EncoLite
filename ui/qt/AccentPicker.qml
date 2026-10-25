@@ -20,7 +20,7 @@ Popup {
         if(delta>0)hue=h;saturation=max===0?0:delta/max;brightness=max;
     }
     onOpened:{setColor(backend.state.accent_mode==='system'?(backend.state.system_accent||'#168b51'):(backend.state.accent_color||'#168b51'));sv.forceActiveFocus();}
-    background: Rectangle {radius:12;color:Theme.card;border.color:Theme.line}
+    background: Rectangle {radius:12;color:Theme.material(Theme.card,0.97,Window.window);border.color:Theme.line}
     contentItem: ColumnLayout {
         spacing:15
         Text {text:'自选主题色';font.pixelSize:18;font.weight:Font.DemiBold;color:Theme.text}

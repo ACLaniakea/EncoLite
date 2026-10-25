@@ -6,9 +6,9 @@
 
 ## 下载
 
-**[当前预览版 v0.5.0-preview.14](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.14)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
+**[当前预览版 v0.5.0-preview.15](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.15)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
 
-- **安装版**：下载并双击 `EncoLite-0.5.0-preview.14-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
+- **安装版**：下载并双击 `EncoLite-0.5.0-preview.15-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
 - **便携版**：下载同版本 `win-x64-portable.zip`，解压后运行“启动 Enco Lite.cmd”。
 - 运行包已包含 Python 和 Qt，无需另装运行环境。SHA-256 校验值随发行附件提供。
 
@@ -21,7 +21,7 @@
 - 电量、充电状态、佩戴状态、固件信息、编解码器及型号图片。
 - 型号支持的佩戴检测、双设备、游戏、低音、空间音效与多设备管理。
 - 托盘快捷控制、连接提示、全局快捷键和窗口位置记忆。
-- 跟随系统深浅色、自选 / Windows 强调色、窗口动态过渡与极速模式。
+- 跟随系统深浅色、自选 / Windows 强调色、可选玻璃效果、可选玻璃效果、窗口动态过渡与极速模式。
 - 快捷控制可选置顶、可设置闲置自动收起时间；支持可选的登录自启动。
 
 自启动默认关闭，在“设置 → 启动与性能”开启。登录后先在托盘运行，主窗口按需打开。便携版移动目录后，请重新开启自启动。
@@ -70,7 +70,7 @@ python tools/build_desktop_release.py
 python -m unittest discover -s tests
 ```
 
-当前有 77 项单元检查。`tools/verify_qt_live.py` 等真机工具会操作耳机设置，使用前请阅读构建说明。
+当前有 83 项单元检查。`tools/verify_qt_live.py` 等真机工具会操作耳机设置，使用前请阅读构建说明。
 
 ## 许可证与来源
 

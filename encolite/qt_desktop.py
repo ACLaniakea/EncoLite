@@ -7,12 +7,13 @@ import threading
 import traceback
 
 from PySide6.QtCore import (QObject, Property, Signal, Slot, Qt, QTimer, QUrl, QEvent,
-                           QAbstractListModel, QModelIndex, QMetaObject)
+                           QAbstractListModel, QModelIndex, QMetaObject, QAbstractNativeEventFilter)
 from PySide6.QtGui import QGuiApplication, QFont, QIcon
 from PySide6.QtQml import QQmlApplicationEngine, QQmlComponent
 from PySide6.QtQuickControls2 import QQuickStyle
 from .preferences import window_state, fit_bounds
 from .hotkeys import binding, label
+from .window_material import WindowMaterial
 
 TITLES = {'main': 'Enco Lite · 耳机助手', 'quick': 'Enco Lite · 快捷控制', 'notice': 'Enco Lite · 连接提示'}
 
@@ -55,7 +56,7 @@ class Bridge(QObject):
     def __init__(self, desktop):
         super().__init__(); self.desktop = desktop; self.payload = {}; self.pending = {}; self.bands = Bands()
         self._state = {'connected': False, 'busy': False, 'model_name': '未连接耳机', 'noise': '',
-                       'status': '正在读取耳机…', 'eq_minimum': -6, 'eq_maximum': 6,
+                       'glass_effect':False,'status': '正在读取耳机…', 'eq_minimum': -6, 'eq_maximum': 6,
                        'switches': [], 'noise_options': [], 'presets': [], 'bands': [], 'multi_devices': [],
                        'custom_names': [], 'device_names': [], 'model_names': [], 'spatial_options': [], 'game_options': []}
         self._hotkeys = {'items': [], 'enabled': True, 'capturing': False}
@@ -75,6 +76,14 @@ class Bridge(QObject):
 
     @Property(bool, notify=changed)
     def motion(self): return not self._state.get('fast_mode', False) and self._state.get('system_motion', True)
+
+    @Property(bool, constant=True)
+    def glassAvailable(self): return self.desktop.material.supported
+
+    @Property(bool, notify=changed)
+    def glassAllowed(self):
+        return (self.glassAvailable and self._state.get('glass_effect') is True
+                and not self._state.get('fast_mode',False) and self._state.get('system_transparency',True) is not False)
 
     @Property(QObject, constant=True)
     def bandModel(self): return self.bands
@@ -152,6 +161,20 @@ class Bridge(QObject):
         self.action('set_hotkey', [action, value, request]); return request
 
 
+class MaterialEvents(QAbstractNativeEventFilter):
+    def __init__(self,desktop):super().__init__();self.desktop=desktop
+    def nativeEventFilter(self,event_type,message):
+        if sys.platform=='win32':
+            import ctypes as C
+            from ctypes import wintypes as W
+            msg=C.cast(int(message),C.POINTER(W.MSG)).contents
+            if msg.message in (0x231,0x232) and msg.hWnd in self.desktop.material_handles.values():
+                if msg.message==0x231:self.desktop.material_suspended.add(msg.hWnd)
+                else:self.desktop.material_suspended.discard(msg.hWnd)
+                self.desktop.update_materials()
+        return False,0
+
+
 class Desktop(QObject):
     incoming = Signal(dict)
     eof = Signal()
@@ -165,7 +188,10 @@ class Desktop(QObject):
         self.app.setWindowIcon(QIcon(str(root / 'ui/assets/app-icon.ico')))
         font = QFont('Microsoft YaHei UI'); font.setPixelSize(13); self.app.setFont(font)
         QQuickStyle.setStyle('Basic')
+        self.material=WindowMaterial();self.material_handles={};self.material_suspended=set()
+        self.material_events=MaterialEvents(self);self.material_filter_installed=False
         self.bridge = Bridge(self)
+        self.bridge.changed.connect(self.update_materials)
         self.engine = QQmlApplicationEngine(); self.engine.rootContext().setContextProperty('backend', self.bridge)
         self.component = QQmlComponent(self.engine, QUrl.fromLocalFile(str(root / 'ui/qt/App.qml')))
         if self.component.isError(): raise RuntimeError('\n'.join(error.toString() for error in self.component.errors()))
@@ -179,6 +205,8 @@ class Desktop(QObject):
         self.quick_idle_config = (False, 30); self.quick_touch_down = False
 
     def eventFilter(self, watched, event):
+        if self.bridge.glassAllowed and event.type() in (QEvent.PlatformSurface,QEvent.Resize,QEvent.WindowStateChange,QEvent.DevicePixelRatioChange):
+            QTimer.singleShot(0,lambda:self.update_materials())
         if self.quick_idle_config[0] and watched is self.windows.get('quick'):
             kind = event.type()
             if kind == QEvent.TouchBegin: self.quick_touch_down = True
@@ -189,6 +217,27 @@ class Desktop(QObject):
                 if self.closing.get('quick', {}).get('reason') == 'idle': self.show('quick')
                 else: self.reset_quick_idle()
         return False
+
+    def update_materials(self,force=False):
+        wanted=bool(self.windows) and self.bridge.glassAllowed
+        if wanted!=self.material_filter_installed:
+            if wanted:self.app.installNativeEventFilter(self.material_events)
+            else:self.app.removeNativeEventFilter(self.material_events);self.material_suspended.clear()
+            self.material_filter_installed=wanted
+        for kind,window in list(self.windows.items()):
+            hwnd=int(window.winId());old=self.material_handles.get(kind)
+            if old and old!=hwnd:self.material.forget(old)
+            self.material_handles[kind]=hwnd
+            requested=self.bridge.glassAllowed and hwnd not in self.material_suspended
+            changing=bool(window.property('nativeGlass'))!=requested
+            if changing:window.setProperty('materialChanging',True)
+            active=self.material.apply(hwnd,requested,self.bridge.state.get('dark',False),force=force)
+            window.setProperty('nativeGlass',active)
+            if changing:
+                QTimer.singleShot(0,lambda w=window,k=kind:w.setProperty('materialChanging',False) if self.windows.get(k) is w else None)
+            ratio=window.devicePixelRatio()
+            shape=(round(window.width()*ratio),round(window.height()*ratio),round(8*ratio)) if active and window.windowState()!=Qt.WindowMaximized else None
+            self.material.shape(hwnd,shape)
 
     def update_quick_idle(self):
         seconds = self.bridge.state.get('quick_idle_seconds', 30)
@@ -311,11 +360,13 @@ class Desktop(QObject):
         window = self.component.createWithInitialProperties({'kind': kind})
         if window is None: raise RuntimeError('\n'.join(error.toString() for error in self.component.errors()))
         self.windows[kind] = window
+        window.installEventFilter(self)
+        window.opacityChanged.connect(lambda *_:self.update_materials(force=True) if window.opacity()==1 and self.bridge.glassAllowed else None)
         if kind == 'quick':
             self.quick_touch_down = False
-            window.installEventFilter(self)
             window.quickMenuOpenChanged.connect(self.reset_quick_idle)
         self.restore(window, kind)
+        self.update_materials()
         def remember(*_):
             if self.windows.get(kind) is window and window.windowState() == Qt.WindowNoState:
                 rect = window.geometry(); self.normal_bounds[kind] = [rect.x(), rect.y(), rect.width(), rect.height()]
@@ -323,7 +374,9 @@ class Desktop(QObject):
             signal.connect(lambda *_, callback=remember: QTimer.singleShot(0, callback))
         window.finishedClosing.connect(lambda: self.finish_close(kind, window))
         window._first_frame = lambda: self.first_frame(kind, window)
-        window.frameSwapped.connect(window._first_frame)
+        # frameSwapped may originate on Qt's render thread. Window properties,
+        # native material and QML animation must start on the GUI thread.
+        window.frameSwapped.connect(window._first_frame,Qt.QueuedConnection)
         window.setOpacity(.01 if self.bridge.motion else 1)
         if window.property('restoreMaximized'): window.showMaximized()
         else: window.show()
@@ -332,6 +385,7 @@ class Desktop(QObject):
     def first_frame(self, kind, window):
         if self.windows.get(kind) is not window or kind in self.ready: return
         self.ready.add(kind)
+        self.update_materials(force=True)
         window.frameSwapped.disconnect(window._first_frame)
         # Closing may precede the first frame (including its delayed fallback).
         # present() would stop the close animation and leave closing set forever.
@@ -339,6 +393,10 @@ class Desktop(QObject):
         if kind != 'notice' and self.requested != kind:
             self.close_view(kind, exiting=False, animate=False); return
         QMetaObject.invokeMethod(window, 'present')
+        # A suspended compositor can deliver its first frame without advancing
+        # the render-thread animation clock. Never leave the window at 1% alpha.
+        QTimer.singleShot(650,lambda:QMetaObject.invokeMethod(window,'finishStalledEntrance')
+                          if self.windows.get(kind) is window and kind not in self.closing else None)
         self.activate(window, kind)
         if kind != 'notice':
             for old in list(self.windows):
@@ -403,6 +461,9 @@ class Desktop(QObject):
             self.send('action', name='save_window', args=[kind, bounds, window.property('page')], frontend='qt')
         if kind == 'main': self.bridge.action('end_hotkey_capture', [])
         self.windows.pop(kind); self.ready.discard(kind)
+        hwnd=self.material_handles.pop(kind,None)
+        if hwnd:self.material.forget(hwnd);self.material_suspended.discard(hwnd)
+        self.update_materials()
         window.hide(); window.deleteLater()
         if not self.windows and info['exiting'] and not self.stopping:
             if self.bridge.state.get('fast_launch', False):

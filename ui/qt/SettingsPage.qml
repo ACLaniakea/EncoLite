@@ -13,6 +13,7 @@ ColumnLayout {
         SettingRow { title:'深浅外观';Layout.fillWidth:true
             UiSelect { accessibleName:'深浅外观';width:parent.width; options:[{value:'system',label:'跟随系统'},{value:'light',label:'浅色'},{value:'dark',label:'深色'}];value:backend.state.theme_mode||'system';onChosen:function(value){backend.action('change_theme_mode',[value]);} }
         }
+        SettingRow { title:'玻璃效果';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'glassSwitch';value:backend.glassAllowed;enabled:backend.glassAvailable&&!backend.state.fast_mode&&backend.state.system_transparency!==false;Accessible.name:'玻璃效果';onTriggered:function(value){backend.action('change_glass_effect',[value]);}} }
         SettingRow { title:'主题色';Layout.fillWidth:true
             UiSelect { accessibleName:'主题色来源';width:parent.width;options:[{value:'custom',label:'自选颜色'},{value:'system',label:'跟随 Windows'}];value:backend.state.accent_mode||'custom';onChosen:function(value){backend.action('change_accent_mode',[value]);} }
         }
@@ -67,7 +68,7 @@ ColumnLayout {
         objectName:'performanceSettings'
         Layout.fillWidth:true
         SettingRow { title:'开机自启动';detail:backend.state.autostart_error||'登录 Windows 后在托盘运行';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'autostartSwitch';value:!!backend.state.autostart_enabled;enabled:backend.state.autostart_available===true;Accessible.name:'开机自启动';onTriggered:function(value){backend.action('change_autostart',[value]);}} }
-        SettingRow { title:'极速模式';detail:'关闭动画和阴影';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_mode;Accessible.name:'极速模式';onTriggered:function(value){backend.action('change_fast_mode',[value]);}} }
+        SettingRow { title:'极速模式';detail:'关闭动画、玻璃效果和阴影';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_mode;Accessible.name:'极速模式';onTriggered:function(value){backend.action('change_fast_mode',[value]);}} }
         SettingRow { title:'快速唤出';detail:'保留界面进程，更快打开，占用更多内存';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_launch;Accessible.name:'快速唤出';onTriggered:function(value){backend.action('change_fast_launch',[value]);}} }
     }
     Text { Layout.topMargin:7;text:'快捷键';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
@@ -94,7 +95,7 @@ ColumnLayout {
         Layout.topMargin:-7
         objectName:'aboutSettings'
         Layout.fillWidth:true
-        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.14';font.pixelSize:13;color:Theme.muted}}
+        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.15';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'开源许可';Layout.fillWidth:true;Text{text:'GPL-3.0-or-later';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'协议来源';Layout.fillWidth:true;Text{text:'OppoPodsManager';font.pixelSize:13;color:Theme.muted}}
     }
