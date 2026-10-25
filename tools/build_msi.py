@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.13'
-MSI_VERSION='0.5.13'
+VERSION='0.5.0-preview.14'
+MSI_VERSION='0.5.14'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'
@@ -26,6 +26,8 @@ def component_guid(path):
     return '{'+str(uuid.uuid5(uuid.UUID(UPGRADE),str(path))).upper()+'}'
 
 def build():
+    from prepare_installer_assets import prepare
+    prepare(ROOT)
     OUTPUT.parent.mkdir(exist_ok=True)
     db=m.init_database(str(OUTPUT),schema,APP_NAME,PRODUCT,MSI_VERSION,'Enco Lite contributors')
     # MSI uses a Windows codepage; 936 preserves Simplified Chinese shortcut names.

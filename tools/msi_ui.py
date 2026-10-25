@@ -7,9 +7,10 @@ from msilib import sequence
 def add_wizard(db, root: Path, entry_point: str, arguments: str):
     m.add_data(db, 'TextStyle', [
         ('UiNormal', 'Segoe UI', 9, None, 0),
-        ('UiTitle', 'Segoe UI', 11, None, 1),
+        ('UiTitle', 'Segoe UI', 12, None, 1),
     ])
-    m.add_data(db, 'Binary', [('InstallerIcon', m.Binary(str(root/'ui/assets/app-icon.ico')))])
+    m.add_data(db, 'Binary', [('InstallerIcon', m.Binary(str(root/'build/installer-assets/icon.bmp'))),
+                               ('InstallerHeader', m.Binary(str(root/'build/installer-assets/header.bmp')))])
     m.add_data(db, 'Property', [
         ('DefaultUIFont', 'UiNormal'), ('ErrorDialog', 'ErrorDlg'),
         ('LAUNCH_AFTER_INSTALL', '1'), ('MsiLogging', 'voicewarmupx'),
@@ -40,9 +41,10 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     def page(name, title, first, default, cancel='Cancel', modeless=False, keep=False):
         attrs = (1 if modeless else 3) | (16 if keep else 0)
         d = m.Dialog(db, name, 50, 50, 370, 270, attrs, '[ProductName] 安装程序', first, default, cancel)
-        d.text('Heading', 20, 15, 290, 22, 3, r'{\UiTitle}'+title)
-        d.control('Icon', 'Icon', 322, 10, 28, 28, 1, None, 'InstallerIcon', None, None)
-        d.line('HeaderLine', 0, 52, 370, 0)
+        d.control('Banner', 'Bitmap', 0, 0, 370, 56, 1, None, 'InstallerHeader', None, None)
+        d.text('Heading', 22, 16, 286, 24, 65539, r'{\UiTitle}'+title)
+        d.control('Icon', 'Bitmap', 322, 12, 30, 30, 1, None, 'InstallerIcon', None, None)
+        d.line('HeaderLine', 0, 56, 370, 0)
         d.line('FooterLine', 0, 234, 370, 0)
         return d
 

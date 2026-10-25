@@ -19,12 +19,14 @@ def source_archive():
 
 
 def build():
+    from prepare_icon import prepare
+    prepare(ROOT)
     bundle=package();OUTPUT.mkdir(exist_ok=True)
     source=source_archive();sources=bundle/'Source';sources.mkdir()
     shutil.copy2(source,sources/source.name)
     msi=OUTPUT/f'EncoLite-{VERSION}-win-x64.msi'
     subprocess.run([sys.executable,str(ROOT/'tools/build_msi.py'),'--bundle',str(bundle),
-        '--output',str(msi),'--version',VERSION,'--msi-version','0.5.13'],check=True)
+        '--output',str(msi),'--version',VERSION,'--msi-version','0.5.14'],check=True)
     # Optional historical EXE wrapper: it is blocked by application control here.
     # MSI and portable are the supported production outputs.
     if '--with-exe' in sys.argv:

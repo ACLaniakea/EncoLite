@@ -4,7 +4,7 @@ This checks MSI dialog references, conditions, directory resolution, launch
 arguments and native dialog creation. It does not simulate user button clicks.
 """
 from pathlib import Path
-import ctypes as C,json,sys,warnings
+import ctypes as C,json,sys,warnings,struct
 warnings.filterwarnings('ignore',category=DeprecationWarning)
 import msilib as m
 ROOT=Path(__file__).resolve().parents[1]
@@ -37,6 +37,10 @@ for name,types in {
  'MsiSetTargetPathW':[C.c_uint32,C.c_wchar_p,C.c_wchar_p],
  'MsiEvaluateConditionW':[C.c_uint32,C.c_wchar_p],
  'MsiCloseHandle':[C.c_uint32],
+ 'MsiDatabaseOpenViewW':[C.c_uint32,C.c_wchar_p,C.POINTER(C.c_uint32)],
+ 'MsiViewExecute':[C.c_uint32,C.c_uint32],
+ 'MsiViewFetch':[C.c_uint32,C.POINTER(C.c_uint32)],
+ 'MsiRecordReadStream':[C.c_uint32,C.c_uint32,C.c_void_p,C.POINTER(C.c_uint32)],
  'MsiGetLastErrorRecord':[],
  'MsiFormatRecordW':[C.c_uint32,C.c_uint32,C.c_wchar_p,C.POINTER(C.c_uint32)],
 }.items():getattr(api,name).argtypes=types
@@ -122,6 +126,20 @@ try:
  check('fresh install, explicit shortcut opt-out, maintenance and uninstall launch conditions behave correctly')
  api.MsiCloseHandle(handle);handle=C.c_uint32()
  assert api.MsiOpenDatabaseW(str(PATH.resolve()),C.c_void_p(0),C.byref(database))==0
+ assert all(c['Type']=='Bitmap' for c in controls if c['Control']=='Icon')
+ for key,dimensions in [('InstallerIcon',(256,256)),('InstallerHeader',(740,112))]:
+  view=C.c_uint32();record=C.c_uint32()
+  try:
+   assert api.MsiDatabaseOpenViewW(database,"SELECT `Data` FROM `Binary` WHERE `Name`='"+key+"'",C.byref(view))==0
+   assert api.MsiViewExecute(view,0)==0 and api.MsiViewFetch(view,C.byref(record))==0
+   data=C.create_string_buffer(54);length=C.c_uint32(len(data))
+   assert api.MsiRecordReadStream(record,1,data,C.byref(length))==0 and length.value==54
+   assert data.raw[:2]==b'BM' and struct.unpack_from('<ii',data.raw,18)==dimensions
+   assert struct.unpack_from('<H',data.raw,28)[0]==24
+  finally:
+   if record.value:api.MsiCloseHandle(record)
+   if view.value:api.MsiCloseHandle(view)
+ check('MSI embeds a full 256 px icon and high-resolution header as native 24-bit bitmaps')
  api.MsiSetInternalUI(5,None)
  status=api.MsiEnableUIPreview(database,C.byref(preview));assert status==0,('MsiEnableUIPreview',status)
  for name in dialogs:

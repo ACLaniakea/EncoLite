@@ -1,4 +1,4 @@
-Enco Lite 0.5.0-preview.13
+Enco Lite 0.5.0-preview.14
 
 先在 Windows 蓝牙设置中配对 OPPO 或一加耳机。
 包内自带官方 Python 和 Qt Quick 运行库，无需安装 WebView2。
