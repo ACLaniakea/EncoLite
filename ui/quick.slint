@@ -1,0 +1,101 @@
+import { PresetItem } from "types.slint";
+import { Theme, Label, Card, Action, Chip, ModeTile } from "components.slint";
+
+export component QuickWindow inherits Window {
+    title: "Enco Lite · 快捷控制";
+    icon: @image-url("assets/app-icon.png");
+    min-width: 336px; max-width: 336px;
+    min-height: 400px; max-height: 400px;
+    no-frame: true; always-on-top: true;
+    default-font-family: "Microsoft YaHei UI";
+    default-font-size: 12px;
+    background: transparent;
+    in-out property <bool> busy: false;
+    in-out property <bool> connecting: false;
+    in-out property <bool> cancelling: false;
+    in-out property <image> product-picture: @image-url("assets/device-neutral.svg");
+    in-out property <string> model-name: "未连接耳机";
+    in-out property <string> firmware: "";
+    in-out property <string> preset-name: "—";
+    in-out property <bool> can-anc: false;
+    in-out property <bool> can-off: false;
+    in-out property <bool> can-transparency: false;
+    in-out property <bool> can-smart: false;
+    in-out property <bool> can-light: false;
+    in-out property <bool> can-moderate: false;
+    in-out property <bool> can-deep: false;
+    in-out property <bool> can-equalizer: false;
+    in-out property <bool> can-wear: false;
+    in-out property <bool> can-dual: false;
+    in-out property <[PresetItem]> presets: [];
+    in-out property <bool> connected: false;
+    in-out property <string> noise: "";
+    in-out property <string> anc-level: "smart";
+    in-out property <int> preset: -1;
+    in-out property <bool> wear: false;
+    in-out property <bool> dual: false;
+    in-out property <bool> dark <=> Theme.dark;
+    in-out property <string> left-value: "—";
+    in-out property <string> right-value: "—";
+    in-out property <string> case-value: "—";
+    in-out property <bool> left-charging: false;
+    in-out property <bool> right-charging: false;
+    in-out property <bool> case-charging: false;
+    in-out property <float> left-level: 0;
+    in-out property <float> right-level: 0;
+    in-out property <float> case-level: 0;
+    in-out property <bool> status-error: false;
+    in-out property <string> status: "已准备好";
+    in-out property <string> trace: "";
+    callback change-noise(string);
+    callback next-preset();
+    callback change-preset(int);
+    callback change-feature(string, bool);
+    callback change-connection();
+    callback refresh-device();
+    callback change-theme(bool);
+    callback reset-demo();
+    callback dismiss();
+    callback show-main();
+
+    callback geometry-changed();
+    changed width => { root.geometry-changed(); }
+    changed height => { root.geometry-changed(); }
+    Rectangle { x: 0px; y: 0px; width: root.width; height: root.height;
+        background: Theme.canvas; border-radius: 12px; clip: true;
+    WindowMoveArea { x: 0px; y: 0px; width: parent.width - 40px; height: 42px; }
+    Image { x: 13px; y: 8px; width: 29px; height: 29px; source: root.product-picture; image-fit: contain; }
+    Label { x: 49px; y: 12px; width: 165px; height: 21px; overflow: elide; text: root.model-name; font-size: 16px; font-weight: 600; }
+    Label { x: 228px; y: 13px; height: 19px; text: root.connecting ? "连接中" : root.connected ? "已连接" : "未连接"; font-size: 12px; color: Theme.muted; }
+    Action { text-size: 14px; x: parent.width - 38px; y: 9px; width: 25px; height: 25px; label: "×"; clicked => { root.dismiss(); } }
+    HorizontalLayout { x: 16px; y: 51px; width: parent.width - 32px; height: 64px; spacing: 6px;
+        for entry in [{name:"左耳",value:root.left-value,charging:root.left-charging,picture:@image-url("assets/wear.svg")},{name:"充电盒",value:root.case-value,charging:root.case-charging,picture:@image-url("assets/case-symbol.svg")},{name:"右耳",value:root.right-value,charging:root.right-charging,picture:@image-url("assets/wear.svg")}]: Card {
+            Image { x: 6px; y: 11px; width: 25px; height: 42px; source: entry.picture; image-fit: contain; colorize: Theme.accent; }
+            Label { x: 37px; y: 9px; height: 17px; text: entry.name; font-size: 12px; color: Theme.muted; }
+            Image { x: parent.width - 17px; y: 10px; width: 10px; height: 14px; source: @image-url("assets/charging.svg"); colorize: Theme.accent; visible: entry.charging; }
+            Label { x: 37px; y: 29px; width: parent.width - 42px; height: 24px; text: entry.value; font-size: 18px; font-weight: 600; }
+        }
+    }
+    Label { x: 16px; y: 132px; height: 20px; text: "聆听模式"; font-size: 14px; font-weight: 600; }
+    HorizontalLayout { x: 16px; y: 162px; width: parent.width - 32px; height: 55px; spacing: 6px;
+        ModeTile { text-size: 14px; label: "降噪"; detail: "专注此刻"; icon: @image-url("assets/noise.svg"); selected: root.noise != "" && root.noise != "off" && root.noise != "transparency" && root.noise != "vocal"; enabled: root.can-anc; clicked => { root.change-noise(root.anc-level); } }
+        ModeTile { text-size: 14px; label: "通透"; detail: "听见周围"; icon: @image-url("assets/transparency.svg"); selected: root.noise == "transparency" || root.noise == "vocal"; enabled: root.can-transparency; clicked => { root.change-noise("transparency"); } }
+        ModeTile { text-size: 14px; label: "关闭"; detail: "自然聆听"; icon: @image-url("assets/off.svg"); selected: root.noise == "off"; enabled: root.can-off; clicked => { root.change-noise("off"); } }
+    }
+    Label { x: 16px; y: 234px; width: 56px; height: 28px; text: "降噪强度"; font-size: 12px; color: Theme.muted; }
+    HorizontalLayout { x: 78px; y: 234px; width: parent.width - 94px; height: 28px; spacing: 3px;
+        Chip { text-size: 13px; label: "智能"; selected: root.noise == "smart"; enabled: root.can-smart; clicked => { root.change-noise("smart"); } }
+        Chip { text-size: 13px; label: "轻度"; selected: root.noise == "light"; enabled: root.can-light; clicked => { root.change-noise("light"); } }
+        Chip { text-size: 13px; label: "中度"; selected: root.noise == "moderate"; enabled: root.can-moderate; clicked => { root.change-noise("moderate"); } }
+        Chip { text-size: 13px; label: "深度"; selected: root.noise == "deep"; enabled: root.can-deep; clicked => { root.change-noise("deep"); } }
+    }
+    Label { x: 16px; y: 263px; width: parent.width - 32px; height: 15px; text: root.status; visible: root.status-error; font-size: 11px; color: Theme.muted; overflow: elide; }
+    Card { x: 16px; y: 279px; width: parent.width - 32px; height: 58px;
+        Label { x: 12px; y: 6px; height: 18px; text: "音效"; font-size: 12px; color: Theme.muted; }
+        Label { x: 12px; y: 28px; height: 19px; width: parent.width - 112px; overflow: elide; text: root.preset-name; font-size: 14px; font-weight: 600; }
+        Action { text-size: 14px; x: parent.width - 87px; y: 14px; width: 73px; height: 29px; label: "切换音效"; enabled: root.can-equalizer; clicked => { root.next-preset(); } }
+    }
+    Action { text-size: 14px; x: 16px; y: 354px; width: 142px; height: 30px; label: "打开主窗口"; clicked => { root.show-main(); } }
+    Action { text-size: 14px; x: 168px; y: 354px; width: 152px; height: 30px; label: root.cancelling ? "正在取消…" : root.connecting ? "取消连接" : !root.connected ? "连接耳机" : root.dual ? "双设备：已开启" : "双设备：已关闭"; enabled: !root.cancelling && (root.connecting || (!root.connected && !root.busy) || root.can-dual); clicked => { if !root.connected || root.connecting { root.change-connection(); } else { root.change-feature("dual", !root.dual); } } }
+    }
+}

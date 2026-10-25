@@ -1,0 +1,29 @@
+# Local dependencies, build products and private diagnostics
+.tools/
+.build-deps/
+.test-deps/
+.install-test/
+.validation-native/
+verification/
+build/
+dist/
+release/
+.publish/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+**/bin/
+**/obj/
+*.log
+*.tmp
+*.user
+.env
+.env.*
+preferences.json
+# Historical experiments are not part of the current Qt client.
+/native/
+/desktop/
+/tk_entry.py
+/web_entry.py
+ui/assets/thumbs/

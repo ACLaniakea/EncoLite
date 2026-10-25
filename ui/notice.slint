@@ -1,0 +1,26 @@
+import { Theme, Label, Card, Action } from "components.slint";
+export component ConnectionNotice inherits Window {
+    title: "Enco Lite · 连接提示";
+    icon: @image-url("assets/app-icon.png");
+    min-width: 360px; max-width: 360px;
+    min-height: 180px; max-height: 180px;
+    no-frame: true; always-on-top: true; background: transparent;
+    default-font-family: "Microsoft YaHei UI";
+    in-out property <bool> dark <=> Theme.dark;
+    in-out property <string> model-name;
+    in-out property <string> battery-text;
+    in-out property <image> product-picture;
+    callback dismiss();
+    callback open-controls();
+    callback hover-changed(bool);
+    Rectangle { x: 0px; y: 0px; width: parent.width; height: parent.height;
+        background: Theme.canvas; border-radius: 12px; clip: true;
+        area := TouchArea { changed has-hover => { root.hover-changed(self.has-hover); } }
+        Label { x: 17px; y: 13px; height: 22px; text: "耳机已连接"; color: Theme.accent; font-size: 14px; }
+        Action { x: parent.width - 37px; y: 9px; width: 25px; height: 25px; label: "×"; clicked => { root.dismiss(); } }
+        Image { x: 16px; y: 51px; width: 66px; height: 66px; source: root.product-picture; image-fit: contain; }
+        Label { x: 96px; y: 47px; width: parent.width - 112px; height: 27px; text: root.model-name; overflow: elide; font-size: 17px; font-weight: 600; }
+        Label { x: 96px; y: 78px; width: parent.width - 112px; height: 42px; wrap: word-wrap; text: root.battery-text; overflow: elide; font-size: 14px; color: Theme.muted; }
+        Action { x: 96px; y: 132px; width: 112px; height: 32px; text-size: 14px; label: "快捷控制"; primary: true; clicked => { root.open-controls(); } }
+    }
+}

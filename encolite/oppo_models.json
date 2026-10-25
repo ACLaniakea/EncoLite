@@ -1,0 +1,4758 @@
+[
+  {
+    "id": "06F010",
+    "name": "OPPO Enco Air4s",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06B450",
+    "name": "OPPO Enco R5",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco xiapu OF"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067414",
+    "name": "OnePlus Flow Buds",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Buds Laplace 4"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06E810",
+    "name": "OPPO Enco Air5s（星光版）",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco Laplace 3"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06C810",
+    "name": "OPPO Enco Air5s",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco Laplace 1",
+      "OPPO Enco Laplace 2"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067014",
+    "name": "OnePlus Nord Buds 4",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "纯净人声"
+      },
+      {
+        "id": 2,
+        "name": "深海低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Buds ohm EX"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06E010",
+    "name": "OPPO Enco Clip2",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      },
+      {
+        "id": 3,
+        "name": "活力动感"
+      },
+      {
+        "id": 4,
+        "name": "丹拿特调"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco Nobel"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "O1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06D810",
+    "name": "OPPO Enco Air5",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "纯享人声"
+      },
+      {
+        "id": 2,
+        "name": "澎湃低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco ohm DO",
+      "OPPO Enco ohm EX",
+      "OPPO Enco ohm"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06C410",
+    "name": "OPPO Enco Air5 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [
+      "OPPO Enco Einstein 1",
+      "OPPO Enco Einstein 3"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066414",
+    "name": "OnePlus Buds Ace 3",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Buds Einstein 1"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2,
+      3
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066814",
+    "name": "OnePlus Nord Buds 4 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Buds Einstein 2"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2,
+      3
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      31,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066054",
+    "name": "OnePlus Buds 3V",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Curie DO"
+    ],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065854",
+    "name": "OnePlus Nord Buds 3r",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [
+      "OnePlus Nord Curie",
+      "OnePlus Nord Newton"
+    ],
+    "product_aliases": [
+      "065814"
+    ],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06B810",
+    "name": "OPPO Enco Clip",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "默认"
+      },
+      {
+        "id": 1,
+        "name": "活力动感"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      },
+      {
+        "id": 3,
+        "name": "深海低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "O1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065C14",
+    "name": "OnePlus Open Buds",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "默认"
+      },
+      {
+        "id": 1,
+        "name": "活力动感"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      },
+      {
+        "id": 3,
+        "name": "深海低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "O1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061410",
+    "name": "OPPO Enco X",
+    "noise": {
+      "deep": 3,
+      "light": 2,
+      "off": 0,
+      "transparency": 1
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "默认"
+      },
+      {
+        "id": 1,
+        "name": "Dynaudio 淳朴悠然"
+      },
+      {
+        "id": 2,
+        "name": "Dynaudio 温暖轻柔"
+      }
+    ],
+    "wear": true,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060410",
+    "name": "OPPO Enco Free",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062010",
+    "name": "OPPO Enco Free2",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2,
+      "vocal": 3
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "明亮通透"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061C10",
+    "name": "OPPO Enco Play",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": true,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061810",
+    "name": "OPPO Enco Air",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062410",
+    "name": "OPPO Enco Buds",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062810",
+    "name": "OPPO Enco Air Lite",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060C10",
+    "name": "OPPO Enco W51",
+    "noise": {},
+    "presets": [],
+    "wear": true,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060810",
+    "name": "OPPO Enco W31",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061010",
+    "name": "OPPO Enco W11",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060412",
+    "name": "OPPO O-Free",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062C10",
+    "name": "OPPO Enco W31 Lite",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050410",
+    "name": "OPPO Enco M31",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050010",
+    "name": "OPPO Enco Quiet",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060414",
+    "name": "OnePlus Buds",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060814",
+    "name": "OnePlus Buds Z",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "060C14",
+    "name": "OnePlus Buds Pro",
+    "noise": {
+      "smart": 4,
+      "deep": 3,
+      "light": 2,
+      "off": 0,
+      "transparency": 1
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062014",
+    "name": "OnePlus Buds Pro 2",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      },
+      {
+        "id": 7,
+        "name": "澄澈人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1,
+      2
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063014",
+    "name": "OnePlus Buds Pro 2（轻享版）",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      },
+      {
+        "id": 7,
+        "name": "澄澈人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063414",
+    "name": "OnePlus Buds Pro 2R",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      },
+      {
+        "id": 7,
+        "name": "澄澈人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064C10",
+    "name": "OPPO Enco Air3",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065C10",
+    "name": "OPPO Enco Air3 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "通话音质"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065810",
+    "name": "OPPO Enco R2",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "醇厚人声"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066010",
+    "name": "OPPO Enco Free3",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "通话音质"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061014",
+    "name": "OnePlus Buds Z2",
+    "noise": {
+      "deep": 3,
+      "light": 2,
+      "off": 0,
+      "transparency": 1
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050810",
+    "name": "OPPO Enco M32",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063010",
+    "name": "OPPO Enco R",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "明亮通透"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063410",
+    "name": "OPPO Enco Air2",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061C14",
+    "name": "OnePlus Nord Buds CE",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "微醺柔音"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064010",
+    "name": "OPPO Enco Free2i",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2,
+      "vocal": 3
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "明亮通透"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068414",
+    "name": "OnePlus Buds",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063C10",
+    "name": "OPPO Enco X2",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 8,
+      "vocal": 9
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "Dynaudio 纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "Dynaudio 淳朴悠然"
+      },
+      {
+        "id": 2,
+        "name": "Dynaudio 澎湃爽朗"
+      },
+      {
+        "id": 3,
+        "name": "久石让大师调音"
+      },
+      {
+        "id": 4,
+        "name": "Enco X 怀旧经典"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068814",
+    "name": "OnePlus Buds Z",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063810",
+    "name": "OPPO Enco Air2 Pro",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2,
+      "vocal": 3
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050414",
+    "name": "OnePlus Bullets Wireless Z2",
+    "noise": {},
+    "presets": [],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": false,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061414",
+    "name": "OnePlus Nord Buds",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "061814",
+    "name": "OnePlus Buds N",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064410",
+    "name": "OPPO Enco Air2i",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064810",
+    "name": "OPPO Enco Buds2",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065010",
+    "name": "OPPO Enco R Pro",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2,
+      "vocal": 3
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "醇美音质"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062414",
+    "name": "OnePlus Nord Buds 2",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 2,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062C14",
+    "name": "OnePlus Nord Buds 2r",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "明快清亮"
+      },
+      {
+        "id": 2,
+        "name": "深海低音"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "062814",
+    "name": "OnePlus Buds Ace",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 2,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066C10",
+    "name": "OPPO Enco Air2（新声版）",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067010",
+    "name": "OPPO Enco Air3i",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050C10",
+    "name": "OPPO Enco M33",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "050C14",
+    "name": "OnePlus BulletsWireless Z2 ANC",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 3,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "051014",
+    "name": "OnePlus Bullets Wireless Z3",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "纯净人声"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "N",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 3,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "063C14",
+    "name": "OnePlus Buds 3",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      1,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1,
+      2,
+      3
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "066810",
+    "name": "OPPO Enco X3i",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      },
+      {
+        "id": 3,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067410",
+    "name": "OPPO Enco X3",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 8,
+      "vocal": 9
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "高清解析"
+      },
+      {
+        "id": 2,
+        "name": "纯享人声"
+      },
+      {
+        "id": 3,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 7,
+        "name": "丹拿特调"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1,
+      2
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064014",
+    "name": "OnePlus Buds Pro 3",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "明快清亮"
+      },
+      {
+        "id": 2,
+        "name": "纯净人声"
+      },
+      {
+        "id": 3,
+        "name": "深海低音"
+      },
+      {
+        "id": 7,
+        "name": "丹拿特调"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1,
+      2
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067810",
+    "name": "OPPO Enco Air3s",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068010",
+    "name": "OPPO Enco Buds2 Pro",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "明快清亮"
+      },
+      {
+        "id": 2,
+        "name": "深海低音"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064814",
+    "name": "OnePlus Buds V",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "明快清亮"
+      },
+      {
+        "id": 2,
+        "name": "深海低音"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "00001107-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068810",
+    "name": "OPPO Enco Air 3i",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068410",
+    "name": "OPPO Enco R3",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "Reno特调（幻紫星河）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": false,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": false,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": false,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "067C10",
+    "name": "OPPO Enco Air4 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064414",
+    "name": "OnePlus Nord Buds 3 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 3,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 4,
+        "name": "纯净人声"
+      },
+      {
+        "id": 5,
+        "name": "深海低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "069010",
+    "name": "OPPO Enco Air4",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065014",
+    "name": "OnePlus Nord Buds 3",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 3,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 4,
+        "name": "纯净人声"
+      },
+      {
+        "id": 5,
+        "name": "深海低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "069C10",
+    "name": "OPPO Enco R3 Pro",
+    "noise": {
+      "smart": 7,
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "off": 0,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "星河独白"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06A010",
+    "name": "OPPO Enco Buds3 Pro+",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "深海低音"
+      },
+      {
+        "id": 2,
+        "name": "明快清亮"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "064C14",
+    "name": "OnePlus Buds Ace 2",
+    "noise": {
+      "nc": 0,
+      "off": 1,
+      "transparency": 2
+    },
+    "presets": [
+      {
+        "id": 3,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 4,
+        "name": "纯净人声"
+      },
+      {
+        "id": 5,
+        "name": "深海低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": true,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "068C10",
+    "name": "OPPO Enco Free4",
+    "noise": {
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "smart": 7,
+      "adaptive": 11,
+      "transparency": 2,
+      "off": 0
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "纯享人声"
+      },
+      {
+        "id": 2,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 7,
+        "name": "活力动感"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06C010",
+    "name": "OPPO Enco Free4（丹拿版）",
+    "noise": {
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "smart": 7,
+      "adaptive": 11,
+      "transparency": 2,
+      "off": 0
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "纯享人声"
+      },
+      {
+        "id": 2,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 3,
+        "name": "丹拿特调"
+      },
+      {
+        "id": 7,
+        "name": "活力动感"
+      },
+      {
+        "id": 8,
+        "name": "丹拿人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06BC10",
+    "name": "OPPO Enco X3s",
+    "noise": {
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "smart": 7,
+      "adaptive": 11,
+      "transparency": 2,
+      "off": 0
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "至臻原音"
+      },
+      {
+        "id": 1,
+        "name": "纯享人声"
+      },
+      {
+        "id": 2,
+        "name": "澎湃低音"
+      },
+      {
+        "id": 3,
+        "name": "丹拿特调"
+      },
+      {
+        "id": 8,
+        "name": "丹拿人声"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "065414",
+    "name": "OnePlus Buds 4",
+    "noise": {
+      "deep": 4,
+      "moderate": 5,
+      "light": 6,
+      "smart": 7,
+      "adaptive": 11,
+      "transparency": 2,
+      "off": 0
+    },
+    "presets": [
+      {
+        "id": 0,
+        "name": "均衡（默认）"
+      },
+      {
+        "id": 1,
+        "name": "纯净人声"
+      },
+      {
+        "id": 2,
+        "name": "深海低音"
+      }
+    ],
+    "wear": true,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": true,
+    "find": true,
+    "hearing": true,
+    "custom": true,
+    "brand": "OnePlus",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T1",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06A850",
+    "name": "OPPO Enco Buds3 Pro",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "069850",
+    "name": "OPPO Enco Air4i",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06AC50",
+    "name": "OPPO Enco R4",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": true,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": true,
+    "game_types": [
+      3,
+      0
+    ],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [
+      1
+    ],
+    "eq_mutex": true,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06A450",
+    "name": "OPPO Enco Buds3",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  },
+  {
+    "id": "06B050",
+    "name": "OPPO Enco Air4（新声版）",
+    "noise": {},
+    "presets": [
+      {
+        "id": 0,
+        "name": "纯粹原音"
+      },
+      {
+        "id": 1,
+        "name": "悠扬人声"
+      },
+      {
+        "id": 2,
+        "name": "脉冲低音"
+      }
+    ],
+    "wear": false,
+    "dual": true,
+    "voice": false,
+    "long": false,
+    "bass": false,
+    "find": true,
+    "hearing": false,
+    "custom": false,
+    "brand": "OPPO",
+    "aliases": [],
+    "product_aliases": [],
+    "service_uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+    "support_spp": true,
+    "form_factor": "T2",
+    "game": false,
+    "game_types": [],
+    "multi": true,
+    "spatial_types": [
+      0,
+      1
+    ],
+    "mutex": [],
+    "eq_mutex": false,
+    "frequencies": [
+      62,
+      250,
+      1000,
+      4000,
+      8000,
+      16000
+    ],
+    "custom_max": 0,
+    "battery_layout": "Auto"
+  }
+]

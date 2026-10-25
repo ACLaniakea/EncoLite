@@ -1,0 +1,14 @@
+{
+  "version": "6.12.0",
+  "source": "https://pypi.org/project/PySide6-Essentials/6.12.0/",
+  "artifacts": [
+    {
+      "file": "pyside6_essentials-6.12.0-cp310-abi3-win_amd64.whl",
+      "sha256": "c9a95102aa23c1f86516a30d5a9be37552d324eee7e567eb7508973f1218cb42"
+    },
+    {
+      "file": "shiboken6-6.12.0-cp310-abi3-win_amd64.whl",
+      "sha256": "a1906cb8116869178c64b6bab52623bbc8b4ceed7b30bfc3c9aa0f6e67f6438e"
+    }
+  ]
+}

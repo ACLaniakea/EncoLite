@@ -1,0 +1,117 @@
+import { ScrollView, LineEdit, Slider, ComboBox } from "std-widgets.slint";
+import { Theme, Label, Card, Action, SettingRow, Chip } from "components.slint";
+import { SwitchItem, NoiseItem, PresetItem, BandItem, DeviceItem } from "types.slint";
+
+export component FeaturePage inherits Rectangle {
+    in property <[SwitchItem]> switches;
+    in property <[NoiseItem]> modes;
+    in property <string> noise;
+    in property <bool> busy;
+    in property <bool> spatial-visible;
+    in property <int> spatial-mode;
+    in property <[PresetItem]> spatial-options;
+    in property <[PresetItem]> game-options;
+    in property <int> game-type;
+    in property <bool> find-visible;
+    in property <bool> finding;
+    in property <string> device-info;
+    callback feature(string,bool);
+    callback change-noise(string);
+    callback spatial(int);
+    callback game(int);
+    callback find(bool);
+    ScrollView { x: 0px; y: 0px; width: parent.width; height: parent.height; horizontal-scrollbar-policy: always-off; content-width: self.width - 12px;
+        VerticalLayout { padding-right: 12px; spacing: 10px;
+            Label { text: "聆听模式"; font-size: 12px; font-weight: 600; height: 23px; }
+            HorizontalLayout { spacing: 2px; height: 30px;
+                for mode in root.modes: Chip { label: mode.name; selected: root.noise == mode.key; enabled: !root.busy; clicked => { root.change-noise(mode.key); } }
+            }
+            if root.spatial-visible: Card { height: 92px;
+                Label { x: 16px; y: 9px; height: 22px; text: "空间音频"; font-size: 12px; font-weight: 600; }
+                HorizontalLayout { x: 12px; y: 42px; width: parent.width - 24px; height: 32px; spacing: 6px;
+                    for option in root.spatial-options: Chip { label: option.name; selected: root.spatial-mode == option.id; enabled: !root.busy; clicked => { root.spatial(option.id); } }
+                }
+            }
+            for item in root.switches: SettingRow { title: item.title; description: item.detail; icon: @image-url("assets/sound.svg"); checked: item.checked; enabled: item.enabled && !root.busy; toggled(value) => { root.feature(item.key,value); } }
+            if root.game-options.length > 0: Card { height: 90px;
+                Label { x: 16px; y: 9px; height: 22px; text: "游戏音效"; font-size: 12px; font-weight: 600; }
+                HorizontalLayout { x: 12px; y: 40px; width: parent.width - 24px; height: 32px; spacing: 6px;
+                    for option in root.game-options: Chip { label: option.name; selected: root.game-type == option.id; enabled: !root.busy; clicked => { root.game(option.id); } }
+                }
+            }
+            if root.find-visible: Card { height: 82px;
+                Label { x: 16px; y: 10px; height: 22px; text: "查找耳机"; font-size: 12px; font-weight: 600; }
+                Label { x: 16px; y: 38px; width: parent.width - 155px; height: 32px; text: "取下耳机后播放提示音。"; color: Theme.muted; font-size: 11px; }
+                Action { x: parent.width - 124px; y: 24px; width: 108px; label: root.finding ? "停止提示音" : "播放提示音"; enabled: !root.busy; clicked => { root.find(!root.finding); } }
+            }
+            Label { text: root.device-info; color: Theme.muted; font-size: 10px; height: 35px; wrap: word-wrap; }
+        }
+    }
+}
+
+export component CustomPage inherits Rectangle {
+    in property <bool> available;
+    in property <bool> busy;
+    in property <[string]> names;
+    in property <int> selected;
+    in-out property <string> eq-name;
+    in property <[BandItem]> bands;
+    in property <int> minimum: -6;
+    in property <int> maximum: 6;
+    private property <bool> confirm-delete: false;
+    callback select-entry(int);
+    callback name-edited(string);
+    callback gain(int,int);
+    callback write(string);
+    ScrollView { x: 0px; y: 0px; width: parent.width; height: parent.height; horizontal-scrollbar-policy: always-off; content-width: self.width - 12px;
+        VerticalLayout { padding-right: 12px; spacing: 8px;
+            Label { text: "自定义均衡器"; font-size: 16px; font-weight: 600; height: 24px; }
+            Label { text: root.available ? "将音色保存到耳机，随时继续聆听。" : "连接支持自定义均衡器的耳机后即可调整。"; font-size: 11px; color: Theme.muted; height: 19px; }
+            HorizontalLayout { spacing: 8px; height: 32px;
+                ComboBox { model: root.names; current-index: root.selected; enabled: root.available && !root.busy; selected(value) => { root.confirm-delete = false; root.select-entry(self.current-index); } }
+                LineEdit { text <=> root.eq-name; placeholder-text: "音效名称"; enabled: root.available && !root.busy; edited(text) => { root.name-edited(text); } }
+            }
+            for band[index] in root.bands: Card { height: 42px;
+                Label { x: 14px; y: 10px; width: 67px; height: 22px; text: band.label; font-size: 11px; }
+                Slider { x: 90px; y: 6px; width: parent.width - 169px; height: 30px; minimum: root.minimum; maximum: root.maximum; value: band.gain; enabled: root.available && !root.busy; changed(value) => { root.gain(index,round(value)); } }
+                Label { x: parent.width - 64px; y: 10px; width: 52px; height: 22px; text: (band.gain > 0 ? "+" : "") + band.gain + " dB"; font-size: 11px; color: Theme.accent; }
+            }
+            HorizontalLayout { spacing: 10px; height: 34px;
+                Action { label: "保存并使用"; primary: true; enabled: root.available && !root.busy; clicked => { root.write("save"); } }
+                Action { label: "试听修改"; enabled: root.available && root.selected > 0 && !root.busy; clicked => { root.write("preview"); } }
+                Action { label: root.confirm-delete ? "确认删除" : "删除音效"; enabled: root.available && root.selected > 0 && !root.busy; clicked => { if root.confirm-delete { root.write("delete"); root.confirm-delete = false; } else { root.confirm-delete = true; } } }
+            }
+            Label { text: "试听会同步修改耳机中的当前条目。名称支持中文、字母和数字。"; height: 19px; font-size: 10px; color: Theme.muted; }
+        }
+    }
+}
+
+export component DevicesPage inherits Rectangle {
+    in property <[DeviceItem]> devices;
+    in property <bool> busy;
+    in property <bool> writable;
+    in property <bool> available;
+    in property <string> priority;
+    private property <string> confirm-address;
+    callback operate(string,string);
+    callback refresh();
+    ScrollView { x: 0px; y: 0px; width: parent.width; height: parent.height; horizontal-scrollbar-policy: always-off; content-width: self.width - 12px;
+        VerticalLayout { padding-right: 12px; spacing: 12px;
+            HorizontalLayout { height: 32px;
+                Label { text: "连接的设备"; font-size: 16px; font-weight: 600; }
+                Action { label: "刷新列表"; enabled: root.available && !root.busy; clicked => { root.refresh(); } }
+            }
+            Label { text: root.available ? root.priority : "连接支持多设备管理的耳机后即可查看。"; font-size: 11px; color: Theme.muted; height: 25px; }
+            for device in root.devices: Card { height: root.writable ? 130px : 76px;
+                Label { x: 16px; y: 10px; width: parent.width - 90px; height: 24px; text: device.name; font-size: 13px; font-weight: 600; overflow: elide; }
+                Label { x: 16px; y: 40px; height: 22px; text: device.detail; font-size: 10px; color: Theme.muted; }
+                if root.writable: HorizontalLayout { x: 14px; y: 80px; width: parent.width - 28px; height: 32px; spacing: 8px;
+                    Action { label: device.connected ? "断开" : "连接"; enabled: !root.busy; clicked => { root.operate(device.connected ? "disconnect" : "connect",device.address); } }
+                    Action { label: "优先连接"; enabled: device.connected && !root.busy; clicked => { root.operate("priority",device.address); } }
+                    Action { label: root.confirm-address == device.address ? "确认取消配对" : "取消配对"; enabled: !root.busy; clicked => { if root.confirm-address == device.address { root.operate("unpair",device.address); root.confirm-address = ""; } else { root.confirm-address = device.address; } } }
+                }
+            }
+            if root.writable: Action { label: "自动连接优先级"; width: 150px; enabled: !root.busy; clicked => { root.operate("auto",""); } }
+        }
+    }
+}

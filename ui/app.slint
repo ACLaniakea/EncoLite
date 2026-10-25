@@ -1,0 +1,290 @@
+import { FeaturePage, CustomPage, DevicesPage } from "advanced.slint";
+import { PresetItem, SwitchItem, NoiseItem, BandItem, DeviceItem } from "types.slint";
+import { ComboBox, ScrollView } from "std-widgets.slint";
+// Compact UI: explicit container origins prevent Slint auto-centering.
+import { Theme, Label, Card, Action, NavItem, Toggle, SettingRow, BatteryTile, ModeTile, Chip } from "components.slint";
+component CaptionButton inherits Rectangle {
+    in property <string> label;
+    in property <bool> danger: false;
+    callback clicked();
+    y: 0px; width: 38px; height: 26px;
+    background: area.has-hover ? (danger ? #c42b1c : Theme.line) : transparent;
+    Label { text: root.label; horizontal-alignment: center; color: root.danger && area.has-hover ? #fff : Theme.muted; font-size: 13px; }
+    area := TouchArea { mouse-cursor: pointer; clicked => { root.clicked(); } }
+}
+export component AppWindow inherits Window {
+    title: "Enco Lite · OPPO 耳机助手";
+    icon: @image-url("assets/app-icon.png");
+    preferred-width: 864px;
+    preferred-height: 640px;
+    min-width: 800px;
+    min-height: 640px;
+    default-font-family: "Microsoft YaHei UI";
+    default-font-size: 11px;
+    no-frame: true;
+    resize-border-width: 4px;
+    background: transparent;
+    in-out property <[string]> device-names: [];
+    in-out property <int> device-index: -1;
+    callback scan-devices();
+    callback select-device(int);
+    in-out property <int> page: 0;
+    in-out property <bool> busy: false;
+    in-out property <bool> connecting: false;
+    in-out property <bool> cancelling: false;
+    in-out property <bool> connection-popup: true;
+    callback change-connection-popup(bool);
+    in-out property <image> product-picture: @image-url("assets/device-neutral.svg");
+    in-out property <string> model-name: "未连接耳机";
+    in-out property <string> firmware: "";
+    in-out property <string> preset-name: "—";
+    in-out property <bool> can-anc: false;
+    in-out property <bool> can-off: false;
+    in-out property <bool> can-transparency: false;
+    in-out property <bool> can-smart: false;
+    in-out property <bool> can-light: false;
+    in-out property <bool> can-moderate: false;
+    in-out property <bool> can-deep: false;
+    in-out property <bool> can-equalizer: false;
+    in-out property <bool> can-wear: false;
+    in-out property <bool> can-dual: false;
+    in-out property <[PresetItem]> presets: [];
+    in-out property <bool> window-maximized <=> root.maximized;
+    in-out property <bool> window-minimized <=> root.minimized;
+    in-out property <bool> connected: false;
+    in-out property <string> noise: "";
+    in-out property <string> anc-level: "smart";
+    in-out property <int> preset: -1;
+    in-out property <bool> wear: false;
+    in-out property <bool> dual: false;
+    in-out property <bool> dark <=> Theme.dark;
+    in-out property <string> left-value: "—";
+    in-out property <string> right-value: "—";
+    in-out property <string> case-value: "—";
+    in-out property <bool> left-charging: false;
+    in-out property <bool> right-charging: false;
+    in-out property <bool> case-charging: false;
+    in-out property <float> left-level: 0;
+    in-out property <float> right-level: 0;
+    in-out property <float> case-level: 0;
+    in-out property <string> status: "已准备好";
+    in-out property <string> trace: "";
+    in-out property <bool> show-trace: false;
+    in-out property <[SwitchItem]> switches: [];
+    in-out property <[NoiseItem]> noise-options: [];
+    in-out property <bool> spatial-visible: false;
+    in-out property <int> spatial-mode: -1;
+    in-out property <[PresetItem]> spatial-options: [];
+    in-out property <[PresetItem]> game-options: [];
+    in-out property <int> game-type: -1;
+    in-out property <bool> find-visible: false;
+    in-out property <bool> finding: false;
+    in-out property <string> device-info: "";
+    in-out property <bool> custom-available: false;
+    in-out property <[string]> custom-names: [];
+    in-out property <int> custom-index: 0;
+    in-out property <string> eq-name: "";
+    in-out property <[BandItem]> bands: [];
+    in-out property <int> eq-minimum: -6;
+    in-out property <int> eq-maximum: 6;
+    in-out property <[DeviceItem]> multi-devices: [];
+    in-out property <bool> multi-available: false;
+    in-out property <bool> multi-writable: false;
+    in-out property <string> priority-text: "";
+    in-out property <[string]> model-names: [];
+    in-out property <int> model-index: -1;
+    callback select-model(int);
+    callback change-spatial(int);
+    callback change-game(int);
+    callback find-device(bool);
+    callback select-custom(int);
+    callback edit-custom-name(string);
+    callback edit-gain(int,int);
+    callback write-custom(string);
+    callback operate-multi(string,string);
+    callback change-noise(string);
+    callback next-preset();
+    callback change-preset(int);
+    callback change-feature(string, bool);
+    callback change-connection();
+    callback refresh-device();
+    callback change-theme(bool);
+    callback reset-demo();
+    callback dismiss();
+    callback show-quick();
+    callback quit-requested();
+
+    callback geometry-changed();
+    changed width => { root.geometry-changed(); }
+    changed height => { root.geometry-changed(); }
+    changed maximized => { root.geometry-changed(); }
+    changed minimized => { root.geometry-changed(); }
+    Rectangle { x: 0px; y: 0px; width: root.width; height: root.height;
+        background: Theme.canvas; border-radius: root.maximized ? 0px : 12px; clip: true;
+    WindowMoveArea { x: 0px; y: 0px; width: parent.width - 76px; height: 24px; }
+    CaptionButton { x: parent.width - 76px; label: "−"; clicked => { root.minimized = true; } }
+    CaptionButton { x: parent.width - 38px; label: "×"; danger: true; clicked => { root.dismiss(); } }
+    Rectangle { x: 0px; y: 0px; width: 156.8px; height: parent.height; background: Theme.sidebar;
+        Rectangle { x: 17.6px; y: 24px; width: 26.4px; height: 26.4px; border-radius: 8px; background: #17684b;
+            Image { source: @image-url("assets/buds.svg"); x: 6.4px; y: 6.4px; width: 13.6px; height: 13.6px; colorize: #fff; }
+        }
+        Label { x: 52.8px; y: 23.2px; height: 19.2px; text: "Enco Lite"; font-size: 15px; font-weight: 700; }
+        Label { x: 18.4px; y: 62.4px; height: 14.4px; text: "留一点空间，给好声音。"; font-size: 10px; color: Theme.muted; }
+        Label { x: 18.4px; y: 108px; height: 14.4px; text: "我的空间"; font-size: 10px; color: Theme.muted; }
+        NavItem { x: 11.2px; y: 133.6px; label: "我的耳机"; icon: @image-url("assets/buds.svg"); selected: root.page == 0; clicked => { root.page = 0; } }
+        NavItem { x: 11.2px; y: 172.8px; label: "声音与音效"; icon: @image-url("assets/sound.svg"); selected: root.page == 1; clicked => { root.page = 1; } }
+        NavItem { x: 11.2px; y: 212px; label: "耳机功能"; icon: @image-url("assets/settings.svg"); selected: root.page == 4; clicked => { root.page = 4; } }
+        NavItem { x: 11.2px; y: 251px; label: "自定义音效"; icon: @image-url("assets/sound.svg"); selected: root.page == 5; clicked => { root.page = 5; } }
+        NavItem { x: 11.2px; y: 290px; label: "连接的设备"; icon: @image-url("assets/devices.svg"); selected: root.page == 6; clicked => { root.page = 6; } }
+        Rectangle { x: 18.4px; y: 340px; width: 120px; height: 0.8px; background: Theme.line; }
+        NavItem { x: 11.2px; y: 354px; label: "应用设置"; icon: @image-url("assets/settings.svg"); selected: root.page == 2; clicked => { root.page = 2; } }
+        NavItem { x: 11.2px; y: 393px; label: "关于 Enco Lite"; icon: @image-url("assets/info.svg"); selected: root.page == 3; clicked => { root.page = 3; } }
+        Rectangle { x: 11.2px; y: parent.height - 85.6px; width: 134.4px; height: 49.6px; border-radius: 6.4px; background: Theme.card;
+            Rectangle { x: 11.2px; y: 16px; width: 5.6px; height: 5.6px; border-radius: 3.2px; background: root.connected ? Theme.accent : Theme.muted; }
+            Label { x: 23.2px; y: 8.8px; width: 104px; height: 18.4px; overflow: elide; text: root.model-name; font-size: 10px; font-weight: 600; }
+            Label { x: 23.2px; y: 28px; height: 12px; text: root.connected ? "已连接" : "未连接"; font-size: 10px; color: Theme.muted; }
+        }
+        Action { x: 12px; y: parent.height - 132px; width: 132px; height: 29px; label: "快捷控制"; clicked => { root.show-quick(); } }
+        Label { x: 19.2px; y: parent.height - 26.4px; height: 14.4px; text: "v0.3.0"; font-size: 10px; color: Theme.muted; letter-spacing: 0.8px; }
+    }
+
+    Rectangle { x: 156.8px; y: 0px; width: parent.width - 156.8px; height: parent.height; background: transparent;
+        Label { x: 24px; y: 20px; height: 13.6px; text: "设备 / " + (root.page == 0 ? "概览" : root.page == 1 ? "声音与音效" : root.page == 2 ? "应用设置" : root.page == 4 ? "耳机功能" : root.page == 5 ? "自定义音效" : root.page == 6 ? "连接的设备" : "关于"); font-size: 10px; color: Theme.muted; }
+        Label { x: 24px; y: 40.8px; height: 28.8px; text: root.page == 0 ? "我的耳机" : root.page == 1 ? "声音，恰到好处。" : root.page == 2 ? "保持简单。" : root.page == 4 ? "随心调整。" : root.page == 5 ? "调出你的音色。" : root.page == 6 ? "连接，自在切换。" : "轻一点，刚刚好。"; font-size: 21px; font-weight: 650; }
+
+
+        ComboBox { x: parent.width - 260px; y: 41px; width: 190px; height: 28px; model: root.device-names; current-index: root.device-index; enabled: !root.busy; selected(value) => { root.select-device(self.current-index); } }
+        Action { x: parent.width - 64px; y: 41px; width: 40px; height: 28px; label: "刷新"; enabled: !root.busy; clicked => { root.scan-devices(); } }
+        if root.page == 0: Rectangle {
+            x: 24px; y: 88.8px; width: parent.width - 48px; height: parent.height - 126.4px; background: transparent;
+            Rectangle { x: 0px; y: 0px; width: parent.width; height: 166.4px; border-radius: 9.6px; background: root.dark ? #283e31 : #e5eee7;
+                Label { x: 20.8px; y: 18.4px; height: 14.4px; text: "为每一次聆听，留白。"; font-size: 10px; color: Theme.accent; }
+                Label { x: 20.8px; y: 48.8px; width: parent.width - 235px; height: 28.8px; overflow: elide; text: root.model-name; font-size: 24px; font-weight: 650; }
+                Label { x: 21.6px; y: 84.8px; height: 17.6px; text: root.connected ? "●  已连接" : "○  未连接"; font-size: 10px; color: Theme.muted; }
+                Action { x: 20.8px; y: 120.8px; label: root.cancelling ? "正在取消…" : root.connecting ? "取消连接" : root.connected ? "断开连接" : "连接耳机"; enabled: (!root.busy || root.connecting) && !root.cancelling; primary: true; width: 96px; clicked => { root.change-connection(); } }
+                Image { x: parent.width - 215px; y: 12px; width: 190px; height: 145px; source: root.product-picture; image-fit: contain; }
+            }
+            HorizontalLayout { x: 0px; width: parent.width; y: 179.2px; height: 78.4px; spacing: 9.6px;
+                BatteryTile { label: "左耳机"; value: root.left-value; level: root.left-level; charging: root.left-charging; picture: @image-url("assets/wear.svg"); }
+                BatteryTile { label: "右耳机"; value: root.right-value; level: root.right-level; charging: root.right-charging; picture: @image-url("assets/wear.svg"); }
+                BatteryTile { label: "充电盒"; value: root.case-value; level: root.case-level; charging: root.case-charging; picture: @image-url("assets/case-symbol.svg"); }
+            }
+            Card { x: 0px; y: 270.4px; width: parent.width; height: 156.8px;
+                Label { x: 15.2px; y: 12px; height: 20.8px; text: "聆听模式"; font-size: 12px; font-weight: 600; }
+                
+                HorizontalLayout { x: 14.4px; y: 44px; width: parent.width - 28.8px; height: 52px; spacing: 8px;
+                    ModeTile { label: "降噪"; detail: "安静，专注于此刻"; icon: @image-url("assets/noise.svg"); selected: root.noise != "" && root.noise != "off" && root.noise != "transparency" && root.noise != "vocal"; enabled: root.can-anc; clicked => { root.change-noise(root.anc-level); } }
+                    ModeTile { label: "通透"; detail: "听见身边的声音"; icon: @image-url("assets/transparency.svg"); selected: root.noise == "transparency" || root.noise == "vocal"; enabled: root.can-transparency; clicked => { root.change-noise("transparency"); } }
+                    ModeTile { label: "关闭"; detail: "自然的聆听体验"; icon: @image-url("assets/off.svg"); selected: root.noise == "off"; enabled: root.can-off; clicked => { root.change-noise("off"); } }
+                }
+                Rectangle { x: 16px; y: 109px; width: parent.width - 32px; height: 1px; background: Theme.line; }
+                Label { x: 16px; y: 118px; width: 64px; height: 27px; text: "降噪强度"; font-size: 11px; color: Theme.muted; }
+                HorizontalLayout { x: 96px; y: 118px; width: parent.width - 112px; height: 28px; spacing: 6px;
+                    Chip { label: "智能"; selected: root.noise == "smart"; enabled: root.can-smart; clicked => { root.change-noise("smart"); } }
+                    Chip { label: "轻度"; selected: root.noise == "light"; enabled: root.can-light; clicked => { root.change-noise("light"); } }
+                    Chip { label: "中度"; selected: root.noise == "moderate"; enabled: root.can-moderate; clicked => { root.change-noise("moderate"); } }
+                    Chip { label: "深度"; selected: root.noise == "deep"; enabled: root.can-deep; clicked => { root.change-noise("deep"); } }
+                }
+            }
+            HorizontalLayout { x: 0px; width: parent.width; y: 440px; height: 60.8px; spacing: 9.6px;
+                SettingRow { title: "佩戴检测"; description: "摘下暂停，戴上继续"; icon: @image-url("assets/wear.svg"); checked: root.wear; enabled: root.can-wear; toggled(value) => { root.change-feature("wear", value); } }
+                SettingRow { title: "双设备连接"; description: "在两台设备之间自由切换"; icon: @image-url("assets/devices.svg"); checked: root.dual; enabled: root.can-dual; toggled(value) => { root.change-feature("dual", value); } }
+            }
+        }
+
+        if root.page == 1: Rectangle {
+            x: 24px; y: 88.8px; width: parent.width - 48px; height: parent.height - 128px; background: transparent;
+            Card { x: 0px; y: 0px; width: parent.width; height: 102.4px;
+                Rectangle { x: 17.6px; y: 19.2px; width: 64px; height: 64px; border-radius: 11.2px; background: Theme.selected;
+                    Image { x: 17.6px; y: 17.6px; width: 28.8px; height: 28.8px; source: @image-url("assets/sound.svg"); colorize: Theme.accent; }
+                }
+                Label { x: 99.2px; y: 20px; height: 16px; text: "ENCO MASTER"; font-size: 10px; color: Theme.muted; letter-spacing: 1.6px; }
+                Label { x: 99.2px; y: 41.6px; height: 24px; text: "找到属于你的声音"; font-size: 18px; font-weight: 600; }
+                Label { x: 99.2px; y: 70.4px; height: 14.4px; text: root.model-name + " · 原厂音效"; font-size: 10px; color: Theme.muted; }
+            }
+            Label { x: 0px; y: 120px; height: 22.4px; text: "大师调音"; font-size: 13px; font-weight: 600; }
+            Label { x: 0px; y: 144.8px; height: 16px; text: "选择一种音色，让喜欢的音乐更动听。"; font-size: 10px; color: Theme.muted; }
+            ScrollView { x: 0px; y: 174.4px; width: parent.width; height: parent.height - 174.4px; horizontal-scrollbar-policy: always-off; content-width: self.width - 12px;
+                VerticalLayout { spacing: 8px; padding-right: 12px;
+            for entry[index] in root.presets: Card { height: 50.4px;
+                border-color: root.preset == entry.id ? Theme.accent : Theme.line;
+                background: root.preset == entry.id ? Theme.selected : Theme.card;
+                Rectangle { x: 16px; y: 18.4px; width: 12.8px; height: 12.8px; border-radius: 6.4px; border-width: 0.8px; border-color: root.preset == entry.id ? Theme.accent : Theme.muted;
+                    if root.preset == entry.id: Rectangle { x: 3.2px; y: 3.2px; width: 6.4px; height: 6.4px; border-radius: 3.2px; background: Theme.accent; }
+                }
+                Label { x: 43.2px; y: 6.4px; height: 18.4px; text: entry.name; font-size: 10px; font-weight: 600; }
+                Label { x: 43.2px; y: 27.2px; height: 14.4px; text: entry.detail; font-size: 10px; color: Theme.muted; }
+                Label { x: parent.width - 72px; y: 16px; height: 18.4px; text: root.preset == entry.id ? "使用中" : ""; font-size: 10px; color: Theme.accent; }
+                TouchArea { enabled: root.can-equalizer; mouse-cursor: pointer; clicked => { root.change-preset(entry.id); } }
+            }
+                }
+            }
+        }
+
+        if root.page == 4: FeaturePage {
+            x: 24px; y: 89px; width: parent.width - 48px; height: parent.height - 128px;
+            switches: root.switches; modes: root.noise-options; noise: root.noise; busy: root.busy;
+            spatial-visible: root.spatial-visible; spatial-mode: root.spatial-mode; spatial-options: root.spatial-options;
+            game-options: root.game-options; game-type: root.game-type; find-visible: root.find-visible; finding: root.finding; device-info: root.device-info;
+            feature(key,value) => { root.change-feature(key,value); }
+            change-noise(key) => { root.change-noise(key); }
+            spatial(mode) => { root.change-spatial(mode); }
+            game(mode) => { root.change-game(mode); }
+            find(value) => { root.find-device(value); }
+        }
+        if root.page == 5: CustomPage {
+            x: 24px; y: 89px; width: parent.width - 48px; height: parent.height - 128px;
+            available: root.custom-available; busy: root.busy; names: root.custom-names; selected: root.custom-index;
+            eq-name <=> root.eq-name; bands: root.bands; minimum: root.eq-minimum; maximum: root.eq-maximum;
+            select-entry(index) => { root.select-custom(index); }
+            name-edited(text) => { root.edit-custom-name(text); }
+            gain(index,value) => { root.edit-gain(index,value); }
+            write(action) => { root.write-custom(action); }
+        }
+        if root.page == 6: DevicesPage {
+            x: 24px; y: 89px; width: parent.width - 48px; height: parent.height - 128px;
+            devices: root.multi-devices; busy: root.busy; writable: root.multi-writable; available: root.multi-available; priority: root.priority-text;
+            operate(action,address) => { root.operate-multi(action,address); }
+            refresh => { root.refresh-device(); }
+        }
+        if root.page == 2: Rectangle {
+            x: 24px; y: 88.8px; width: parent.width - 48px; height: parent.height - 128px; background: transparent;
+            Label { x: 0px; y: 0px; height: 20px; text: "外观"; font-size: 12px; font-weight: 600; }
+            SettingRow { y: 32.8px; width: parent.width; title: "深色模式"; description: "为夜晚的聆听换一种氛围"; icon: @image-url("assets/moon.svg"); checked: root.dark; toggled(value) => { root.change-theme(value); } }
+            Label { x: 0px; y: 118.4px; height: 20px; text: "桌面交互"; font-size: 12px; font-weight: 600; }
+            SettingRow { x: 0px; y: 150px; width: parent.width; title: "连接提示"; description: "连接成功时显示电量，自动收起"; icon: @image-url("assets/devices.svg"); checked: root.connection-popup; toggled(value) => { root.change-connection-popup(value); } }
+            Card { x: 0px; y: 226px; width: parent.width; height: 112px;
+                Label { x: 17.6px; y: 12px; height: 21.6px; text: "随手控制，收进托盘"; font-size: 12px; font-weight: 600; }
+                Label { x: 17.6px; y: 42.4px; height: 64px; text: "单击托盘图标：打开或收起快捷浮窗。\n双击托盘图标：恢复主窗口。\n关闭窗口收进托盘，右键图标可退出程序。"; font-size: 10px; color: Theme.muted; }
+            }
+            Label { x: 0px; y: 442px; width: 180px; height: 21px; text: "手动选择耳机型号"; font-size: 11px; color: Theme.muted; }
+            ComboBox { x: 190px; y: 437px; width: parent.width - 190px; height: 32px; model: root.model-names; current-index: root.model-index; enabled: root.connected && !root.busy; selected(value) => { root.select-model(self.current-index); } }
+            Action { x: 0px; y: 478px; width: 126px; label: "退出 Enco Lite"; clicked => { root.quit-requested(); } }
+            Card { x: 0px; y: 350px; width: parent.width; height: 72px;
+                Label { x: 17.6px; y: 11.2px; height: 19.2px; text: "恢复默认外观"; font-size: 11px; font-weight: 600; }
+                Label { x: 17.6px; y: 37.6px; height: 16px; text: "只重置应用外观，不改变耳机设置。"; font-size: 10px; color: Theme.muted; }
+                Action { x: parent.width - 120px; y: 19px; label: "恢复默认"; clicked => { root.reset-demo(); } }
+            }
+        }
+
+        if root.page == 3: Rectangle {
+            x: 24px; y: 88.8px; width: parent.width - 48px; height: parent.height - 128px; background: transparent;
+            Card { x: 0px; y: 0px; width: parent.width; height: 168px;
+                Label { x: 19.2px; y: 14.4px; height: 28.8px; text: "Enco Lite"; font-size: 22px; font-weight: 700; }
+                Label { x: 19.2px; y: 52.8px; height: 17.6px; text: "0.3.0 · OPPO 耳机助手"; font-size: 10px; color: Theme.accent; }
+                Label { x: 19.2px; y: 82.4px; width: parent.width - 38.4px; height: 66.4px; text: "让耳机控制更简单。\n专注 OPPO 耳机，随时调整你喜欢的声音。\n" + (root.firmware == "" ? "" : "固件版本：" + root.firmware); font-size: 10px; color: Theme.muted; }
+            }
+            Card { x: 0px; y: 182.4px; width: parent.width; height: 77.6px;
+                Label { x: 17.6px; y: 10.4px; height: 20px; text: "开源与致谢"; font-weight: 600; }
+                Label { x: 17.6px; y: 34.4px; width: parent.width - 35.2px; height: 33.6px; text: "OppoPodsManager © 2026 Zhaoyi-ya · GPL-3.0-or-later\n本修改版同以 GPL-3.0-or-later 提供，不附带任何担保。许可见随附 LICENSE。"; font-size: 10px; color: Theme.muted; }
+            }
+
+        }
+        Rectangle { x: 24px; y: parent.height - 28px; width: parent.width - 48px; height: 0.8px; background: Theme.line; }
+        Label { x: 24px; y: parent.height - 22.4px; width: parent.width - 120px; height: 15.2px; text: root.status; font-size: 10px; color: Theme.muted; overflow: elide; }
+        Label { x: parent.width - 85.6px; y: parent.height - 22.4px; width: 61.6px; height: 15.2px; text: "刷新状态 ↻"; font-size: 10px; color: Theme.accent;
+            TouchArea { enabled: root.connected; mouse-cursor: pointer; clicked => { root.refresh-device(); } }
+        }
+    }
+    }
+}

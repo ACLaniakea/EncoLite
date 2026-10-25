@@ -1,0 +1,22 @@
+[
+  {
+    "module": "qtbase",
+    "source": "https://github.com/qt/qtbase/tree/v6.12.0",
+    "source_archive": "https://github.com/qt/qtbase/archive/refs/tags/v6.12.0.tar.gz"
+  },
+  {
+    "module": "qtdeclarative",
+    "source": "https://github.com/qt/qtdeclarative/tree/v6.12.0",
+    "source_archive": "https://github.com/qt/qtdeclarative/archive/refs/tags/v6.12.0.tar.gz"
+  },
+  {
+    "module": "qtsvg",
+    "source": "https://github.com/qt/qtsvg/tree/v6.12.0",
+    "source_archive": "https://github.com/qt/qtsvg/archive/refs/tags/v6.12.0.tar.gz"
+  },
+  {
+    "module": "pyside-setup",
+    "source": "https://github.com/pyside/pyside-setup/tree/v6.12.0",
+    "source_archive": "https://github.com/pyside/pyside-setup/archive/refs/tags/v6.12.0.tar.gz"
+  }
+]
