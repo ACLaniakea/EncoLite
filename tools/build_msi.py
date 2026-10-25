@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.12'
-MSI_VERSION='0.5.12'
+VERSION='0.5.0-preview.13'
+MSI_VERSION='0.5.13'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'
@@ -130,7 +130,7 @@ def build():
         ('DesktopShortcut','DesktopFolder','ENCOLI~1|Enco Lite','DesktopComponent','[#'+exe+']',launch_arguments,None,None,'AppIcon',0,1,'INSTALLDIR')])
     m.add_data(db,'RemoveFile',[('RemoveAppMenu','MenuComponent',None,'AppMenu',2)])
     from msi_ui import add_wizard
-    add_wizard(db,ROOT,exe,launch_arguments or '')
+    add_wizard(db,ROOT,runtime_manifest.get('entry_point','EncoLite.exe'),launch_arguments or '')
     cab.commit(db)
     db.Commit()
     manifest={'version':VERSION,'msi_version':MSI_VERSION,'product_code':PRODUCT,'upgrade_code':UPGRADE,'file_count':len(files)}

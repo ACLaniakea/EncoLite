@@ -79,11 +79,16 @@ try:
  assert any(r['Event']=='SetProgress' and r['Attribute']=='Progress' for r in mappings)
  assert any(r['Event']=='ActionText' and r['Attribute']=='Text' for r in mappings)
  assert any(r['Event']=='ActionData' and r['Attribute']=='Text' for r in mappings)
- launch=[r for r in events if r['Event']=='MsiLaunchApp'];assert len(launch)==1
- assert launch[0]['Argument'].startswith('"[#') and '" "[INSTALLDIR]desktop_entry.py" --restart' in launch[0]['Argument']
+ launch=[r for r in events if r['Event']=='DoAction' and r['Argument']=='LaunchApplication'];assert len(launch)==1
+ actions={r['Action']:r for r in rows('CustomAction')}
+ assert actions['SetLauncher']['Target']=='[INSTALLDIR]python\\pythonw.exe'
+ assert actions['LaunchApplication']['Type']=='242' and actions['LaunchApplication']['Source']=='INSTALLER_PYTHON'
+ assert actions['LaunchApplication']['Target']=='"[INSTALLDIR]desktop_entry.py" --restart'
  assert 'REMOVE' in launch[0]['Condition'] and 'LAUNCH_AFTER_INSTALL' in launch[0]['Condition']
+ assert dialogs['OptionsDlg']['Control_First']=='Install'
+ assert {'RemoveDlg','FilesInUse','MsiRMFilesInUse'} <= set(dialogs)
  assert any(r['Dialog_']=='MaintenanceDlg' and r['Control_']=='Repair' and r['Event']=='[REMOVE]' and r['Argument']=='{}' for r in events)
- assert any(r['Dialog_']=='MaintenanceDlg' and r['Control_']=='Remove' and r['Event']=='[REINSTALL]' and r['Argument']=='{}' for r in events)
+ assert any(r['Dialog_']=='RemoveDlg' and r['Control_']=='Remove' and r['Event']=='[REINSTALL]' and r['Argument']=='{}' for r in events)
  check('progress subscriptions and optional per-user finish launch are authored')
  assert api.MsiOpenPackageExW(str(PATH.resolve()),1,C.byref(handle))==0
  conditions={r['Condition'] for r in events+rows('ControlCondition')+rows('InstallUISequence')+rows('InstallExecuteSequence') if r.get('Condition')}
@@ -108,10 +113,12 @@ try:
  action('DefaultDesktopShortcut');assert get('CREATE_DESKTOP_SHORTCUT')=='1'
  set_('CREATE_DESKTOP_SHORTCUT','0')
  assert api.MsiEvaluateConditionW(handle,sequence['DefaultDesktopShortcut']['Condition'])==0
- set_('Installed','1')
+ set_('Installed','1');set_('REMOVE','')
  assert api.MsiEvaluateConditionW(handle,sequence['MaintenanceDlg']['Condition'])==1
  assert api.MsiEvaluateConditionW(handle,sequence['WelcomeDlg']['Condition'])==0
- set_('REMOVE','ALL');assert api.MsiEvaluateConditionW(handle,launch[0]['Condition'])==0
+ set_('REMOVE','ALL');action('RememberRemoveRequest');assert api.MsiEvaluateConditionW(handle,launch[0]['Condition'])==0
+ assert api.MsiEvaluateConditionW(handle,sequence['RemoveDlg']['Condition'])==1
+ assert api.MsiEvaluateConditionW(handle,sequence['MaintenanceDlg']['Condition'])==0
  check('fresh install, explicit shortcut opt-out, maintenance and uninstall launch conditions behave correctly')
  api.MsiCloseHandle(handle);handle=C.c_uint32()
  assert api.MsiOpenDatabaseW(str(PATH.resolve()),C.c_void_p(0),C.byref(database))==0
