@@ -5,6 +5,7 @@ import ctypes
 import os
 import sys
 import traceback
+import time
 
 ROOT=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT))
@@ -16,6 +17,7 @@ def main():
     parser.add_argument('--quick',action='store_true')
     parser.add_argument('--tray-only',action='store_true')
     parser.add_argument('--quit',action='store_true')
+    parser.add_argument('--restart',action='store_true',help=argparse.SUPPRESS)
     parser.add_argument('--remove-autostart',action='store_true',help=argparse.SUPPRESS)
     parser.add_argument('--startup-folder',type=Path,help=argparse.SUPPRESS)
     parser.add_argument('--fixture',action='store_true',help=argparse.SUPPRESS)
@@ -38,11 +40,22 @@ def main():
         hwnd=shell.FindWindow('EncoLiteTray','Enco Lite tray')
         if hwnd:shell.PostMessage(hwnd,0x8002,3,0)
         return
-    if shell.activate_existing(args.quick,args.tray_only):return
-    mutex=shell.application_mutex()
-    if mutex is None:
-        shell.activate_existing(args.quick,args.tray_only)
-        return
+    if args.restart:
+        hwnd=shell.FindWindow('EncoLiteTray','Enco Lite tray')
+        if hwnd:shell.PostMessage(hwnd,0x8002,3,0)
+        deadline=time.monotonic()+15
+        while True:
+            if not shell.FindWindow('EncoLiteTray','Enco Lite tray'):
+                mutex=shell.application_mutex()
+                if mutex is not None:break
+            if time.monotonic()>=deadline:raise RuntimeError('已有 Enco Lite 尚未退出，请从托盘退出后再打开新版本')
+            time.sleep(.1)
+    else:
+        if shell.activate_existing(args.quick,args.tray_only):return
+        mutex=shell.application_mutex()
+        if mutex is None:
+            shell.activate_existing(args.quick,args.tray_only)
+            return
     from encolite.native_desktop import NativeDesktop
     app=NativeDesktop(ROOT,args)
     try:app.run()

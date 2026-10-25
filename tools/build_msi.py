@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.11'
-MSI_VERSION='0.5.11'
+VERSION='0.5.0-preview.12'
+MSI_VERSION='0.5.12'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'
@@ -50,7 +50,7 @@ def build():
     summary.SetProperty(m.PID_CODEPAGE,936)
     summary.SetProperty(m.PID_PAGECOUNT,500)
     summary.Persist()
-    # Use Windows Installer's own progress; no unsigned bootstrap executable.
+    # Use Windows Installer's native wizard; no bootstrap executable.
     execute_sequence=list(sequence.InstallExecuteSequence)
     m.change_sequence(execute_sequence,'LaunchConditions',450)
     m.add_data(db,'InstallExecuteSequence',execute_sequence)
@@ -58,13 +58,23 @@ def build():
     view.Execute(None);view.Close()
     m.add_data(db,'Property',[
         ('UpgradeCode',UPGRADE),('ARPNOMODIFY','1'),
-        ('ARPPRODUCTICON','AppIcon'),('INSTALLLEVEL','1'),('SecureCustomProperties','OLDPRODUCTS;NEWPRODUCTS'),
+        ('ARPPRODUCTICON','AppIcon'),('INSTALLLEVEL','1'),('SecureCustomProperties','OLDPRODUCTS;NEWPRODUCTS;INSTALLDIR;CREATE_DESKTOP_SHORTCUT;LAUNCH_AFTER_INSTALL'),
         ('ProductRelease',VERSION)])
     m.add_data(db,'Upgrade',[
         (UPGRADE,None,MSI_VERSION,None,513,None,'OLDPRODUCTS'),
         (UPGRADE,MSI_VERSION,None,None,258,None,'NEWPRODUCTS')])
     m.add_data(db,'RegLocator',[('OSBuild',2,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentBuildNumber',18)])
     m.add_data(db,'AppSearch',[('WINDOWSBUILD','OSBuild')])
+    # The stable entry-script component also locates older installations that did not
+    # publish ARPINSTALLLOCATION. Keep upgrades and startup links in that folder.
+    m.add_data(db,'CompLocator',[('ExistingInstall',component_guid(Path('desktop_entry.py')),1)])
+    m.add_data(db,'AppSearch',[('EXISTINGINSTALLDIR','ExistingInstall')])
+    m.add_data(db,'CustomAction',[
+        ('UseExistingDirectory',51,'INSTALLDIR','[EXISTINGINSTALLDIR]'),
+        ('SetInstallLocation',51,'ARPINSTALLLOCATION','[INSTALLDIR]')])
+    m.add_data(db,'InstallExecuteSequence',[
+        ('UseExistingDirectory','EXISTINGINSTALLDIR',425),
+        ('SetInstallLocation',None,1010)])
     m.add_data(db,'CustomAction',[('ReinstallAll',51,'REINSTALL','ALL')])
     m.add_data(db,'InstallExecuteSequence',[('ReinstallAll','Installed AND NOT REMOVE',750)])
     m.add_data(db,'LaunchCondition',[
@@ -119,6 +129,8 @@ def build():
         ('QuickShortcut','AppMenu','QUICKC~1|快捷控制','MenuComponent','[#'+exe+']',quick_arguments,None,None,'AppIcon',0,1,'INSTALLDIR'),
         ('DesktopShortcut','DesktopFolder','ENCOLI~1|Enco Lite','DesktopComponent','[#'+exe+']',launch_arguments,None,None,'AppIcon',0,1,'INSTALLDIR')])
     m.add_data(db,'RemoveFile',[('RemoveAppMenu','MenuComponent',None,'AppMenu',2)])
+    from msi_ui import add_wizard
+    add_wizard(db,ROOT,exe,launch_arguments or '')
     cab.commit(db)
     db.Commit()
     manifest={'version':VERSION,'msi_version':MSI_VERSION,'product_code':PRODUCT,'upgrade_code':UPGRADE,'file_count':len(files)}

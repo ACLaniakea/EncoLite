@@ -1,6 +1,6 @@
 # Qt Windows 构建
 
-0.5.0-preview.11 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
+0.5.0-preview.12 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
 
 ## 准备依赖
 
@@ -62,3 +62,9 @@ MSI 验证使用独立产品名称、UpgradeCode、安装目录和偏好目录�
 Qt 表面背景、内层角和顶层描边使用同一半径；描边最后绘制，关闭像素整数对齐以适应分数 DPI。DWM 设为不做第二次圆角裁切，仍隐藏系统边框；不增加遮罩纹理或效果运行库。`verify_qt_corners.py` 检查实际像素弧线、透明角、原生属性、深浅色及最小/最大化状态，测试色描边仅用于隔离检查。
 
 参考：[Microsoft 启动应用](https://support.microsoft.com/zh-cn/windows/experience/startup-boot/configure-startup-applications-in-windows)。
+
+## 原生 MSI 安装向导
+
+preview.12 使用 Windows Installer 自身的 Dialog / Control / InstallUISequence，提供欢迎、目录、快捷方式、进度、完成、维护和错误页，无外部引导程序。静默安装仍可使用 `/qn`，桌面快捷方式在完整向导中默认勾选，可取消；静默安装需显式传入 `CREATE_DESKTOP_SHORTCUT=1`。
+
+`python tools/verify_msi_ui.py` 检查导航循环、控件引用、条件、目录解析和原生页面创建。它使用 MSI 作者预览 API，不模拟鼠标点击。`python tools/verify_qt_install.py` 在独立产品标识下验证静默安装、运行、重装和卸载。完整向导的人工作业与自动化检查范围分别记录在 VALIDATION.md。
