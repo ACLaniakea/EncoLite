@@ -18,8 +18,9 @@ C.Button {
         color: root.primary ? Theme.accentText : root.selected ? Theme.accent : Theme.text
     }
     background: Rectangle {
+        objectName: 'buttonSurface'
         radius: 7
-        color: root.primary ? (root.down?Qt.darker(Theme.accent,1.12):Theme.accent) : root.selected ? Theme.selection : root.hovered||root.down ? Theme.selection : root.quiet ? "transparent" : Theme.card
+        color: root.primary ? (root.down?Qt.darker(Theme.accent,1.12):Theme.accent) : root.selected||root.hovered||root.down ? Theme.surface(Theme.selection,'selection',root.Window.window) : root.quiet ? "transparent" : Theme.surface(Theme.card,'field',root.Window.window)
         border.width: root.visualFocus ? 2 : 1
         border.color: root.visualFocus||root.selected ? Theme.accent : root.quiet||root.primary ? "transparent" : Theme.line
         Behavior on color { ColorAnimation { duration: Theme.motion ? 130 : 0 } }

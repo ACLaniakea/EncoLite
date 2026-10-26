@@ -66,13 +66,13 @@ Item {
         implicitHeight: Math.min(300, root.choices.length*35+(root.searchable?46:0)+12)
         padding: 6; closePolicy: Popup.CloseOnEscape|Popup.CloseOnPressOutsideParent
         focus: true
-        background: Rectangle { color: Theme.material(Theme.card,0.97,root.Window.window); border.color: Theme.line; radius: 9 }
+        background: Rectangle { objectName:'menuSurface';color: Theme.surface(Theme.card,'menu',root.Window.window); border.color: Theme.line; radius: 9 }
         contentItem: ColumnLayout {
             spacing: 5
             TextField {
                 id: search; visible: root.searchable; Layout.fillWidth: true; implicitHeight: 34
                 placeholderText: "搜索"; color: Theme.text; font.pixelSize: 13; selectByMouse: true
-                background: Rectangle { color: Theme.bg; radius: 5; border.color: search.activeFocus?Theme.accent:Theme.line }
+                background: Rectangle { objectName:'fieldSurface';color: Theme.surface(Theme.bg,'field',root.Window.window); radius: 5; border.color: search.activeFocus?Theme.accent:Theme.line }
                 onTextChanged: list.currentIndex=0
                 Keys.onPressed: function(event){
                     if(event.key===Qt.Key_Tab){popup.close();event.accepted=false;return;}
@@ -91,7 +91,7 @@ Item {
                     text: modelData.label; Accessible.name: text
                     onHoveredChanged: if(hovered)list.currentIndex=index
                     onClicked: root.pick(index)
-                    background: Rectangle { radius: 5; color: parent.hovered||list.currentIndex===parent.index?Theme.selection:"transparent" }
+                    background: Rectangle { radius: 5; color: parent.hovered||list.currentIndex===parent.index?Theme.surface(Theme.selection,'selection',root.Window.window):"transparent" }
                 }
                 Keys.onPressed: function(event){
                     if(event.key===Qt.Key_Tab){popup.close();event.accepted=false;return;}

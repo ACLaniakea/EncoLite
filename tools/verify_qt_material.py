@@ -1,13 +1,14 @@
 """Exercise native Desktop Acrylic and its opaque fallback on owned Qt windows."""
 from pathlib import Path
-import ctypes as C,json,sys,traceback
+import ctypes as C,json,os,sys,traceback
 ROOT=Path(__file__).resolve().parents[1];TARGET=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else ROOT
 sys.path[:0]=[str(TARGET),str(TARGET/'qt' if TARGET!=ROOT else ROOT/'.tools/qt-probe/packages')]
 sys.dont_write_bytecode=True;sys.stdout.reconfigure(encoding='utf-8')
-from PySide6.QtCore import QTimer,qInstallMessageHandler
+from PySide6.QtCore import QTimer,qInstallMessageHandler,QObject,QMetaObject
 from PySide6.QtQuick import QQuickItem
 from encolite.qt_desktop import Desktop
 OUT=ROOT/'verification/qt-material';OUT.mkdir(exist_ok=True,parents=True)
+TAG=os.environ.get('ENCOLITE_MATERIAL_TAG','default')
 report={'checks':[],'errors':[],'warnings':[],'frames':[],'scope':'Own Qt windows, successful native Acrylic requests, region geometry and QML alpha; Windows does not expose accent-policy readback here. No real earbud writes'}
 qInstallMessageHandler(lambda kind,context,text:report['warnings'].append(text))
 app=Desktop(TARGET,read_pipe=False)
@@ -26,7 +27,7 @@ def later(ms,fn):
 def check(label):report['checks'].append(label);print('PASS',label,flush=True)
 def sample(win):
  surface=win.findChild(QQuickItem,'windowSurface')
- return {'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':app.material.native.accent_state(int(win.winId())),
+ return {'ratio':win.devicePixelRatio(),'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':app.material.native.accent_state(int(win.winId())),
          'corner':attr(win,33),'alpha':surface.property('color').alphaF(),'radius':surface.property('radius')}
 def cycle(index=0):
  if index==6:return toggles()
@@ -34,7 +35,7 @@ def cycle(index=0):
  def shown():
   win=app.windows[kind];row=sample(win);report['frames'].append(row)
   assert row['native'] and row['backdrop'] in (None,4) and row['corner']==1,row
-  assert 0.1<row['alpha']<.9 and row['radius']==8,row
+  assert 0.1<row['alpha']<.9 and row['radius']==12,row
   image=win.grabWindow();assert image.pixelColor(0,image.height()-1).alpha()==0
   image.save(str(OUT/(kind+('-dark' if state['dark'] else '-light')+'.png')))
   check(kind+(': dark' if state['dark'] else ': light')+' native Acrylic, translucent surface and matching rounded contour')
@@ -96,11 +97,14 @@ def shape_check():
  delete=gdi.DeleteObject;delete.argtypes=[C.c_void_p];delete.restype=C.c_int
  try:
   assert get_region(hwnd,region)==3
-  size=round(10*win.devicePixelRatio())
+  size=round(14*win.devicePixelRatio())
   for x in range(size):
    for y in range(size):
     for px,py in ((x,y),(image.width()-1-x,y),(x,image.height()-1-y),(image.width()-1-x,image.height()-1-y)):
      if image.pixelColor(px,py).alpha()>128:assert contains(region,px,py),(px,py)
+     assert bool(contains(region,x,y))==bool(contains(region,image.width()-1-x,y))==bool(contains(region,x,image.height()-1-y))==bool(contains(region,image.width()-1-x,image.height()-1-y)),(x,y)
+  assert not contains(region,0,0) and not contains(region,image.width()-1,0)
+  assert not contains(region,-1,size) and not contains(region,image.width(),size)
  finally:delete(region)
  check('the native rounded region contains the visible Qt corner outline')
  app.close_view('main',exiting=False,animate=False)
@@ -115,12 +119,48 @@ def animated():
 def animated_closed():
  assert 'quick' not in app.windows and not app.material_filter_installed
  check('animated glass dismissal releases its window and material listener')
- assert not report['warnings'],report['warnings'];app.quit()
-publish();later(0,cycle);later(15000,lambda:(_ for _ in ()).throw(TimeoutError('material verification timeout')))
+ state.update(system_motion=False,dark=False,quick_auto_hide=True,custom_available=True,custom_names=['音效'],custom_index=0,can_equalizer=True,presets=[{'name':'默认','id':0}],noise_options=[{'key':'anc'}],can_anc=True,can_off=True,can_transparency=True,noise='anc');publish();app.show('main');later(150,lambda:surfaces(0))
+def surfaces(index):
+ modes=[(True,False),(True,True),(False,False)]
+ if index==len(modes):
+  assert not report['warnings'],report['warnings'];app.quit();return
+ glass,dark=modes[index];state.update(glass_effect=glass,dark=dark);publish()
+ win=app.windows['main'];win.setProperty('page',0);later(180,lambda:surface_page(index,0))
+def surface_page(index,page_index):
+ win=app.windows['main'];glass=state['glass_effect'];pages=[0,2,5]
+ items=[item for item in win.findChildren(QQuickItem) if item.objectName() in ('cardSurface','appearanceSettings','batterySurface','buttonSurface','fieldSurface') and item.isVisible()]
+ assert items,(index,page_index)
+ for item in items:
+  alpha=item.property('color').alphaF()
+  if item.objectName()=='buttonSurface' and (item.parentItem().property('primary') or item.parentItem().property('quiet')):continue
+  assert (0<alpha<.5 if glass else alpha==1),(item.objectName(),alpha,glass)
+ if page_index==1:
+  trigger=next(item for item in win.findChildren(QQuickItem,'selectTrigger') if item.isVisible())
+  control=trigger.parentItem();QMetaObject.invokeMethod(control,'openMenu');later(100,lambda:menu_check(index,control));return
+ continue_surfaces(index,page_index)
+def menu_check(index,control):
+ popup=control.findChild(QObject,'selectPopup');assert popup and popup.property('visible')
+ alpha=popup.property('background').property('color').alphaF()
+ assert (.6<alpha<.8 if state['glass_effect'] else alpha==1),alpha
+ QMetaObject.invokeMethod(control,'closeMenu')
+ check('drop-down menu inherits the active window glass setting')
+ picker=app.windows['main'].findChild(QObject,'accentPicker');assert picker
+ QMetaObject.invokeMethod(picker,'open');later(100,lambda:picker_check(index,picker))
+def picker_check(index,picker):
+ background=picker.property('background');alpha=background.property('color').alphaF()
+ assert (.6<alpha<.8 if state['glass_effect'] else alpha==1),alpha
+ QMetaObject.invokeMethod(picker,'close');continue_surfaces(index,1)
+def continue_surfaces(index,page_index):
+ if page_index<2:
+  app.windows['main'].setProperty('page',[0,2,5][page_index+1]);later(150,lambda:surface_page(index,page_index+1))
+ else:
+  check('controls and color dialog use translucent surfaces' if state['glass_effect'] else 'disabling glass restores every checked control to its solid surface')
+  later(0,lambda:surfaces(index+1))
+publish();later(0,cycle);later(24000,lambda:(_ for _ in ()).throw(TimeoutError('material verification timeout')))
 try:
  assert app.material.supported,'Native Acrylic needs Windows 10 1809 or later'
  app.run()
 finally:
- report['result']='PASS' if not report['errors'] and not report['warnings'] and len(report['checks'])==18 else 'FAIL'
- (OUT/'report.json').write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(report),flush=True)
+ report['result']='PASS' if not report['errors'] and not report['warnings'] and len(report['checks'])==24 else 'FAIL'
+ (OUT/('report.json' if TAG=='default' else TAG+'-report.json')).write_text(json.dumps(report,indent=2),'utf-8');print(json.dumps(report),flush=True)
  if report['result']!='PASS':raise SystemExit(1)

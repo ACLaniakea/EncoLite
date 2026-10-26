@@ -6,9 +6,9 @@
 
 ## 下载
 
-**[当前预览版 v0.5.0-preview.15](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.15)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
+**[当前预览版 v0.5.0-preview.16](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.16)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
 
-- **安装版**：下载并双击 `EncoLite-0.5.0-preview.15-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
+- **安装版**：下载并双击 `EncoLite-0.5.0-preview.16-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
 - **便携版**：下载同版本 `win-x64-portable.zip`，解压后运行“启动 Enco Lite.cmd”。
 - 运行包已包含 Python 和 Qt，无需另装运行环境。SHA-256 校验值随发行附件提供。
 
@@ -70,7 +70,7 @@ python tools/build_desktop_release.py
 python -m unittest discover -s tests
 ```
 
-当前有 83 项单元检查。`tools/verify_qt_live.py` 等真机工具会操作耳机设置，使用前请阅读构建说明。
+当前有 84 项单元检查。`tools/verify_qt_live.py` 等真机工具会操作耳机设置，使用前请阅读构建说明。
 
 ## 许可证与来源
 

@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.15'
-MSI_VERSION='0.5.15'
+VERSION='0.5.0-preview.16'
+MSI_VERSION='0.5.16'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'

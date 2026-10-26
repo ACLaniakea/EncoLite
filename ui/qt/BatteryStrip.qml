@@ -16,7 +16,7 @@ RowLayout {
         Rectangle {
             required property string modelData
             Layout.fillWidth: true; Layout.fillHeight: true
-            color: Theme.card; border.color: Theme.line; radius: 9
+            objectName:'batterySurface';color: Theme.surface(Theme.card,'card',root.Window.window); border.color: Theme.line; radius: 9
             ColumnLayout {
                 anchors.fill: parent; anchors.margins: root.compact?10:12; spacing: 4
                 Text { text: backend.state.battery_layout==='single'?'耳机':({left:'左耳',right:'右耳',case:'充电盒'})[modelData]; color: Theme.muted; font.pixelSize: 12 }

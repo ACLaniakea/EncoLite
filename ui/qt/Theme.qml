@@ -4,6 +4,13 @@ QtObject {
     function material(color, opacity, window) {
         return window && window.nativeGlass ? Qt.rgba(color.r,color.g,color.b,opacity) : color;
     }
+    function surface(color, role, window) {
+        var alpha = role === 'menu' ? (dark ? 0.76 : 0.70)
+                  : role === 'selection' ? (dark ? 0.40 : 0.36)
+                  : role === 'field' ? (dark ? 0.24 : 0.18)
+                  : (dark ? 0.32 : 0.24);
+        return material(color, alpha, window);
+    }
     readonly property bool dark: backend ? !!backend.state.dark : false
     readonly property bool motion: backend ? backend.motion : false
     readonly property var palette: backend ? (backend.state.palette||{}) : ({})

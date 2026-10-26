@@ -17,7 +17,7 @@ ColumnLayout {
             enabled: !!backend.state.custom_available&&!backend.state.busy
             Binding { target: eqName; property: 'text'; value: backend.state.eq_name||''; when: !eqName.activeFocus }
             onTextEdited: backend.action('edit_custom_name',[text])
-            background: Rectangle { color: Theme.card; radius: 7; border.color: eqName.activeFocus?Theme.accent:Theme.line }
+            background: Rectangle { objectName:'fieldSurface';color: Theme.surface(Theme.card,'field',root.Window.window); radius: 7; border.color: eqName.activeFocus?Theme.accent:Theme.line }
         }
     }
     Card {

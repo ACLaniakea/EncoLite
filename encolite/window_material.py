@@ -1,6 +1,21 @@
 """Per-window native Acrylic. Effects exist only while a GUI window is open."""
 import ctypes as C
+import math
+import struct
 import sys
+
+
+def rounded_region_rows(width,height,radius):
+    """Symmetric pixel rows for the QML outer contour, including its AA fringe."""
+    radius=min(max(0,radius),width//2,height//2)
+    rows=[]
+    for y in range(radius):
+        distance=radius-y-0.5
+        inset=max(0,math.ceil(radius-math.sqrt(max(0,(radius+0.5)**2-distance**2))-0.5))
+        rows.append((inset,y,width-inset,y+1))
+    if height>2*radius:rows.append((0,radius,width,height-radius))
+    rows.extend((left,height-bottom,right,height-top) for left,top,right,bottom in reversed(rows[:radius]))
+    return rows
 
 
 class AccentPolicy(C.Structure):
@@ -23,7 +38,7 @@ class DwmApi:
             self._frame.argtypes=[C.c_void_p,C.c_void_p];self._frame.restype=C.c_long
             self._set=user.SetWindowCompositionAttribute;self._get=user.GetWindowCompositionAttribute
             for fn in (self._set,self._get):fn.argtypes=[C.c_void_p,C.POINTER(CompositionData)];fn.restype=C.c_int
-            self._region=gdi.CreateRoundRectRgn;self._region.argtypes=[C.c_int]*6;self._region.restype=C.c_void_p
+            self._region=gdi.ExtCreateRegion;self._region.argtypes=[C.c_void_p,C.c_uint,C.c_void_p];self._region.restype=C.c_void_p
             self._set_region=user.SetWindowRgn;self._set_region.argtypes=[C.c_void_p,C.c_void_p,C.c_int];self._set_region.restype=C.c_int
             self._delete=gdi.DeleteObject;self._delete.argtypes=[C.c_void_p];self._delete.restype=C.c_int
             enabled=C.c_int();fn=dll.DwmIsCompositionEnabled
@@ -51,9 +66,11 @@ class DwmApi:
     def shape(self,hwnd,shape):
         if shape is None:return bool(self._set_region(hwnd,None,1))
         width,height,radius=shape
-        # GDI regions have integer, exclusive edges. Keep the Qt antialiased
-        # outline inside the region on both sides at fractional/scaled DPI.
-        region=self._region(-2,-2,width+3,height+3,radius*2+4,radius*2+4)
+        rows=rounded_region_rows(width,height,radius)
+        payload=struct.pack('<8i',32,1,len(rows),16*len(rows),0,0,width,height)
+        payload+=b''.join(struct.pack('<4i',*row) for row in rows)
+        data=C.create_string_buffer(payload)
+        region=self._region(None,len(payload),data)
         if not region:return False
         if self._set_region(hwnd,region,1):return True  # Ownership passes to USER32.
         self._delete(region);return False

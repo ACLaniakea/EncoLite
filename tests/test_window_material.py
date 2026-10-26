@@ -1,7 +1,7 @@
 import json,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
-from encolite.window_material import WindowMaterial
+from encolite.window_material import WindowMaterial,rounded_region_rows
 from encolite.controller import Controller
 from encolite.session import DemoSession
 
@@ -47,6 +47,16 @@ class WindowMaterialTests(unittest.TestCase):
         api=FakeDwm();material=WindowMaterial(api)
         self.assertFalse(material.apply(1,False,force=True))
         self.assertFalse(api.calls)
+
+    def test_rounded_mask_has_symmetric_corners_and_never_extends_outside_window(self):
+        for ratio in (1,1.25,1.5,2):
+            width,height,radius=round(352*ratio),round(374*ratio),round(12*ratio)
+            rows=rounded_region_rows(width,height,radius)
+            self.assertEqual(len(rows),radius*2+1)
+            self.assertTrue(all(0<=l<r<=width and 0<=t<b<=height for l,t,r,b in rows))
+            self.assertTrue(all(l==width-r for l,t,r,b in rows))
+            self.assertGreater(rows[0][0],0)
+            self.assertEqual(rows[0],(rows[-1][0],height-rows[-1][3],rows[-1][2],height-rows[-1][1]))
 
     def controller(self,path):
         controller=Controller(session=DemoSession(),preferences=path)

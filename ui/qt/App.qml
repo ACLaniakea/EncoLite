@@ -98,7 +98,7 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized?0:(win.nativeGlass?8:12);color:Theme.material(Theme.bg,Theme.dark?0.58:0.46,win);antialiasing:true
+        id:frame;anchors.fill:parent;radius:win.maximized?0:12;color:Theme.material(Theme.bg,Theme.dark?0.30:0.20,win);antialiasing:true
         objectName:'windowSurface'
         transform:[
             Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
@@ -138,7 +138,7 @@ Window {
                 sourceComponent:Component { RowLayout {
                 anchors.fill:parent;spacing:0
                 Rectangle {
-                    color:Theme.material(Theme.sidebar,Theme.dark?0.66:0.60,win);bottomLeftRadius:Math.max(0,frame.radius-1)
+                    color:Theme.material(Theme.sidebar,Theme.dark?0.32:0.24,win);bottomLeftRadius:Math.max(0,frame.radius-1)
                     Layout.preferredWidth:164;Layout.fillHeight:true
                     ColumnLayout {
                         anchors.fill:parent;anchors.margins:11;spacing:5
@@ -253,7 +253,7 @@ Window {
         id:confirmPopup;parent:Overlay.overlay;popupType:Popup.Item;modal:true;focus:true
         anchors.centerIn:parent;width:Math.min(360,parent?parent.width-30:360);padding:22
         property string heading:'';property string description:'';property string actionName:'';property var arguments:[]
-        background:Rectangle{radius:12;color:Theme.material(Theme.card,0.96,win);border.color:Theme.line}
+        background:Rectangle{objectName:'dialogSurface';radius:12;color:Theme.surface(Theme.card,'menu',win);border.color:Theme.line}
         contentItem:ColumnLayout {
             spacing:15
             Text{text:confirmPopup.heading;font.pixelSize:18;font.weight:Font.DemiBold;color:Theme.text}
@@ -271,12 +271,12 @@ Window {
         property string request:''
         property bool hadCapture:false
         onClosed:backend.action('end_hotkey_capture',[])
-        background:Rectangle{radius:12;color:Theme.material(Theme.card,0.96,win);border.color:Theme.line}
+        background:Rectangle{objectName:'dialogSurface';radius:12;color:Theme.surface(Theme.card,'menu',win);border.color:Theme.line}
         contentItem:ColumnLayout {
             spacing:15
             Text{text:hotkeyPopup.item.title||'设置快捷键';font.pixelSize:18;font.weight:Font.DemiBold;color:Theme.text;Layout.fillWidth:true;wrapMode:Text.Wrap}
             Rectangle {
-                id:keyCapture;Layout.fillWidth:true;implicitHeight:67;radius:9;color:Theme.bg;border.color:backend.hotkeys.capturing?Theme.accent:Theme.line
+                id:keyCapture;objectName:'fieldSurface';Layout.fillWidth:true;implicitHeight:67;radius:9;color:Theme.surface(Theme.bg,'field',win);border.color:backend.hotkeys.capturing?Theme.accent:Theme.line
                 focus:true;activeFocusOnTab:true;Accessible.name:'按下新的快捷键'
                 Text{anchors.centerIn:parent;text:hotkeyPopup.keyLabel;color:Theme.text;font.pixelSize:17;font.weight:Font.DemiBold}
                 Keys.onPressed:function(event){

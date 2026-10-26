@@ -3,6 +3,7 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import "."
 ColumnLayout {
+    id: root
     property var host
     spacing:17
     Text { text:'外观';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
@@ -55,7 +56,7 @@ ColumnLayout {
                     onEditingFinished:{
                         if(dirty){var n=Number(draft),valid=/^\d+$/.test(draft)&&n>=5&&n<=3600;if(valid&&n!==(backend.state.quick_idle_seconds||30))backend.action('change_quick_idle_seconds',[n]);dirty=false;text=String(valid?n:(backend.state.quick_idle_seconds||30));}
                     }
-                    background:Rectangle{radius:7;color:Theme.bg;border.color:idleSeconds.activeFocus?Theme.accent:Theme.line}
+                    background:Rectangle{objectName:'fieldSurface';radius:7;color:Theme.surface(Theme.bg,'field',root.Window.window);border.color:idleSeconds.activeFocus?Theme.accent:Theme.line}
                 }
                 Text{text:'秒';font.pixelSize:13;color:Theme.muted}
             }
@@ -95,7 +96,7 @@ ColumnLayout {
         Layout.topMargin:-7
         objectName:'aboutSettings'
         Layout.fillWidth:true
-        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.15';font.pixelSize:13;color:Theme.muted}}
+        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.16';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'开源许可';Layout.fillWidth:true;Text{text:'GPL-3.0-or-later';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'协议来源';Layout.fillWidth:true;Text{text:'OppoPodsManager';font.pixelSize:13;color:Theme.muted}}
     }

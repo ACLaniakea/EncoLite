@@ -236,7 +236,7 @@ class Desktop(QObject):
             if changing:
                 QTimer.singleShot(0,lambda w=window,k=kind:w.setProperty('materialChanging',False) if self.windows.get(k) is w else None)
             ratio=window.devicePixelRatio()
-            shape=(round(window.width()*ratio),round(window.height()*ratio),round(8*ratio)) if active and window.windowState()!=Qt.WindowMaximized else None
+            shape=(round(window.width()*ratio),round(window.height()*ratio),round(12*ratio)) if active and window.windowState()!=Qt.WindowMaximized else None
             self.material.shape(hwnd,shape)
 
     def update_quick_idle(self):
