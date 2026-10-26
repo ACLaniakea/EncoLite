@@ -1,6 +1,10 @@
 pragma Singleton
 import QtQuick
 QtObject {
+    function batteryLow(key) {
+        var value = backend.state[key + '_value'];
+        return !!value && value !== '—' && Number(backend.state[key + '_level']) < 0.20;
+    }
     function material(color, opacity, window) {
         return window && window.nativeGlass ? Qt.rgba(color.r,color.g,color.b,opacity) : color;
     }

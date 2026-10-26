@@ -222,7 +222,19 @@ Window {
                     ColumnLayout {
                         Layout.fillWidth:true;spacing:7
                         Text{text:backend.state.model_name||'';color:Theme.text;font.pixelSize:16;font.weight:Font.DemiBold;Layout.fillWidth:true;elide:Text.ElideRight}
-                        Text{text:['left','right','case'].filter(function(k){return backend.state[k+'_value']&&backend.state[k+'_value']!=='—';}).map(function(k){return ({left:'左',right:'右',case:'盒'})[k]+' '+backend.state[k+'_value'];}).join(' · ');color:Theme.muted;font.pixelSize:12;Layout.fillWidth:true;elide:Text.ElideRight}
+                        RowLayout {
+                            Layout.fillWidth:true;spacing:8
+                            Repeater {
+                                model:['left','right','case'].filter(function(k){return backend.state[k+'_value']&&backend.state[k+'_value']!=='—';})
+                                Text {
+                                    required property string modelData
+                                    objectName:'noticeBattery_'+modelData
+                                    text:({left:'左',right:'右',case:'盒'})[modelData]+' '+backend.state[modelData+'_value']
+                                    color:Theme.batteryLow(modelData)?Theme.error:Theme.muted;font.pixelSize:12
+                                }
+                            }
+                            Item{Layout.fillWidth:true}
+                        }
                     }
                 }
                 UiButton{text:'打开快捷控制';Layout.fillWidth:true;onClicked:backend.show('quick')}

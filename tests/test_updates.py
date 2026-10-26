@@ -37,7 +37,11 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(commands,[0x0106,0x010C,0x0109])
         commands.clear()
         s.refresh_due(False,now=105);self.assertEqual(commands,[])
-        s.refresh_due(False,now=113);self.assertEqual(commands,[0x0106])
+        with patch('encolite.live_session.time.monotonic',return_value=108):
+            s.refresh_due(False,now=108)
+        self.assertEqual(commands,[0x0106]);commands.clear()
+        s.refresh_due(False,now=113);self.assertEqual(commands,[])
+        s.refresh_due(False,now=114);self.assertEqual(commands,[0x0106])
 
     def test_fresh_notifications_skip_redundant_reads(self):
         s=self.session();now=time.monotonic()

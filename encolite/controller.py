@@ -46,6 +46,10 @@ class Controller(AdvancedController):
         self._retry_delay=2
         self._retry_timer=None
         self._refresh_timer=None
+        self._device_timer=None
+        self._checking_devices=False
+        self._bluetooth_connected={}
+        self._connection_hint=False
         self._refreshing=False
         self._executor=None
         if self.live:
@@ -269,6 +273,8 @@ class Controller(AdvancedController):
             self._schedule_reconnect()
         if self.session.connected and getattr(self.session,'dirty',None):
             self.refresh_background()
+        self._schedule_reconnect()
+        self._consume_connection_hint()
 
     def change_noise(self,mode):
         if self.session.connected and self.session.noise==mode and not self.busy:
@@ -303,6 +309,9 @@ class Controller(AdvancedController):
         self._retry_timer=self.scheduler.timer()
         self._refresh_timer=self.scheduler.timer()
         self._refresh_timer.start(2,self._refresh_tick,repeat=True)
+        self._device_timer=self.scheduler.timer()
+        self._device_timer.start(6,self.check_devices,repeat=True)
+        self.want_connection=True
         self.scan(auto_connect=True)
 
     def scan(self,auto_connect=False):
@@ -311,6 +320,7 @@ class Controller(AdvancedController):
         def found(devices):
             previous=self.devices[self.device_index].address if 0<=self.device_index<len(self.devices) else None
             self.devices=devices
+            self._bluetooth_connected={d.address:d.connected for d in devices}
             self.device_index=next((i for i,d in enumerate(devices) if d.address==previous),0 if devices else -1)
             self.sync()
             if not devices:
@@ -333,10 +343,10 @@ class Controller(AdvancedController):
     def connect_selected(self):
         if self.busy or self.stopped:
             return
+        self.want_connection=True
         if not (0<=self.device_index<len(self.devices)):
             self.scan(auto_connect=True)
             return
-        self.want_connection=True
         if self._retry_timer:
             self._retry_timer.stop()
         self.connecting=True
@@ -353,6 +363,7 @@ class Controller(AdvancedController):
             return
         if self.busy and self.connecting:
             self.want_connection=False
+            self._connection_hint=False
             self.cancel_requested=True
             if self._retry_timer:
                 self._retry_timer.stop()
@@ -368,6 +379,7 @@ class Controller(AdvancedController):
             return
         if self.session.connected:
             self.want_connection=False
+            self._connection_hint=False
             if self._retry_timer:
                 self._retry_timer.stop()
             self.perform(self.session.disconnect,"控制连接已断开")
@@ -376,10 +388,75 @@ class Controller(AdvancedController):
 
     def _schedule_reconnect(self):
         if (self.stopped or not self.want_connection or self.session.connected or self.busy
+                or not (0<=self.device_index<len(self.devices))
                 or not self._retry_timer or self._retry_timer.running):
             return
         self._retry_timer.start(self._retry_delay,self.connect_selected)
         self._retry_delay=min(self._retry_delay*2,60)
+
+    def bluetooth_changed(self,address,connected):
+        """Called on the native loop even when every graphical window is closed."""
+        if self.stopped or not self.live or not self.want_connection:
+            return
+        selected=self.devices[self.device_index] if 0<=self.device_index<len(self.devices) else None
+        if selected is None:
+            self.check_devices()
+            return
+        if selected.address!=address:
+            return
+        self._bluetooth_connected[address]=connected
+        if not connected:
+            self.session.transport_lost()
+            return
+        self._connection_hint=True
+        self._consume_connection_hint()
+
+    def _consume_connection_hint(self):
+        if (not self._connection_hint or self.stopped or not self.want_connection
+                or self.busy or self._refreshing or self._checking_devices):
+            return
+        self._connection_hint=False
+        self._retry_delay=2
+        if self.session.connected:
+            self.refresh_background(force=True)
+        elif self._retry_timer:
+            # Coalesce duplicate ACL notifications and allow service discovery
+            # to settle, without waiting out an old offline backoff.
+            self._retry_timer.start(.25,self.connect_selected)
+
+    def check_devices(self):
+        """Paired-state fallback for adapters that omit ACL notifications.
+
+        No active inquiry and no separate worker. Do not queue scans behind a
+        connection attempt or compete with a live session's notification path.
+        """
+        if (self.stopped or not self.live or not self.want_connection or self.busy
+                or self._refreshing or self._checking_devices or self.session.connected):
+            return
+        from .bluetooth_windows import discover
+        self._checking_devices=True
+        future=self._executor.submit(discover)
+        future.add_done_callback(lambda f:None if self.stopped else self.dispatch(lambda:self._finish_devices(f)))
+
+    def _finish_devices(self,future):
+        self._checking_devices=False
+        if self.stopped:return
+        try:
+            devices=future.result()
+        except OSError:
+            self._consume_connection_hint()
+            return
+        previous=self.devices[self.device_index].address if 0<=self.device_index<len(self.devices) else None
+        old=self._bluetooth_connected
+        self.devices=devices
+        self._bluetooth_connected={d.address:d.connected for d in devices}
+        self.device_index=next((i for i,d in enumerate(devices) if d.address==previous),0 if devices else -1)
+        if self.device_index>=0:
+            target=devices[self.device_index]
+            if target.connected and (previous!=target.address or not old.get(target.address,False)):
+                self._connection_hint=True
+        self.sync()
+        self._consume_connection_hint()
 
     def _refresh_tick(self):
         self.refresh_background()
@@ -408,6 +485,7 @@ class Controller(AdvancedController):
         self.sync()
         if self.session.connected and self.session.dirty:
             self.refresh_background()
+        self._consume_connection_hint()
 
     def refresh(self):
         if self.live and not self.session.connected:
@@ -521,7 +599,7 @@ class Controller(AdvancedController):
 
     def close(self):
         self.stopped=True
-        for timer in (self._retry_timer,self._refresh_timer):
+        for timer in (self._retry_timer,self._refresh_timer,self._device_timer):
             if timer:
                 timer.stop()
         if self.live:

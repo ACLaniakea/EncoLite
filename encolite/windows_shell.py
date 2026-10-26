@@ -272,7 +272,7 @@ class TrayClickTimer:
 
 
 class Tray:
-    def __init__(self, icon_path, on_quick, on_main, on_exit, on_noise, defer, test_mode=False, noise_options=None, on_show_quick=None, on_dispatch=None, on_settings_changed=None, on_hotkey=None):
+    def __init__(self, icon_path, on_quick, on_main, on_exit, on_noise, defer, test_mode=False, noise_options=None, on_show_quick=None, on_dispatch=None, on_settings_changed=None, on_hotkey=None, on_bluetooth=None):
         self.on_quick,self.on_main,self.on_exit,self.on_noise=on_quick,on_main,on_exit,on_noise
         self.defer=defer
         self.noise_options=noise_options
@@ -280,6 +280,8 @@ class Tray:
         self.on_dispatch=on_dispatch
         self.on_settings_changed=on_settings_changed
         self.on_hotkey=on_hotkey
+        self.on_bluetooth=on_bluetooth
+        self.bluetooth_notifications=None
         self._destroyed=False
         self._ignore_until=0
         self._menu_pending=False
@@ -303,6 +305,9 @@ class Tray:
                              message=0x8001,icon=self.icon,tip="Enco Lite")
         self._add_icon()
         self.click_timer=TrayClickTimer(self)
+        if on_bluetooth:
+            from .bluetooth_notifications import BluetoothNotifications
+            self.bluetooth_notifications=BluetoothNotifications(self.hwnd)
 
     def _add_icon(self):
         if not Notify(0,C.byref(self.data)):
@@ -322,6 +327,12 @@ class Tray:
         try:
             if message == self.taskbar_created and hasattr(self,"data"):
                 self._add_icon()
+            elif message==0x219 and self.bluetooth_notifications:  # WM_DEVICECHANGE
+                event=self.bluetooth_notifications.event(wparam,lparam)
+                if event is not None:
+                    self.defer(lambda event=event:self.on_bluetooth(*event))
+                elif wparam==7:  # DBT_DEVNODES_CHANGED: radio may have been replaced.
+                    self.defer(self.bluetooth_notifications.refresh)
             elif message==0x312 and self.on_hotkey:  # WM_HOTKEY, delivered without a keyboard hook.
                 self.defer(lambda:self.on_hotkey(wparam,lparam))
                 return 0
@@ -405,6 +416,8 @@ class Tray:
         if self._destroyed:
             return
         self._destroyed=True
+        if self.bluetooth_notifications:
+            self.bluetooth_notifications.close()
         if hasattr(self,"click_timer"):
             self.click_timer.stop()
         if hasattr(self,"data"):

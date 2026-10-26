@@ -48,7 +48,8 @@ class NativeDesktop:
             lambda:self.show('main'),self.quit,self.controller.change_noise,self.loop.post,
             test_mode=getattr(args,'isolated_tray',False),
             noise_options=self.noise_options,on_show_quick=lambda:self.show('quick'),on_dispatch=self.loop.drain,
-            on_settings_changed=self.system_settings_changed,on_hotkey=self.hotkey_message)
+            on_settings_changed=self.system_settings_changed,on_hotkey=self.hotkey_message,
+            on_bluetooth=self.controller.bluetooth_changed if self.controller.live else None)
         self.loop.hwnd=self.tray.hwnd
         from .hotkeys import Hotkeys,WindowsRegistration
         self.hotkeys=Hotkeys(WindowsRegistration(self.tray.hwnd),self.controller.preference_data.get('hotkeys'),

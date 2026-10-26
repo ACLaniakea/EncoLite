@@ -209,6 +209,13 @@ class LiveSession(ExtendedSession):
             self.error = error
             self._changed()
 
+    def transport_lost(self):
+        """An OS ACL disconnect invalidates this stream without a blocking join."""
+        self.cancel.set()
+        if self.channel:
+            self.channel.close()
+        self._lost('蓝牙连接已断开',self._generation)
+
     def _receive(self, frame, generation):
         if generation != self._generation:
             return
@@ -327,7 +334,7 @@ class LiveSession(ExtendedSession):
                     self.game_sound=None
                 # Optional/temporarily refused states should not be hammered.
             self._last_updates[command]=time.monotonic()
-        read(0x0106,2 if interactive else 10)
+        read(0x0106,2 if interactive else 6)
         if interactive:
             if self.noise_modes:
                 read(0x010C,2,b'\x01\x01')

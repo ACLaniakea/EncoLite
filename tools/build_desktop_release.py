@@ -26,7 +26,7 @@ def build():
     shutil.copy2(source,sources/source.name)
     msi=OUTPUT/f'EncoLite-{VERSION}-win-x64.msi'
     subprocess.run([sys.executable,str(ROOT/'tools/build_msi.py'),'--bundle',str(bundle),
-        '--output',str(msi),'--version',VERSION,'--msi-version','0.5.18'],check=True)
+        '--output',str(msi),'--version',VERSION,'--msi-version','0.5.19'],check=True)
     # Optional historical EXE wrapper: it is blocked by application control here.
     # MSI and portable are the supported production outputs.
     if '--with-exe' in sys.argv:
