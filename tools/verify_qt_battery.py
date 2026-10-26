@@ -15,7 +15,7 @@ qInstallMessageHandler(lambda kind,context,text:report['warnings'].append(text))
 app=Desktop(TARGET,read_pipe=False)
 state={'connected':True,'model_name':'OPPO Enco X3','battery_layout':'stereo','noise_options':[],
        'system_motion':False,'glass_effect':False,'fast_launch':True}
-cases=[(19,20,0),(20,19,19),(None,None,None),(100,100,100)]
+cases=[(19,20,0),(20,19,19),(None,None,None),(21,100,100)]
 def later(ms,fn):
     def run():
         try:fn()
@@ -41,7 +41,7 @@ def verify(index,case,kind):
     if not win.property('presented'):
         later(100,lambda:verify(index,case,kind));return
     for key,value in zip(('left','right','case'),cases[case]):
-        low=value is not None and value<20
+        low=value is not None and value<=20
         names=('noticeBattery_',) if kind=='notice' else ('batteryValue_','batteryBar_')
         for prefix in names:
             items=[item for item in visual_items(win.contentItem()) if item.objectName()==prefix+key and item.isVisible()]
@@ -51,7 +51,7 @@ def verify(index,case,kind):
             color=items[0].property('color')
             red=QColor('#ffaaa0' if state['dark'] else '#bb473d')
             assert (color==red)==low,(kind,key,value,color.name(),red.name())
-    report['checks'].append(f"{kind} {'dark' if state['dark'] else 'light'} battery values {cases[case]} use the strict below-20% threshold")
+    report['checks'].append(f"{kind} {'dark' if state['dark'] else 'light'} battery values {cases[case]} use the at-or-below-20% threshold")
     if case==0:
         box=win.frameGeometry()
         win.screen().grabWindow(0,box.x(),box.y(),box.width(),box.height()).save(str(OUT/(kind+('-dark' if state['dark'] else '-light')+'.png')))

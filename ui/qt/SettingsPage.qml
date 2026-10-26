@@ -109,7 +109,7 @@ ColumnLayout {
         Layout.topMargin:-7
         objectName:'aboutSettings'
         Layout.fillWidth:true
-        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.19';font.pixelSize:13;color:Theme.muted}}
+        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.20';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'开源许可';Layout.fillWidth:true;Text{text:'GPL-3.0-or-later';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'协议来源';Layout.fillWidth:true;Text{text:'OppoPodsManager';font.pixelSize:13;color:Theme.muted}}
     }

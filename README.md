@@ -6,9 +6,9 @@
 
 ## 下载
 
-**[当前预览版 v0.5.0-preview.19](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.19)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
+**[当前预览版 v0.5.0-preview.20](https://github.com/ACLaniakea/EncoLite/releases/tag/v0.5.0-preview.20)** · [全部发行版本](https://github.com/ACLaniakea/EncoLite/releases)
 
-- **安装版**：下载并双击 `EncoLite-0.5.0-preview.19-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
+- **安装版**：下载并双击 `EncoLite-0.5.0-preview.20-win-x64.msi`，按向导选择位置和桌面快捷方式，完成时可直接打开程序。
 - **便携版**：下载同版本 `win-x64-portable.zip`，解压后运行“启动 Enco Lite.cmd”。
 - 运行包已包含 Python 和 Qt，无需另装运行环境。SHA-256 校验值随发行附件提供。
 
