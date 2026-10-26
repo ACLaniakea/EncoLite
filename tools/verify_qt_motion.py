@@ -37,14 +37,14 @@ def until(predicate,fn,label):
 def sample(win,phase):
     color=W.DWORD();alpha=C.c_ubyte();flags=W.DWORD()
     ok=native_alpha(int(win.winId()),C.byref(color),C.byref(alpha),C.byref(flags))
-    surface=win.findChild(QQuickItem,'windowSurface')
+    surface=win.findChild(QQuickItem,'windowContent' if win.property('systemFrame') else 'windowSurface')
     top=surface.mapToScene(QPointF(0,0));bottom=surface.mapToScene(QPointF(surface.width(),surface.height()))
-    return {'phase':phase,'opacity':win.opacity(),'reveal':win.property('reveal'),
-            'scale':win.property('surfaceScale'),'offset':win.property('surfaceOffset'),
+    return {'phase':phase,'opacity':win.property('displayOpacity'),'reveal':win.property('reveal'),
+            'scale':win.property('contentScale' if win.property('systemFrame') else 'surfaceScale'),'offset':win.property('contentOffset' if win.property('systemFrame') else 'surfaceOffset'),
             'surface_bounds':[top.x(),top.y(),bottom.x(),bottom.y()],
             'native_alpha':alpha.value if ok else None,
             'bounds':[win.x(),win.y(),win.width(),win.height()]}
-def settled(win):return win.opacity()==1 and win.property('reveal')==1 and not win.property('transitioning')
+def settled(win):return win.property('displayOpacity')==1 and win.property('reveal')==1 and not win.property('transitioning')
 def track(win,key):
     # Observe completed scene-graph frames, leaving production methods untouched.
     began=time.monotonic();rows=report['frames'][key]=[]
@@ -65,9 +65,9 @@ def cycle(index=0):
         assert 0<left<right<win.width() and 0<top<bottom<=win.height(),row
         if row['native_alpha'] is not None:assert 0<row['native_alpha']<255,row
         win.grabWindow().save(str(OUT/(kind+'-opening.png')))
-        before=(win.opacity(),win.property('reveal'));app.show(kind)
-        assert (win.opacity(),win.property('reveal'))==before
-        check(kind+': native fade, scale and rise progress together; repeated show preserves progress')
+        before=(win.property('displayOpacity'),win.property('reveal'));app.show(kind)
+        assert (win.property('displayOpacity'),win.property('reveal'))==before
+        check(kind+': content fade, scale and rise progress together without changing the native contour; repeated show preserves progress')
         until(lambda:settled(win),opened,kind+' open completes')
     def opened():
         win.frameSwapped.disconnect(observer)
@@ -75,8 +75,8 @@ def cycle(index=0):
         assert len([r for r in rows if 0<r['reveal']<1])>=3,rows
         assert all(r['bounds']==geometry for r in rows)
         assert win.property('surfaceScale')==1 and win.property('surfaceOffset')==0
-        assert sample(win,'settled')['surface_bounds']==[0,0,win.width(),win.height()]
-        assert not shell.GetWindowLong(int(win.winId()),-16)&0x00C00000
+        assert sample(win,'settled')['surface_bounds']==([1,1,win.width()-1,win.height()-1] if win.property('systemFrame') else [0,0,win.width(),win.height()])
+        assert app.material.native.caption_hidden(int(win.winId())) if win.property('systemFrame') else not shell.GetWindowLong(int(win.winId()),-16)&0x00C00000
         win.grabWindow().save(str(OUT/(kind+'-opened.png')))
         check(kind+': several actual intermediate frames, unchanged placement and full-size caption-free endpoint')
         app.close_view(kind,exiting=False);later(65,closing)
@@ -90,8 +90,8 @@ def cycle(index=0):
             # Only an automatic notice timeout is allowed to reverse on hover.
             until(lambda:kind not in app.windows,closed,kind+' close completes')
         else:
-            before=(win.opacity(),win.property('reveal'));app.show(kind)
-            assert (win.opacity(),win.property('reveal'))==before
+            before=(win.property('displayOpacity'),win.property('reveal'));app.show(kind)
+            assert (win.property('displayOpacity'),win.property('reveal'))==before
             until(lambda:settled(win),reversed_close,kind+' reversed close')
     def reversed_close():
         later(420,after_old_deadline)

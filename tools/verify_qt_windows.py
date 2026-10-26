@@ -29,26 +29,26 @@ def until(predicate,fn,label,timeout=2500):
 def capture(window,phase):
  color=W.DWORD();alpha=C.c_ubyte();flags=W.DWORD();hwnd=int(window.winId())
  ok=get_alpha(hwnd,C.byref(color),C.byref(alpha),C.byref(flags))
- row={'phase':phase,'opacity':window.opacity(),'native_alpha':alpha.value if ok else None,'caption':bool(s.GetWindowLong(hwnd,-16)&0x00C00000)}
+ row={'phase':phase,'opacity':window.property('displayOpacity'),'native_alpha':alpha.value if ok else None,'caption':not app.material.native.caption_hidden(hwnd) if window.property('systemFrame') else bool(s.GetWindowLong(hwnd,-16)&0x00C00000)}
  report['alpha'].append(row);assert not row['caption'];return row
 def start():
  win=app.windows['main'];capture(win,'opening')
- until(lambda:bool(win.property('presented')) and .01<win.opacity()<1,lambda:opening(win),'first frame and opening animation')
+ until(lambda:bool(win.property('presented')) and .01<win.property('displayOpacity')<1,lambda:opening(win),'first frame and opening animation')
 def opening(win):
- assert 0<win.opacity()<1,capture(win,'open-mid')
+ assert 0<win.property('displayOpacity')<1,capture(win,'open-mid')
  capture(win,'open-mid')
- check('whole native Qt window fades in with no system caption')
- until(lambda:win.opacity()==1,lambda:opened(win),'opening animation completes')
+ check('window content fades in with no system caption')
+ until(lambda:win.property('displayOpacity')==1,lambda:opened(win),'opening animation completes')
 def opened(win):
- assert win.opacity()==1
+ assert win.property('displayOpacity')==1
  app.close_view('main',exiting=False);later(45,lambda:closing(win))
 def closing(win):
  row=capture(win,'close-mid');assert 0<row['opacity']<1,row
  if row['native_alpha'] is not None:assert 0<row['native_alpha']<255,row
- check('native HWND opacity changes during close')
+ check('content opacity changes during close while native corners remain stable')
  app.show('main');later(250,lambda:cancelled(win))
 def cancelled(win):
- assert app.windows['main'] is win and win.opacity()==1 and not win.property('closingUi')
+ assert app.windows['main'] is win and win.property('displayOpacity')==1 and not win.property('closingUi')
  check('reopen cancels the close transition and retains the same window')
  win.showMinimized();app.show('main');later(250,lambda:maximized(win))
 def maximized(win):
@@ -67,7 +67,7 @@ def cycle(index):
  if index==8:return finish()
  kind='quick' if index%2==0 else 'main';app.show(kind)
  def ready():
-  win=app.windows[kind];assert win.opacity()==1
+  win=app.windows[kind];assert win.property('displayOpacity')==1
   app.close_view(kind,exiting=False);dead.append(win);later(50,lambda:cycle(index+1))
  later(100,ready)
 def finish():
@@ -75,7 +75,7 @@ def finish():
  check('nine closed QML windows are destroyed rather than retained')
  state.update(fast_mode=False,system_motion=False);publish();app.show('notice');later(150,notice)
 def notice():
- win=app.windows['notice'];assert win.opacity()==1
+ win=app.windows['notice'];assert win.property('displayOpacity')==1
  assert s.GetWindowLong(int(win.winId()),-20)&0x08000000
  check('connection notice does not activate and honors reduced motion')
  app.quit()

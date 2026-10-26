@@ -5,6 +5,7 @@ ROOT=Path(__file__).resolve().parents[1];TARGET=Path(sys.argv[1]) if len(sys.arg
 sys.path[:0]=[str(TARGET),str(TARGET/'qt' if TARGET!=ROOT else ROOT/'.tools/qt-probe/packages')]
 sys.dont_write_bytecode=True;sys.stdout.reconfigure(encoding='utf-8')
 from PySide6.QtCore import QTimer,Qt,qInstallMessageHandler
+from PySide6.QtQuick import QQuickItem
 from encolite.qt_desktop import Desktop
 OUT=ROOT/'verification/qt-corners';OUT.mkdir(parents=True,exist_ok=True)
 tag=os.environ.get('ENCOLITE_CORNER_TAG','default')
@@ -22,10 +23,26 @@ def later(ms,fn):
     QTimer.singleShot(ms,run)
 def check(text):report['checks'].append(text);print('PASS',text,flush=True)
 def verify(win,label,rounded=True):
-    image=win.grabWindow();image.save(str(OUT/(tag+'-'+label+'.png')))
+    image=win.screen().grabWindow(int(win.winId())) if win.property('systemFrame') else win.grabWindow();image.save(str(OUT/(tag+'-'+label+'.png')))
     dpr=image.width()/win.width();report['pixel_ratios'].append(dpr)
     native=C.c_int();result=get(int(win.winId()),33,C.byref(native),C.sizeof(native))
-    if result==0:assert native.value==1,'DWM must not apply another corner contour'
+    if result==0:assert native.value==(2 if win.property('systemFrame') else 1),'only one owner may draw the outer contour'
+    if win.property('systemFrame'):
+        from encolite import windows_shell as shell
+        assert not shell.GetWindowLong(int(win.winId()),-20)&0x80000
+        assert not win.findChild(QQuickItem,'windowOutline').isVisible()
+        assert win.findChild(QQuickItem,'windowSurface').property('radius')==0
+        if rounded:assert app.material.native.caption_hidden(int(win.winId()))
+        else:
+            from ctypes import wintypes as W
+            rect=W.RECT();point=W.POINT();info=shell.MonitorInfo();info.size=C.sizeof(info)
+            assert shell.GetClientRect(int(win.winId()),C.byref(rect))
+            fn=C.windll.user32.ClientToScreen;fn.argtypes=[C.c_void_p,C.POINTER(W.POINT)];fn.restype=W.BOOL
+            assert fn(int(win.winId()),C.byref(point))
+            assert shell.GetMonitorInfo(shell.MonitorFromWindow(int(win.winId()),2),C.byref(info))
+            assert abs(point.x-info.work.left)<=1 and abs(point.y-info.work.top)<=1,(point.x,point.y)
+            assert abs(rect.right-(info.work.right-info.work.left))<=1 and abs(rect.bottom-(info.work.bottom-info.work.top))<=1
+        check(label+': native rounded surface and border, full client area and no duplicate QML contour');return
     width,height=image.width(),image.height()
     if rounded:
         assert image.pixelColor(0,height-1).alpha()==0 and image.pixelColor(width-1,height-1).alpha()==0

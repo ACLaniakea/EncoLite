@@ -9,6 +9,9 @@ Window {
     property string kind: "main"
     property int page: 0
     property bool nativeGlass: false
+    property bool systemFrame: false
+    property real displayOpacity: 1
+    opacity: systemFrame?1:displayOpacity
     property bool materialChanging: false
     property bool restoreMaximized: false
     property bool closingUi: false
@@ -17,8 +20,10 @@ Window {
     property int openDuration: 320
     property int closeDuration: 220
     readonly property bool transitioning: openAnimation.running||closeAnimation.running
-    readonly property real surfaceScale: Theme.motion&&!nativeGlass?1-(kind==='main'?0.02:0.05)*(1-reveal):1
-    readonly property real surfaceOffset: Theme.motion&&!nativeGlass?(1-reveal)*Math.min(kind==='main'?6:kind==='quick'?8:4,height*(kind==='main'?0.02:0.05)*0.45):0
+    readonly property real surfaceScale: Theme.motion&&!systemFrame?1-(kind==='main'?0.02:0.05)*(1-reveal):1
+    readonly property real surfaceOffset: Theme.motion&&!systemFrame?(1-reveal)*Math.min(kind==='main'?6:kind==='quick'?8:4,height*(kind==='main'?0.02:0.05)*0.45):0
+    readonly property real contentScale: systemFrame&&Theme.motion?1-0.015*(1-reveal):1
+    readonly property real contentOffset: systemFrame&&Theme.motion?(1-reveal)*Math.min(4,(height-2)*0.015*0.45):0
     readonly property bool quickMenuOpen:quickSound.menuOpen
     property bool maximized: visibility===Window.Maximized
     readonly property int sectionPage: page===5?1:page
@@ -45,10 +50,10 @@ Window {
         // Duplicate tray/show requests must not snap an in-flight entrance.
         if(openAnimation.running&&!animate)return;
         if(animate&&Theme.motion){
-            if(minimized){opacity=0.01;reveal=0;}
+            if(minimized){displayOpacity=0.01;reveal=0;}
             openDuration=Math.max(90,Math.round((kind==='main'?320:280)*(1-reveal)));
             openAnimation.restart();
-        }else{openAnimation.stop();opacity=1;reveal=1;}
+        }else{openAnimation.stop();displayOpacity=1;reveal=1;}
         presented=true;
     }
     function dismiss() {
@@ -58,7 +63,7 @@ Window {
     }
     function finishStalledEntrance() {
         if(presented&&!closingUi&&openAnimation.running&&reveal===0){
-            openAnimation.stop();opacity=1;reveal=1;
+            openAnimation.stop();displayOpacity=1;reveal=1;
         }
     }
     function navigate(index) { closeMenus();if(index!==page){page=index;} }
@@ -72,18 +77,18 @@ Window {
     }
     ParallelAnimation {
         id:openAnimation
-        NumberAnimation{target:win;property:'opacity';to:1;duration:win.openDuration;easing.type:Easing.OutQuad}
+        NumberAnimation{target:win;property:'displayOpacity';to:1;duration:win.openDuration;easing.type:Easing.OutQuad}
         NumberAnimation{target:win;property:'reveal';to:1;duration:win.openDuration;easing.type:Easing.OutCubic}
     }
     ParallelAnimation {
         id:closeAnimation
-        NumberAnimation{target:win;property:'opacity';to:0;duration:win.closeDuration;easing.type:Easing.InQuad}
+        NumberAnimation{target:win;property:'displayOpacity';to:0;duration:win.closeDuration;easing.type:Easing.InQuad}
         NumberAnimation{target:win;property:'reveal';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
         onFinished:win.finishedClosing()
     }
     Connections {
         target:Theme
-        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();closeAnimation.stop();win.opacity=1;win.reveal=1;if(win.closingUi)win.finishedClosing();}}
+        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();closeAnimation.stop();win.displayOpacity=1;win.reveal=1;if(win.closingUi)win.finishedClosing();}}
     }
     Connections {
         target:backend
@@ -98,7 +103,7 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized?0:12;color:Theme.material(Theme.bg,Theme.dark?0.30:0.20,win);antialiasing:true
+        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame?0:12;color:Theme.material(Theme.bg,Theme.dark?0.30:0.20,win);antialiasing:true
         objectName:'windowSurface'
         transform:[
             Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
@@ -106,7 +111,9 @@ Window {
         ]
         Behavior on color {enabled:!win.materialChanging;ColorAnimation{duration:Theme.motion?150:0}}
         ColumnLayout {
-            anchors.fill:parent;anchors.margins:1;spacing:0
+            id:windowContent;objectName:'windowContent';anchors.fill:parent;anchors.margins:1;spacing:0
+            opacity:win.systemFrame?win.displayOpacity:1
+            transform:[Scale{origin.x:windowContent.width/2;origin.y:windowContent.height/2;xScale:win.contentScale;yScale:xScale},Translate{y:win.contentOffset}]
             Item {
                 id:titleBar;Layout.fillWidth:true;Layout.preferredHeight:39
                 DragHandler {target:null;acceptedButtons:Qt.LeftButton;onActiveChanged:if(active)win.startSystemMove()}
@@ -224,7 +231,7 @@ Window {
         HoverHandler {enabled:win.kind==='notice';onHoveredChanged:backend.hoverNotice(hovered)}
         // Paint the outline after content so sidebar/hover fills cannot cover it.
         Rectangle {
-            objectName:'windowOutline';anchors.fill:parent;z:100;radius:frame.radius
+            objectName:'windowOutline';anchors.fill:parent;z:100;radius:frame.radius;visible:!win.systemFrame
             color:'transparent';antialiasing:true
             border.width:1;border.color:Theme.line;border.pixelAligned:false
         }

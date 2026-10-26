@@ -9,7 +9,7 @@ from PySide6.QtQuick import QQuickItem
 from encolite.qt_desktop import Desktop
 OUT=ROOT/'verification/qt-material';OUT.mkdir(exist_ok=True,parents=True)
 TAG=os.environ.get('ENCOLITE_MATERIAL_TAG','default')
-report={'checks':[],'errors':[],'warnings':[],'frames':[],'scope':'Own Qt windows, successful native Acrylic requests, region geometry and QML alpha; Windows does not expose accent-policy readback here. No real earbud writes'}
+report={'checks':[],'errors':[],'warnings':[],'frames':[],'scope':'Owned Qt windows, readable official DWM backdrop and corner attributes, non-layered native client area and QML surfaces; prototype contour also confirmed by user. No earbud writes'}
 qInstallMessageHandler(lambda kind,context,text:report['warnings'].append(text))
 app=Desktop(TARGET,read_pipe=False)
 get=C.windll.dwmapi.DwmGetWindowAttribute;get.argtypes=[C.c_void_p,C.c_uint,C.c_void_p,C.c_uint];get.restype=C.c_long
@@ -27,16 +27,16 @@ def later(ms,fn):
 def check(label):report['checks'].append(label);print('PASS',label,flush=True)
 def sample(win):
  surface=win.findChild(QQuickItem,'windowSurface')
- return {'ratio':win.devicePixelRatio(),'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':app.material.native.accent_state(int(win.winId())),
+ return {'ratio':win.devicePixelRatio(),'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':attr(win,38),
          'corner':attr(win,33),'alpha':surface.property('color').alphaF(),'radius':surface.property('radius')}
 def cycle(index=0):
  if index==6:return toggles()
  kind=('main','quick','notice')[index%3];state['dark']=index>=3;publish();app.show(kind)
  def shown():
   win=app.windows[kind];row=sample(win);report['frames'].append(row)
-  assert row['native'] and row['backdrop'] in (None,4) and row['corner']==1,row
-  assert 0.1<row['alpha']<.9 and row['radius']==12,row
-  image=win.grabWindow();assert image.pixelColor(0,image.height()-1).alpha()==0
+  assert row['native'] and row['backdrop']==3 and row['corner']==2,row
+  assert 0.1<row['alpha']<.9 and row['radius']==0,row
+  image=win.screen().grabWindow(int(win.winId()));assert not image.isNull()
   image.save(str(OUT/(kind+('-dark' if state['dark'] else '-light')+'.png')))
   check(kind+(': dark' if state['dark'] else ': light')+' native Acrylic, translucent surface and matching rounded contour')
   app.close_view(kind,exiting=False,animate=False);later(70,lambda:cycle(index+1))
@@ -46,16 +46,16 @@ def toggles():
 def disable():
  state['glass_effect']=False;publish();later(120,disabled)
 def disabled():
- row=sample(app.windows['main']);assert not row['native'] and row['backdrop'] in (None,0) and row['alpha']==1 and row['radius']==12,row
- check('turning glass off restores the opaque surface and original QML corner handling')
+ row=sample(app.windows['main']);assert not row['native'] and row['backdrop']==1 and row['alpha']==1 and row['radius']==0,row
+ check('turning glass off restores an opaque surface while preserving the same native corners')
  state.update(glass_effect=True,fast_mode=True);publish();later(120,fast)
 def fast():
- row=sample(app.windows['main']);assert not row['native'] and row['alpha']==1 and row['backdrop'] in (None,0),row
+ row=sample(app.windows['main']);assert not row['native'] and row['alpha']==1 and row['backdrop']==1,row
  assert not app.bridge.glassAllowed and app.bridge.state['glass_effect']
  check('speed mode overrides glass without erasing the stored choice')
  state['fast_mode']=False;publish();later(120,restored)
 def restored():
- row=sample(app.windows['main']);assert row['native'] and row['backdrop'] in (None,4),row
+ row=sample(app.windows['main']);assert row['native'] and row['backdrop']==3,row
  check('leaving speed mode restores the selected glass effect')
  state['system_transparency']=False;publish();later(120,policy)
 def policy():
@@ -80,35 +80,31 @@ def moving():
  win=app.windows['main'];hwnd=int(win.winId());msg=W.MSG();msg.hWnd=hwnd;msg.message=0x231
  assert app.material_filter_installed
  app.material_events.nativeEventFilter(b'windows_generic_MSG',C.addressof(msg))
- assert not win.property('nativeGlass') and hwnd in app.material_suspended
+ assert win.property('nativeGlass') and attr(win,38)==3
  msg.message=0x232;app.material_events.nativeEventFilter(b'windows_generic_MSG',C.addressof(msg))
- assert win.property('nativeGlass') and hwnd not in app.material_suspended
- check('native move/resize handling temporarily suspends Acrylic and restores it afterward')
- state['fast_mode']=True;publish();assert not app.material_filter_installed
- check('speed mode also removes the native material event listener')
+ assert win.property('nativeGlass')
+ check('official Acrylic remains enabled during native window moving')
+ state['fast_mode']=True;publish();assert app.material_filter_installed and not win.property('nativeGlass')
+ check('speed mode removes glass while retaining essential native client-area handling')
  state['fast_mode']=False;publish();later(120,shape_check)
 def shape_check():
- win=app.windows['main'];image=win.grabWindow();hwnd=int(win.winId())
- gdi=C.WinDLL('gdi32');user=C.WinDLL('user32')
- create=gdi.CreateRectRgn;create.argtypes=[C.c_int]*4;create.restype=C.c_void_p
- region=create(0,0,0,0)
- get_region=user.GetWindowRgn;get_region.argtypes=[C.c_void_p,C.c_void_p];get_region.restype=C.c_int
- contains=gdi.PtInRegion;contains.argtypes=[C.c_void_p,C.c_int,C.c_int];contains.restype=C.c_int
- delete=gdi.DeleteObject;delete.argtypes=[C.c_void_p];delete.restype=C.c_int
+ from encolite import windows_shell as shell
+ win=app.windows['main'];hwnd=int(win.winId())
+ assert win.property('systemFrame') and attr(win,1)==1 and attr(win,33)==2
+ assert not shell.GetWindowLong(hwnd,-20)&0x80000,'layered windows cannot use the native rounded contour'
+ region=C.windll.gdi32.CreateRectRgn;region.argtypes=[C.c_int]*4;region.restype=C.c_void_p
+ handle=region(0,0,0,0)
  try:
-  assert get_region(hwnd,region)==3
-  size=round(14*win.devicePixelRatio())
-  for x in range(size):
-   for y in range(size):
-    for px,py in ((x,y),(image.width()-1-x,y),(x,image.height()-1-y),(image.width()-1-x,image.height()-1-y)):
-     if image.pixelColor(px,py).alpha()>128:assert contains(region,px,py),(px,py)
-     assert bool(contains(region,x,y))==bool(contains(region,image.width()-1-x,y))==bool(contains(region,x,image.height()-1-y))==bool(contains(region,image.width()-1-x,image.height()-1-y)),(x,y)
-  assert not contains(region,0,0) and not contains(region,image.width()-1,0)
-  assert not contains(region,-1,size) and not contains(region,image.width(),size)
- finally:delete(region)
- check('the native rounded region contains the visible Qt corner outline')
+  get_region=C.windll.user32.GetWindowRgn;get_region.argtypes=[C.c_void_p,C.c_void_p];get_region.restype=C.c_int
+  assert get_region(hwnd,handle)==0,'DWM must own the contour; no manual window region'
+ finally:
+  delete=C.windll.gdi32.DeleteObject;delete.argtypes=[C.c_void_p];delete(handle)
+ assert app.material.native.caption_hidden(hwnd)
+ composed=win.screen().grabWindow(hwnd);assert not composed.isNull()
+ composed.save(str(OUT/(TAG+'-native-composed.png')))
+ check('DWM owns background and corners together, without layering, custom regions or a native caption')
  app.close_view('main',exiting=False,animate=False)
- assert not app.material.states and not app.material.shapes and not app.material_filter_installed
+ assert not app.material.states and not app.material.frames and not app.material_filter_installed
  check('closing the last window releases material state and its native listener')
  state['system_motion']=True;publish();app.show('quick');later(1900,animated)
 def animated():

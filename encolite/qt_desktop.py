@@ -80,6 +80,9 @@ class Bridge(QObject):
     @Property(bool, constant=True)
     def glassAvailable(self): return self.desktop.material.supported
 
+    @Property(bool, constant=True)
+    def systemFrameAvailable(self): return self.desktop.material.supported
+
     @Property(bool, notify=changed)
     def glassAllowed(self):
         return (self.glassAvailable and self._state.get('glass_effect') is True
@@ -168,10 +171,9 @@ class MaterialEvents(QAbstractNativeEventFilter):
             import ctypes as C
             from ctypes import wintypes as W
             msg=C.cast(int(message),C.POINTER(W.MSG)).contents
-            if msg.message in (0x231,0x232) and msg.hWnd in self.desktop.material_handles.values():
-                if msg.message==0x231:self.desktop.material_suspended.add(msg.hWnd)
-                else:self.desktop.material_suspended.discard(msg.hWnd)
-                self.desktop.update_materials()
+            if msg.message==0x83 and msg.hWnd in self.desktop.material_handles.values():
+                self.desktop.material.native.full_client(msg.hWnd,msg.lParam)
+                return True,0
         return False,0
 
 
@@ -188,7 +190,7 @@ class Desktop(QObject):
         self.app.setWindowIcon(QIcon(str(root / 'ui/assets/app-icon.ico')))
         font = QFont('Microsoft YaHei UI'); font.setPixelSize(13); self.app.setFont(font)
         QQuickStyle.setStyle('Basic')
-        self.material=WindowMaterial();self.material_handles={};self.material_suspended=set()
+        self.material=WindowMaterial();self.material_handles={}
         self.material_events=MaterialEvents(self);self.material_filter_installed=False
         self.bridge = Bridge(self)
         self.bridge.changed.connect(self.update_materials)
@@ -205,8 +207,8 @@ class Desktop(QObject):
         self.quick_idle_config = (False, 30); self.quick_touch_down = False
 
     def eventFilter(self, watched, event):
-        if self.bridge.glassAllowed and event.type() in (QEvent.PlatformSurface,QEvent.Resize,QEvent.WindowStateChange,QEvent.DevicePixelRatioChange):
-            QTimer.singleShot(0,lambda:self.update_materials())
+        if self.material.supported and event.type() in (QEvent.PlatformSurface,QEvent.WindowStateChange):
+            QTimer.singleShot(0,lambda:self.update_materials(force=True))
         if self.quick_idle_config[0] and watched is self.windows.get('quick'):
             kind = event.type()
             if kind == QEvent.TouchBegin: self.quick_touch_down = True
@@ -219,25 +221,23 @@ class Desktop(QObject):
         return False
 
     def update_materials(self,force=False):
-        wanted=bool(self.windows) and self.bridge.glassAllowed
+        wanted=bool(self.windows) and self.material.supported
         if wanted!=self.material_filter_installed:
             if wanted:self.app.installNativeEventFilter(self.material_events)
-            else:self.app.removeNativeEventFilter(self.material_events);self.material_suspended.clear()
+            else:self.app.removeNativeEventFilter(self.material_events)
             self.material_filter_installed=wanted
         for kind,window in list(self.windows.items()):
             hwnd=int(window.winId());old=self.material_handles.get(kind)
             if old and old!=hwnd:self.material.forget(old)
             self.material_handles[kind]=hwnd
-            requested=self.bridge.glassAllowed and hwnd not in self.material_suspended
+            requested=self.bridge.glassAllowed
             changing=bool(window.property('nativeGlass'))!=requested
             if changing:window.setProperty('materialChanging',True)
             active=self.material.apply(hwnd,requested,self.bridge.state.get('dark',False),force=force)
+            window.setProperty('systemFrame',self.material.frames.get(hwnd,False))
             window.setProperty('nativeGlass',active)
             if changing:
                 QTimer.singleShot(0,lambda w=window,k=kind:w.setProperty('materialChanging',False) if self.windows.get(k) is w else None)
-            ratio=window.devicePixelRatio()
-            shape=(round(window.width()*ratio),round(window.height()*ratio),round(12*ratio)) if active and window.windowState()!=Qt.WindowMaximized else None
-            self.material.shape(hwnd,shape)
 
     def update_quick_idle(self):
         seconds = self.bridge.state.get('quick_idle_seconds', 30)
@@ -312,7 +312,9 @@ class Desktop(QObject):
                           'devices': len(state.get('multi_devices') or []), 'connected': bool(state.get('connected'))}
                 if sys.platform == 'win32':
                     from . import windows_shell as s
-                    report['caption_absent'] = not bool(s.GetWindowLong(int(window.winId()), -16) & 0x00C00000)
+                    hwnd=int(window.winId())
+                    report['caption_absent'] = (self.material.native.caption_hidden(hwnd) if window.property('systemFrame')
+                                                else not bool(s.GetWindowLong(hwnd,-16)&0x00C00000))
                 self.send('diagnostic', data=report); return
             window.setProperty('page', pages[index])
             def capture():
@@ -357,11 +359,11 @@ class Desktop(QObject):
             self.closing.pop(kind, None); window = self.windows[kind]
             QMetaObject.invokeMethod(window, 'present')
             self.activate(window, kind); return
-        window = self.component.createWithInitialProperties({'kind': kind})
+        window = self.component.createWithInitialProperties({'kind': kind,'systemFrame':self.material.supported})
         if window is None: raise RuntimeError('\n'.join(error.toString() for error in self.component.errors()))
         self.windows[kind] = window
         window.installEventFilter(self)
-        window.opacityChanged.connect(lambda *_:self.update_materials(force=True) if window.opacity()==1 and self.bridge.glassAllowed else None)
+        window.flagsChanged.connect(lambda *_:QTimer.singleShot(0,lambda:self.update_materials(force=True)))
         if kind == 'quick':
             self.quick_touch_down = False
             window.quickMenuOpenChanged.connect(self.reset_quick_idle)
@@ -377,7 +379,7 @@ class Desktop(QObject):
         # frameSwapped may originate on Qt's render thread. Window properties,
         # native material and QML animation must start on the GUI thread.
         window.frameSwapped.connect(window._first_frame,Qt.QueuedConnection)
-        window.setOpacity(.01 if self.bridge.motion else 1)
+        window.setProperty('displayOpacity',.01 if self.bridge.motion else 1)
         if window.property('restoreMaximized'): window.showMaximized()
         else: window.show()
         QTimer.singleShot(1000, lambda: self.first_frame(kind, window) if self.windows.get(kind) is window else None)
@@ -393,8 +395,8 @@ class Desktop(QObject):
         if kind != 'notice' and self.requested != kind:
             self.close_view(kind, exiting=False, animate=False); return
         QMetaObject.invokeMethod(window, 'present')
-        # A suspended compositor can deliver its first frame without advancing
-        # the render-thread animation clock. Never leave the window at 1% alpha.
+        # A suspended compositor can deliver a frame without advancing the
+        # animation clock. Never leave the content nearly invisible.
         QTimer.singleShot(650,lambda:QMetaObject.invokeMethod(window,'finishStalledEntrance')
                           if self.windows.get(kind) is window and kind not in self.closing else None)
         self.activate(window, kind)
@@ -415,9 +417,10 @@ class Desktop(QObject):
             hwnd = int(window.winId())
             try:
                 fn = s.api(C.WinDLL('dwmapi'), 'DwmSetWindowAttribute', C.c_long, C.c_void_p, C.c_uint, C.c_void_p, C.c_uint)
-                # QML owns the rounded alpha surface and its matching outline.
-                # A second DWM corner clip can cut that outline at fractional DPI.
-                corner = C.c_int(1); border = C.c_uint(0xFFFFFFFE)
+                # Win11 owns background and contour on one native surface;
+                # older systems keep the existing QML alpha contour.
+                corner = C.c_int(2 if window.property('systemFrame') else 1)
+                border = C.c_uint(0xffffffff if window.property('systemFrame') else 0xfffffffe)
                 fn(hwnd, 33, C.byref(corner), C.sizeof(corner)); fn(hwnd, 34, C.byref(border), C.sizeof(border))
             except OSError: pass
             if kind != 'notice': s.activate_window(hwnd)
@@ -460,11 +463,12 @@ class Desktop(QObject):
             bounds = (self.normal_bounds.get(kind, [rect.x(),rect.y(),rect.width(),rect.height()]) if maximized else [rect.x(),rect.y(),rect.width(),rect.height()]) + [maximized]
             self.send('action', name='save_window', args=[kind, bounds, window.property('page')], frontend='qt')
         if kind == 'main': self.bridge.action('end_hotkey_capture', [])
+        window.hide()  # Keep native client-area handling installed until hidden.
         self.windows.pop(kind); self.ready.discard(kind)
         hwnd=self.material_handles.pop(kind,None)
-        if hwnd:self.material.forget(hwnd);self.material_suspended.discard(hwnd)
+        if hwnd:self.material.forget(hwnd)
         self.update_materials()
-        window.hide(); window.deleteLater()
+        window.deleteLater()
         if not self.windows and info['exiting'] and not self.stopping:
             if self.bridge.state.get('fast_launch', False):
                 self.idle = True; self.requested = None; self.send('idle')

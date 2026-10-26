@@ -1,20 +1,19 @@
 import json,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
-from encolite.window_material import WindowMaterial,rounded_region_rows
+from encolite.window_material import WindowMaterial
 from encolite.controller import Controller
 from encolite.session import DemoSession
 
 
 class FakeDwm:
     supported=True
-    def __init__(self):self.calls=[];self.reject=False
+    def __init__(self):self.calls=[];self.reject=False;self.reject_frame=False
+    def prepare_frame(self,hwnd):self.calls.append(('prepare',hwnd));return not self.reject_frame
     def attribute(self,hwnd,name,value):
         self.calls.append(('attribute',hwnd,name,value))
-        return True
+        return not(name==38 and value==3 and self.reject)
     def frame(self,hwnd,extended):self.calls.append(('frame',hwnd,extended));return True
-    def accent(self,hwnd,enabled,dark):self.calls.append(('accent',hwnd,enabled,dark));return not(enabled and self.reject)
-    def shape(self,hwnd,shape):self.calls.append(('shape',hwnd,shape));return True
 
 
 class WindowMaterialTests(unittest.TestCase):
@@ -27,15 +26,15 @@ class WindowMaterialTests(unittest.TestCase):
         self.assertIn(('attribute',17,20,1),api.calls[count:])
         self.assertFalse(material.apply(17,False,True))
         self.assertIn(('attribute',17,38,1),api.calls)
-        self.assertIn(('attribute',17,33,1),api.calls)
+        self.assertIn(('prepare',17),api.calls)
         self.assertIn(('frame',17,False),api.calls)
         material.forget(17);self.assertFalse(material.states)
 
     def test_partial_native_failure_rolls_back_to_an_opaque_compatible_frame(self):
         api=FakeDwm();api.reject=True;material=WindowMaterial(api)
         self.assertFalse(material.apply(23,True))
-        self.assertIn(('accent',23,False,False),api.calls)
-        self.assertEqual(api.calls[-4:],[('attribute',23,38,1),('frame',23,False),('attribute',23,33,1),('attribute',23,34,0xfffffffe)])
+        self.assertIn(('attribute',23,38,1),api.calls)
+        self.assertEqual(api.calls[-2:],[('attribute',23,38,1),('frame',23,False)])
         count=len(api.calls);self.assertFalse(material.apply(23,True));self.assertEqual(count,len(api.calls))
         api.reject=False;self.assertTrue(material.apply(23,True,force=True))
 
@@ -43,20 +42,17 @@ class WindowMaterialTests(unittest.TestCase):
         api=FakeDwm();api.supported=False;material=WindowMaterial(api)
         self.assertFalse(material.apply(1,True));self.assertFalse(api.calls)
 
-    def test_opaque_windows_do_not_change_native_composition(self):
+    def test_opaque_windows_keep_the_system_frame_without_glass(self):
         api=FakeDwm();material=WindowMaterial(api)
         self.assertFalse(material.apply(1,False,force=True))
-        self.assertFalse(api.calls)
+        self.assertTrue(material.frames[1]);self.assertNotIn(('attribute',1,38,3),api.calls)
+        count=len(api.calls);material.apply(1,False);self.assertEqual(count,len(api.calls))
 
-    def test_rounded_mask_has_symmetric_corners_and_never_extends_outside_window(self):
-        for ratio in (1,1.25,1.5,2):
-            width,height,radius=round(352*ratio),round(374*ratio),round(12*ratio)
-            rows=rounded_region_rows(width,height,radius)
-            self.assertEqual(len(rows),radius*2+1)
-            self.assertTrue(all(0<=l<r<=width and 0<=t<b<=height for l,t,r,b in rows))
-            self.assertTrue(all(l==width-r for l,t,r,b in rows))
-            self.assertGreater(rows[0][0],0)
-            self.assertEqual(rows[0],(rows[-1][0],height-rows[-1][3],rows[-1][2],height-rows[-1][1]))
+    def test_failed_native_frame_never_enables_a_detached_backdrop(self):
+        api=FakeDwm();api.reject_frame=True;material=WindowMaterial(api)
+        self.assertFalse(material.apply(1,True))
+        self.assertNotIn(('attribute',1,38,3),api.calls)
+        material.forget(1);self.assertFalse(material.frames);self.assertFalse(material.states)
 
     def controller(self,path):
         controller=Controller(session=DemoSession(),preferences=path)
