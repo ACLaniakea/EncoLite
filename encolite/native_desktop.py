@@ -17,7 +17,7 @@ from .preferences import data_directory,window_state
 
 class NativeDesktop:
     ACTIONS={name for name in '''change_noise change_preset change_feature change_connection
-        refresh scan select_device next_preset change_theme change_theme_mode change_glass_effect change_fast_mode change_connection_popup
+        refresh scan select_device next_preset change_theme change_theme_mode change_glass_effect change_glass_transparency change_fast_mode change_connection_popup
         select_custom edit_custom_name edit_gain write_custom change_spatial change_game
         find_device operate_multi select_model reset change_accent_mode change_accent_color change_fast_launch change_quick_topmost change_quick_auto_hide change_quick_idle_seconds'''.split()}
 

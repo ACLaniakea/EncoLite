@@ -16,7 +16,7 @@ report={'checks':[],'errors':[],'warnings':[],'frames':{},'real_hardware':False,
         'scope':'Own Qt windows and native alpha; no renderer wrappers or physical input'}
 qInstallMessageHandler(lambda kind,context,text:report['warnings'].append(text))
 app=Desktop(TARGET,read_pipe=False)
-state={'connected':True,'model_name':'OPPO Enco X3','noise_options':[],
+state={'glass_effect':True,'glass_transparency':70,'system_transparency':True,'connected':True,'model_name':'OPPO Enco X3','noise_options':[],
        'fast_mode':False,'fast_launch':True,'system_motion':True,'dark':False}
 native_alpha=shell.api(shell.user,'GetLayeredWindowAttributes',W.BOOL,W.HWND,
                        C.POINTER(W.DWORD),C.POINTER(C.c_ubyte),C.POINTER(W.DWORD))

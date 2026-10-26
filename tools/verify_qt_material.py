@@ -9,7 +9,7 @@ from PySide6.QtQuick import QQuickItem
 from encolite.qt_desktop import Desktop
 OUT=ROOT/'verification/qt-material';OUT.mkdir(exist_ok=True,parents=True)
 TAG=os.environ.get('ENCOLITE_MATERIAL_TAG','default')
-report={'checks':[],'errors':[],'warnings':[],'frames':[],'scope':'Owned Qt windows, readable official DWM backdrop and corner attributes, non-layered native client area and QML surfaces; prototype contour also confirmed by user. No earbud writes'}
+report={'checks':[],'errors':[],'warnings':[],'frames':[],'scope':'Owned Qt windows, native Acrylic state and readable DWM corner attributes, non-layered native client area and QML surfaces; prototype contour also confirmed by user. No earbud writes'}
 qInstallMessageHandler(lambda kind,context,text:report['warnings'].append(text))
 app=Desktop(TARGET,read_pipe=False)
 get=C.windll.dwmapi.DwmGetWindowAttribute;get.argtypes=[C.c_void_p,C.c_uint,C.c_void_p,C.c_uint];get.restype=C.c_long
@@ -27,14 +27,14 @@ def later(ms,fn):
 def check(label):report['checks'].append(label);print('PASS',label,flush=True)
 def sample(win):
  surface=win.findChild(QQuickItem,'windowSurface')
- return {'ratio':win.devicePixelRatio(),'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':attr(win,38),
+ return {'ratio':win.devicePixelRatio(),'kind':win.property('kind'),'native':bool(win.property('nativeGlass')),'backdrop':bool(app.material.states.get(int(win.winId()),(False,))[-1]),
          'corner':attr(win,33),'alpha':surface.property('color').alphaF(),'radius':surface.property('radius')}
 def cycle(index=0):
  if index==6:return toggles()
  kind=('main','quick','notice')[index%3];state['dark']=index>=3;publish();app.show(kind)
  def shown():
   win=app.windows[kind];row=sample(win);report['frames'].append(row)
-  assert row['native'] and row['backdrop']==3 and row['corner']==2,row
+  assert row['native'] and row['backdrop'] is True and row['corner']==2,row
   assert 0.1<row['alpha']<.9 and row['radius']==0,row
   image=win.screen().grabWindow(int(win.winId()));assert not image.isNull()
   image.save(str(OUT/(kind+('-dark' if state['dark'] else '-light')+'.png')))
@@ -46,16 +46,16 @@ def toggles():
 def disable():
  state['glass_effect']=False;publish();later(120,disabled)
 def disabled():
- row=sample(app.windows['main']);assert not row['native'] and row['backdrop']==1 and row['alpha']==1 and row['radius']==0,row
+ row=sample(app.windows['main']);assert not row['native'] and row['backdrop'] is False and row['alpha']==1 and row['radius']==0,row
  check('turning glass off restores an opaque surface while preserving the same native corners')
  state.update(glass_effect=True,fast_mode=True);publish();later(120,fast)
 def fast():
- row=sample(app.windows['main']);assert not row['native'] and row['alpha']==1 and row['backdrop']==1,row
+ row=sample(app.windows['main']);assert not row['native'] and row['alpha']==1 and row['backdrop'] is False,row
  assert not app.bridge.glassAllowed and app.bridge.state['glass_effect']
  check('speed mode overrides glass without erasing the stored choice')
  state['fast_mode']=False;publish();later(120,restored)
 def restored():
- row=sample(app.windows['main']);assert row['native'] and row['backdrop']==3,row
+ row=sample(app.windows['main']);assert row['native'] and row['backdrop'] is True,row
  check('leaving speed mode restores the selected glass effect')
  state['system_transparency']=False;publish();later(120,policy)
 def policy():
@@ -80,10 +80,10 @@ def moving():
  win=app.windows['main'];hwnd=int(win.winId());msg=W.MSG();msg.hWnd=hwnd;msg.message=0x231
  assert app.material_filter_installed
  app.material_events.nativeEventFilter(b'windows_generic_MSG',C.addressof(msg))
- assert win.property('nativeGlass') and attr(win,38)==3
+ assert win.property('nativeGlass') and app.material.states[hwnd][-1]
  msg.message=0x232;app.material_events.nativeEventFilter(b'windows_generic_MSG',C.addressof(msg))
  assert win.property('nativeGlass')
- check('official Acrylic remains enabled during native window moving')
+ check('Acrylic remains enabled during native window moving')
  state['fast_mode']=True;publish();assert app.material_filter_installed and not win.property('nativeGlass')
  check('speed mode removes glass while retaining essential native client-area handling')
  state['fast_mode']=False;publish();later(120,shape_check)

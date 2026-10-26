@@ -3,6 +3,14 @@ import ctypes as C
 import sys
 
 
+class AccentPolicy(C.Structure):
+    _fields_=[('state',C.c_int),('flags',C.c_uint),('color',C.c_uint),('animation',C.c_int)]
+
+
+class CompositionData(C.Structure):
+    _fields_=[('attribute',C.c_int),('data',C.c_void_p),('size',C.c_size_t)]
+
+
 class DwmApi:
     def __init__(self):
         self.supported=False
@@ -15,6 +23,8 @@ class DwmApi:
             self._frame.argtypes=[C.c_void_p,C.c_void_p];self._frame.restype=C.c_long
             self._get=dll.DwmGetWindowAttribute
             self._get.argtypes=[C.c_void_p,C.c_uint,C.c_void_p,C.c_uint];self._get.restype=C.c_long
+            self._accent=self.user.SetWindowCompositionAttribute
+            self._accent.argtypes=[C.c_void_p,C.POINTER(CompositionData)];self._accent.restype=C.c_int
             enabled=C.c_int();fn=dll.DwmIsCompositionEnabled
             fn.argtypes=[C.POINTER(C.c_int)];fn.restype=C.c_long
             self.supported=fn(C.byref(enabled))==0 and bool(enabled.value)
@@ -31,6 +41,12 @@ class DwmApi:
     def frame(self,hwnd,extended):
         margins=(C.c_int*4)(*([-1]*4 if extended else [0]*4))
         return self._frame(hwnd,C.byref(margins))==0
+
+    def accent(self,hwnd,enabled,dark):
+        color=0x66181818 if dark else 0x44f5f5f5
+        policy=AccentPolicy(4 if enabled else 0,0,color,0)
+        data=CompositionData(19,C.addressof(policy),C.sizeof(policy))
+        return bool(self._accent(hwnd,C.byref(data)))
 
     def prepare_frame(self,hwnd):
         from . import windows_shell as s
@@ -81,16 +97,17 @@ class WindowMaterial:
     def apply(self,hwnd,enabled,dark=False,*,force=False):
         if not self.supported:return False
         key=(bool(enabled),bool(dark));previous=self.states.get(hwnd)
-        if not force and previous and previous[:2]==key:return previous[2]
+        if not force and previous and previous[:2]==key:return previous[-1]
         if force or not self.frames.get(hwnd):self.frames[hwnd]=self.native.prepare_frame(hwnd)
         self.updates+=1
         active=False
-        if self.frames[hwnd]:self.native.attribute(hwnd,20,int(bool(dark)))
-        if self.frames[hwnd] and enabled:
-            active=self.native.frame(hwnd,True) and self.native.attribute(hwnd,38,3)
-        if not active:
+        if self.frames[hwnd] and (force or previous is None or previous[1]!=bool(dark)):
+            self.native.attribute(hwnd,20,int(bool(dark)))
+        if force or previous is None:
             self.native.attribute(hwnd,38,1)
             self.native.frame(hwnd,False)
+        if self.frames[hwnd]:active=bool(enabled and self.native.accent(hwnd,True,dark))
+        if not active:self.native.accent(hwnd,False,dark)
         self.states[hwnd]=(*key,active)
         return active
 

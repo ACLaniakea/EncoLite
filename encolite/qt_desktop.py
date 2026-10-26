@@ -11,6 +11,7 @@ from PySide6.QtCore import (QObject, Property, Signal, Slot, Qt, QTimer, QUrl, Q
 from PySide6.QtGui import QGuiApplication, QFont, QIcon
 from PySide6.QtQml import QQmlApplicationEngine, QQmlComponent
 from PySide6.QtQuickControls2 import QQuickStyle
+from PySide6.QtQuick import QQuickWindow
 from .preferences import window_state, fit_bounds
 from .hotkeys import binding, label
 from .window_material import WindowMaterial
@@ -60,7 +61,7 @@ class Bridge(QObject):
                        'switches': [], 'noise_options': [], 'presets': [], 'bands': [], 'multi_devices': [],
                        'custom_names': [], 'device_names': [], 'model_names': [], 'spatial_options': [], 'game_options': []}
         self._hotkeys = {'items': [], 'enabled': True, 'capturing': False}
-        self._preferences = {}; self._picture = ''; self.request = 0
+        self._preferences = {}; self._picture = ''; self.request = 0;self._glass_preview=None
 
     @Property('QVariantMap', notify=changed)
     def state(self): return self._state
@@ -83,6 +84,14 @@ class Bridge(QObject):
     @Property(bool, constant=True)
     def systemFrameAvailable(self): return self.desktop.material.supported
 
+    @Property(int,notify=changed)
+    def glassTransparency(self):
+        return self._glass_preview if self._glass_preview is not None else self._state.get('glass_transparency',70)
+
+    @Slot(int)
+    def previewGlassTransparency(self,value):
+        self._glass_preview=max(0,min(100,value));self.changed.emit()
+
     @Property(bool, notify=changed)
     def glassAllowed(self):
         return (self.glassAvailable and self._state.get('glass_effect') is True
@@ -94,6 +103,7 @@ class Bridge(QObject):
     def update(self, payload):
         self.payload = payload
         state = {**self._state, **payload.get('state', {})}
+        if state.get('glass_transparency')==self._glass_preview:self._glass_preview=None
         switches = [dict(row) for row in state.get('switches') or []]
         for key, pending in list(self.pending.items()):
             row = next((row for row in switches if row['key'] == key), None)
@@ -181,6 +191,7 @@ class Desktop(QObject):
     incoming = Signal(dict)
     eof = Signal()
     def __init__(self, root, *, read_pipe=True):
+        QQuickWindow.setDefaultAlphaBuffer(True)
         self.app = QGuiApplication.instance() or QGuiApplication(sys.argv)
         super().__init__()
         self.root = Path(root); self.read_pipe = read_pipe; self.windows = {}; self.closing = {}; self.requested = None

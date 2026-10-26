@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.17'
-MSI_VERSION='0.5.17'
+VERSION='0.5.0-preview.18'
+MSI_VERSION='0.5.18'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'
@@ -48,8 +48,11 @@ def build():
         assert api.MsiDatabaseCommit(handle)==0
     finally:api.MsiCloseHandle(handle)
     db=m.OpenDatabase(str(OUTPUT),m.MSIDBOPEN_TRANSACT)
+    view=db.OpenView("UPDATE `Property` SET `Value`='2052' WHERE `Property`='ProductLanguage'")
+    view.Execute(None);view.Close()
     summary=db.GetSummaryInformation(20)
     summary.SetProperty(m.PID_CODEPAGE,936)
+    summary.SetProperty(m.PID_TEMPLATE,'x64;2052')
     summary.SetProperty(m.PID_PAGECOUNT,500)
     summary.Persist()
     # Use Windows Installer's native wizard; no bootstrap executable.
@@ -59,7 +62,7 @@ def build():
     view=db.OpenView("UPDATE `InstallExecuteSequence` SET `Sequence`=1510 WHERE `Action`='RemoveExistingProducts'")
     view.Execute(None);view.Close()
     m.add_data(db,'Property',[
-        ('UpgradeCode',UPGRADE),('ARPNOMODIFY','1'),
+        ('UpgradeCode',UPGRADE),('ARPNOMODIFY','1'),('ARPSYSTEMCOMPONENT','1'),
         ('ARPPRODUCTICON','AppIcon'),('INSTALLLEVEL','1'),('SecureCustomProperties','OLDPRODUCTS;NEWPRODUCTS;INSTALLDIR;CREATE_DESKTOP_SHORTCUT;LAUNCH_AFTER_INSTALL'),
         ('ProductRelease',VERSION)])
     m.add_data(db,'Upgrade',[
@@ -80,8 +83,8 @@ def build():
     m.add_data(db,'CustomAction',[('ReinstallAll',51,'REINSTALL','ALL')])
     m.add_data(db,'InstallExecuteSequence',[('ReinstallAll','Installed AND NOT REMOVE',750)])
     m.add_data(db,'LaunchCondition',[
-        ('NOT NEWPRODUCTS','A newer version of Enco Lite is already installed.'),
-        ('VersionNT64 AND WINDOWSBUILD >= 17763','Enco Lite requires 64-bit Windows 10 1809 or later.')])
+        ('NOT NEWPRODUCTS','已安装更新版本的 Enco Lite。'),
+        ('VersionNT64 AND WINDOWSBUILD >= 17763','Enco Lite 需要 64 位 Windows 10 1809 或更新版本。')])
     cab=m.CAB('EncoLite.cab')
     target=m.Directory(db,cab,None,str(BUNDLE),'TARGETDIR','SourceDir',componentflags=0)
     local=m.Directory(db,cab,target,'','LocalAppDataFolder','.',componentflags=0)
@@ -126,6 +129,22 @@ def build():
     m.add_data(db,'Registry',[
         ('MenuRegistry',1,registry_key,'Menu', '1','MenuComponent'),
         ('DesktopRegistry',1,registry_key,'Desktop','1','DesktopComponent')])
+    # Apps/Control Panel otherwise request basic MSI UI and bypass our pages.
+    # Keep one per-user uninstall entry which explicitly selects full UI.
+    arp_key=r'Software\Microsoft\Windows\CurrentVersion\Uninstall\EncoLite.'+UPGRADE.strip('{}')
+    m.add_data(db,'Component',[
+        ('UninstallComponent',component_guid('registry/uninstall'),'INSTALLDIR',260,None,'UninstallName')])
+    m.add_data(db,'FeatureComponents',[('Main','UninstallComponent')])
+    uninstall_command='"[SystemFolder]msiexec.exe" /x '+PRODUCT+' /qf /norestart'
+    arp_values=[('Name','DisplayName',APP_NAME),('Version','DisplayVersion',VERSION),
+                ('Publisher','Publisher','Enco Lite contributors'),('Location','InstallLocation','[INSTALLDIR]'),
+                ('Icon','DisplayIcon','"[INSTALLDIR]ui\\assets\\app-icon.ico"'),
+                ('Command','UninstallString',uninstall_command),
+                ('Quiet','QuietUninstallString','"[SystemFolder]msiexec.exe" /x '+PRODUCT+' /qn /norestart'),
+                ('NoModify','NoModify','#1'),('NoRepair','NoRepair','#1')]
+    m.add_data(db,'Registry',[(('UninstallName' if suffix=='Name' else 'Uninstall'+suffix),1,arp_key,name,value,'UninstallComponent')
+                             for suffix,name,value in arp_values])
+    m.add_data(db,'Registry',[('UninstallKey',1,arp_key,'*',None,'UninstallComponent')])
     m.add_data(db,'Shortcut',[
         ('MainShortcut','AppMenu','ENCOLI~1|'+APP_NAME,'MenuComponent','[#'+exe+']',launch_arguments,None,None,'AppIcon',0,1,'INSTALLDIR'),
         ('QuickShortcut','AppMenu','QUICKC~1|快捷控制','MenuComponent','[#'+exe+']',quick_arguments,None,None,'AppIcon',0,1,'INSTALLDIR'),
@@ -135,7 +154,8 @@ def build():
     add_wizard(db,ROOT,runtime_manifest.get('entry_point','EncoLite.exe'),launch_arguments or '')
     cab.commit(db)
     db.Commit()
-    manifest={'version':VERSION,'msi_version':MSI_VERSION,'product_code':PRODUCT,'upgrade_code':UPGRADE,'file_count':len(files)}
+    manifest={'version':VERSION,'msi_version':MSI_VERSION,'product_code':PRODUCT,'upgrade_code':UPGRADE,'file_count':len(files),
+              'arp_key':arp_key,'uninstall_command':uninstall_command}
     (ROOT/'build/msi-manifest.json').write_text(json.dumps(manifest,indent=2),'utf-8')
     print(json.dumps(manifest),flush=True)
     return OUTPUT

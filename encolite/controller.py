@@ -59,6 +59,8 @@ class Controller(AdvancedController):
         self.system_transparency=read_system_transparency()
         value=self.preference_data.get('glass_effect',True)
         self.glass_effect=value if type(value) is bool else True
+        value=self.preference_data.get('glass_transparency',70)
+        self.glass_transparency=value if type(value) is int and 0<=value<=100 else 70
         self.accent_mode,self.accent_color=saved_accent(self.preference_data)
         self.system_accent=read_system_accent() if self.accent_mode=='system' else DEFAULT_ACCENT
         self.dark=self.system_dark if self.theme_mode=='system' else self.theme_mode=='dark'
@@ -158,7 +160,7 @@ class Controller(AdvancedController):
         w.noise=s.noise
         w.anc_level=self.anc_level
         w.dark=self.dark
-        for key in ('theme_mode','system_dark','system_motion','system_transparency','glass_effect','fast_mode','fast_launch','quick_topmost','quick_auto_hide','quick_idle_seconds','accent_mode','accent_color','system_accent'):
+        for key in ('theme_mode','system_dark','system_motion','system_transparency','glass_effect','glass_transparency','fast_mode','fast_launch','quick_topmost','quick_auto_hide','quick_idle_seconds','accent_mode','accent_color','system_accent'):
             if hasattr(w,key):setattr(w,key,getattr(self,key))
         if hasattr(w,'palette'):
             from .appearance import accent_palette
@@ -428,6 +430,12 @@ class Controller(AdvancedController):
         if type(enabled) is not bool:raise ValueError('玻璃效果需要开关值')
         self.glass_effect=enabled
         self.save_preferences(glass_effect=enabled)
+        self.sync()
+
+    def change_glass_transparency(self,value):
+        if type(value) is not int or not 0<=value<=100:raise ValueError('透明度需要是 0–100 的整数')
+        self.glass_transparency=value
+        self.save_preferences(glass_transparency=value)
         self.sync()
 
     def change_fast_mode(self,enabled):

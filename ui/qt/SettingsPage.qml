@@ -15,6 +15,19 @@ ColumnLayout {
             UiSelect { accessibleName:'深浅外观';width:parent.width; options:[{value:'system',label:'跟随系统'},{value:'light',label:'浅色'},{value:'dark',label:'深色'}];value:backend.state.theme_mode||'system';onChosen:function(value){backend.action('change_theme_mode',[value]);} }
         }
         SettingRow { title:'玻璃效果';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'glassSwitch';value:backend.glassAllowed;enabled:backend.glassAvailable&&!backend.state.fast_mode&&backend.state.system_transparency!==false;Accessible.name:'玻璃效果';onTriggered:function(value){backend.action('change_glass_effect',[value]);}} }
+        SettingRow { title:'透明度';visible:backend.glassAvailable;Layout.fillWidth:true
+            RowLayout {width:parent.width;spacing:10;enabled:backend.glassAllowed
+                Slider {id:glassSlider;objectName:'glassTransparencySlider';Layout.fillWidth:true;from:0;to:100;stepSize:1
+                    Accessible.name:'玻璃透明度'
+                    Binding{target:glassSlider;property:'value';value:backend.glassTransparency;when:!glassSlider.pressed}
+                    onMoved:backend.previewGlassTransparency(Math.round(value))
+                    onPressedChanged:if(!pressed)backend.action('change_glass_transparency',[Math.round(value)])
+                    background:Rectangle{x:glassSlider.leftPadding;y:(glassSlider.height-height)/2;width:glassSlider.availableWidth;height:3;radius:2;color:Theme.line;Rectangle{width:glassSlider.visualPosition*parent.width;height:3;radius:2;color:Theme.accent}}
+                    handle:Rectangle{x:glassSlider.leftPadding+glassSlider.visualPosition*(glassSlider.availableWidth-width);y:(glassSlider.height-height)/2;width:16;height:16;radius:8;color:Theme.card;border.color:Theme.accent;border.width:2}
+                }
+                Text{text:Math.round(glassSlider.value)+'%';Layout.preferredWidth:36;horizontalAlignment:Text.AlignRight;font.pixelSize:13;color:Theme.muted}
+            }
+        }
         SettingRow { title:'主题色';Layout.fillWidth:true
             UiSelect { accessibleName:'主题色来源';width:parent.width;options:[{value:'custom',label:'自选颜色'},{value:'system',label:'跟随 Windows'}];value:backend.state.accent_mode||'custom';onChosen:function(value){backend.action('change_accent_mode',[value]);} }
         }
@@ -96,7 +109,7 @@ ColumnLayout {
         Layout.topMargin:-7
         objectName:'aboutSettings'
         Layout.fillWidth:true
-        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.17';font.pixelSize:13;color:Theme.muted}}
+        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.18';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'开源许可';Layout.fillWidth:true;Text{text:'GPL-3.0-or-later';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'协议来源';Layout.fillWidth:true;Text{text:'OppoPodsManager';font.pixelSize:13;color:Theme.muted}}
     }

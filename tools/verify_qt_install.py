@@ -1,6 +1,6 @@
 """Install a distinct validation product; never upgrade the user's installed app."""
 from pathlib import Path
-import ctypes as C,json,os,shutil,subprocess,sys,time,uuid
+import ctypes as C,json,os,shutil,subprocess,sys,time,uuid,winreg
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'tools')]
 sys.stdout.reconfigure(encoding='utf-8')
@@ -109,6 +109,11 @@ try:
  install('install');assert (GROUP/(NAME+'.lnk')).exists() and (GROUP/'快捷控制.lnk').exists()
  assert startup_value()==original_startup
  check('isolated MSI installs the bundled Qt runtime and both shortcuts')
+ arp_key=r'Software\Microsoft\Windows\CurrentVersion\Uninstall\EncoLite.'+UPGRADE.strip('{}')
+ with winreg.OpenKey(winreg.HKEY_CURRENT_USER,arp_key,0,winreg.KEY_READ|winreg.KEY_WOW64_64KEY) as key:
+  command=winreg.QueryValueEx(key,'UninstallString')[0];assert '/qf' in command and PRODUCT in command and '/norestart' in command,command
+  assert winreg.QueryValueEx(key,'DisplayName')[0]==NAME
+ check('Windows app-list uninstall entry explicitly opens the full Chinese wizard')
  startup.set_enabled(True);startup_entry();registered=startup_value()
  ui('first');entry('first');saved=(DATA/'preferences.json').read_bytes()
  install('reinstall');assert (DATA/'preferences.json').read_bytes()==saved
@@ -120,6 +125,10 @@ try:
  assert startup_value() is None
  check('uninstall removes the startup command belonging to this installation')
  check('MSI uninstall removes app and test shortcuts while retaining preferences')
+ try:winreg.OpenKey(winreg.HKEY_CURRENT_USER,arp_key,0,winreg.KEY_READ|winreg.KEY_WOW64_64KEY)
+ except FileNotFoundError:pass
+ else:raise AssertionError('The app-list uninstall entry was left behind')
+ check('uninstall removes its own app-list registration without leaving a duplicate entry')
  install('foreign-registration')
  foreign=WindowsStartup(ROOT);foreign.set_enabled(True);foreign_value=startup_value()
  uninstall();assert startup_value()==foreign_value

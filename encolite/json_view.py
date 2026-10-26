@@ -1,6 +1,6 @@
 """Plain serializable projection of every control supported by the controller."""
 
-FIELDS='''connected noise anc_level dark theme_mode system_dark system_motion system_transparency glass_effect fast_mode fast_launch autostart_enabled autostart_available autostart_error quick_topmost quick_auto_hide quick_idle_seconds accent_mode accent_color system_accent palette status status_error busy connecting cancelling
+FIELDS='''connected noise anc_level dark theme_mode system_dark system_motion system_transparency glass_effect glass_transparency fast_mode fast_launch autostart_enabled autostart_available autostart_error quick_topmost quick_auto_hide quick_idle_seconds accent_mode accent_color system_accent palette status status_error busy connecting cancelling
 connection_popup preset wear dual model_name firmware product_picture
 can_off can_transparency can_smart can_light can_moderate can_deep can_anc
 can_equalizer can_wear can_dual presets preset_name device_names device_index

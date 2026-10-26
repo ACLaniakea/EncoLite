@@ -1,6 +1,6 @@
 # Qt Windows 构建
 
-0.5.0-preview.17 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
+0.5.0-preview.18 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
 
 ## 准备依赖
 
@@ -69,4 +69,4 @@ preview.12 使用 Windows Installer 自身的 Dialog / Control / InstallUISequen
 
 `python tools/verify_msi_ui.py` 检查导航循环、控件引用、条件、目录解析和原生页面创建。它使用 MSI 作者预览 API，不模拟鼠标点击。`python tools/verify_qt_install.py` 在独立产品标识下验证静默安装、运行、重装和卸载。完整向导的人工作业与自动化检查范围分别记录在 VALIDATION.md。
 
-玻璃背景由 `encolite/window_material.py` 通过 Windows 11 22H2+ 官方 DWM 系统背景实现。窗口保留原生非客户区表面，使用 WM_NCCALCSIZE 延伸内容，避免分层窗口和手工区域破坏系统圆角；旧系统使用实色。未引入材质库或着色器。`tools/verify_qt_material.py [运行包目录]` 检查原生调用、深浅色、圆角、策略回退和极速模式。
+玻璃背景由 `encolite/window_material.py` 在 Windows 11 22H2+ 使用任务栏式 Accent Policy 与原生 DWM 圆角实现。窗口保留原生非客户区表面，使用 WM_NCCALCSIZE 延伸内容，避免分层窗口和手工区域破坏系统圆角；旧系统使用实色。未引入材质库或着色器。`tools/verify_qt_material.py [运行包目录]` 检查原生调用、深浅色、圆角、策略回退和极速模式。

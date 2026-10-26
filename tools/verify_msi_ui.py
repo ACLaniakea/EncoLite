@@ -74,6 +74,13 @@ try:
   if row['Event'] in ('NewDialog','SpawnDialog'):assert row['Argument'] in dialogs,row
  assert {r['Argument'] for r in events if r['Dialog_']=='ErrorDlg'}=={'Error'+n for n in ('Ok','Cancel','Abort','Retry','Ignore','Yes','No')}
  check('wizard pages, navigation, tab targets and native error buttons have valid references')
+ properties={r['Property']:r['Value'] for r in rows('Property')}
+ assert properties['ProductLanguage']=='2052' and properties['ARPSYSTEMCOMPONENT']=='1'
+ assert '2052' in str(db.GetSummaryInformation(0).GetProperty(m.PID_TEMPLATE))
+ assert any(r['Name']=='UninstallString' and '/qf' in r['Value'] for r in rows('Registry'))
+ assert any(r['Dialog_']=='RemoveDlg' and r['Control']=='ProductIcon' for r in controls)
+ assert any(r['Action']=='RemoveFiles' and '移除' in r['Description'] for r in rows('ActionText'))
+ check('Chinese language, matching removal layout and full-UI app-list command are authored')
  sequence={r['Action']:r for r in rows('InstallUISequence')}
  assert int(sequence['AppSearch']['Sequence'])<int(sequence['UseExistingDirectory']['Sequence'])<int(sequence['LaunchConditions']['Sequence'])
  assert int(sequence['CostFinalize']['Sequence'])<int(sequence['WelcomeDlg']['Sequence'])<int(sequence['ProgressDlg']['Sequence'])<int(sequence['ExecuteAction']['Sequence'])

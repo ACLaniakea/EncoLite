@@ -13,6 +13,7 @@ class FakeDwm:
     def attribute(self,hwnd,name,value):
         self.calls.append(('attribute',hwnd,name,value))
         return not(name==38 and value==3 and self.reject)
+    def accent(self,hwnd,enabled,dark):self.calls.append(('accent',hwnd,enabled,dark));return not(enabled and self.reject)
     def frame(self,hwnd,extended):self.calls.append(('frame',hwnd,extended));return True
 
 
@@ -34,7 +35,7 @@ class WindowMaterialTests(unittest.TestCase):
         api=FakeDwm();api.reject=True;material=WindowMaterial(api)
         self.assertFalse(material.apply(23,True))
         self.assertIn(('attribute',23,38,1),api.calls)
-        self.assertEqual(api.calls[-2:],[('attribute',23,38,1),('frame',23,False)])
+        self.assertEqual(api.calls[-1],('accent',23,False,False))
         count=len(api.calls);self.assertFalse(material.apply(23,True));self.assertEqual(count,len(api.calls))
         api.reject=False;self.assertTrue(material.apply(23,True,force=True))
 
@@ -53,6 +54,24 @@ class WindowMaterialTests(unittest.TestCase):
         self.assertFalse(material.apply(1,True))
         self.assertNotIn(('attribute',1,38,3),api.calls)
         material.forget(1);self.assertFalse(material.frames);self.assertFalse(material.states)
+
+    def test_invalid_transparency_preference_falls_back_to_default(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'preferences.json'
+            for value in (True,-1,101,1.5,'50',None):
+                path.write_text(json.dumps({'glass_transparency':value}),'utf-8')
+                self.assertEqual(self.controller(path).glass_transparency,70)
+
+    def test_transparency_is_persisted_independently_of_speed_mode(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'preferences.json';controller=self.controller(path)
+            self.assertEqual(controller.glass_transparency,70)
+            for value in (0,43,100):
+                controller.change_glass_transparency(value);controller.change_fast_mode(True)
+                self.assertEqual(self.controller(path).glass_transparency,value)
+                controller.change_fast_mode(False);self.assertEqual(controller.glass_transparency,value)
+            for value in (True,1.5,'50',-1,101,None):
+                with self.assertRaises(ValueError):controller.change_glass_transparency(value)
 
     def controller(self,path):
         controller=Controller(session=DemoSession(),preferences=path)

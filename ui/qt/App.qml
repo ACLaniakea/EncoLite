@@ -103,7 +103,7 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame?0:12;color:Theme.material(Theme.bg,Theme.dark?0.30:0.20,win);antialiasing:true
+        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame?0:12;color:Theme.material(Theme.bg,Math.max(0.08,1-backend.glassTransparency/100),win);antialiasing:true
         objectName:'windowSurface'
         transform:[
             Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},

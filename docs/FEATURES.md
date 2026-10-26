@@ -1,12 +1,12 @@
 # Enco Lite
 
-OPPO / 一加耳机桌面客户端。0.5.0-preview.17 已将主窗口、快捷控制和连接提示全部迁移到 **Qt Quick / PySide6 6.12.0**，继续使用原来的 Python 协议、原生托盘和全局快捷键后台。保留绿色配色、紧凑卡片、圆角和竖向网格 EQ，运行时不使用 WebView2 或浏览器。
+OPPO / 一加耳机桌面客户端。0.5.0-preview.18 已将主窗口、快捷控制和连接提示全部迁移到 **Qt Quick / PySide6 6.12.0**，继续使用原来的 Python 协议、原生托盘和全局快捷键后台。保留绿色配色、紧凑卡片、圆角和竖向网格 EQ，运行时不使用 WebView2 或浏览器。
 
 连接说明：曾出现 Windows 音频正常、OPPO 控制服务却超时的状态，原版对照也失败。用户在 Windows 原生蓝牙设置中断开 X3 再连接后，真实控制与回读已复测恢复；这是已验证的恢复方法，尚未确定内部根因。各次成功与失败记录分别保留，见 [VALIDATION.md](VALIDATION.md)。
 
 ## 安装与启动
 
-安装包：`release/EncoLite-0.5.0-preview.17-win-x64.msi`；也提供同版本便携 ZIP。MSI 由 Windows Installer 安装和卸载，便携包解压后运行“启动 Enco Lite.cmd”。包内自带官方 CPython 和所需 Qt 动态库，无需另装 Python、Qt 或 WebView2。
+安装包：`release/EncoLite-0.5.0-preview.18-win-x64.msi`；也提供同版本便携 ZIP。MSI 由 Windows Installer 安装和卸载，便携包解压后运行“启动 Enco Lite.cmd”。包内自带官方 CPython 和所需 Qt 动态库，无需另装 Python、Qt 或 WebView2。
 
 源码目录使用工作区根目录的“启动 Enco Lite.cmd”或“快捷控制.cmd”。先在 Windows 蓝牙设置中配对 OPPO 或一加耳机。当前实际运行和硬件测试环境为 Windows 11 x64；Linux/macOS 尚未实现真实蓝牙与托盘，跨平台 Qt 界面不等于已完成跨平台硬件支持。
 
@@ -84,6 +84,8 @@ GPL-3.0-or-later。协议来源 OppoPodsManager，Copyright © 2026 Zhaoyi-ya。
 
 ## 玻璃效果
 
-“设置 → 外观 → 玻璃效果”控制主窗口、快捷控制和连接提示，默认开启。Windows 11 22H2 及以上使用系统 Acrylic、圆角与描边，拖动时保留玻璃。卡片、按钮、输入框和菜单统一使用分层色调。极速模式强制关闭模糊并保留偏好，退出后恢复；系统透明策略禁用时使用实色。旧系统使用原来的实色界面。
+“设置 → 外观 → 玻璃效果”控制主窗口、快捷控制和连接提示，默认开启。Windows 11 22H2 及以上使用任务栏式 Acrylic、系统圆角与描边，拖动时保留玻璃。卡片、按钮、输入框和菜单统一使用分层色调。极速模式强制关闭模糊并保留偏好，退出后恢复；系统透明策略禁用时使用实色。旧系统使用原来的实色界面。
 
 动画在稳定的系统外轮廓内运行，极速模式关闭过渡。实现、兼容范围及参考项目见 [GLASS.md](GLASS.md)。
+
+透明度可在外观组调节，实时预览、松手保存，退出极速模式后恢复选择。安装与卸载共用中文向导风格，Windows 应用列表的卸载入口会打开完整界面。

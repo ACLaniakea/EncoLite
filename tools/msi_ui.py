@@ -6,8 +6,8 @@ from msilib import sequence
 
 def add_wizard(db, root: Path, entry_point: str, arguments: str):
     m.add_data(db, 'TextStyle', [
-        ('UiNormal', 'Segoe UI', 9, None, 0),
-        ('UiTitle', 'Segoe UI', 12, None, 1),
+        ('UiNormal', 'Microsoft YaHei UI', 9, None, 0),
+        ('UiTitle', 'Microsoft YaHei UI', 12, None, 1),
     ])
     m.add_data(db, 'Binary', [('InstallerIcon', m.Binary(str(root/'build/installer-assets/icon.bmp'))),
                                ('InstallerHeader', m.Binary(str(root/'build/installer-assets/header.bmp')))])
@@ -15,9 +15,21 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
         ('DefaultUIFont', 'UiNormal'), ('ErrorDialog', 'ErrorDlg'),
         ('LAUNCH_AFTER_INSTALL', '1'), ('MsiLogging', 'voicewarmupx'),
         ('WizardProgressTitle', '正在安装'), ('WizardFinishTitle', '安装完成'),
+        ('WizardWindowTitle', 'Enco Lite 安装程序'),
         ('RMCHOICE', 'Close'),
     ])
     m.add_data(db, 'CheckBox', [('CREATE_DESKTOP_SHORTCUT', '1'), ('LAUNCH_AFTER_INSTALL', '1')])
+    m.add_data(db,'ActionText',[(name,text,'') for name,text in {
+        'CostInitialize':'正在计算所需空间…','FileCost':'正在检查程序文件…','CostFinalize':'正在检查安装位置…',
+        'InstallValidate':'正在检查安装状态…','ProcessComponents':'正在处理程序组件…',
+        'InstallFiles':'正在复制程序文件…','RemoveFiles':'正在移除程序文件…',
+        'WriteRegistryValues':'正在保存程序信息…','RemoveRegistryValues':'正在移除程序信息…',
+        'CreateShortcuts':'正在创建快捷方式…','RemoveShortcuts':'正在移除快捷方式…',
+        'RegisterProduct':'正在注册 Enco Lite…','PublishProduct':'正在完成安装…',
+        'UnpublishFeatures':'正在移除组件信息…','RegisterUser':'正在保存安装信息…',
+        'RemoveExistingProducts':'正在移除旧版本…','InstallFinalize':'正在完成操作…',
+        'RemoveAutostart':'正在移除开机自启动项…',
+    }.items()])
     m.add_data(db, 'CustomAction', [
         ('DefaultDesktopShortcut', 51, 'CREATE_DESKTOP_SHORTCUT', '1'),
         ('RememberRemoveRequest', 51, 'RemoveRequested', '1'),
@@ -38,9 +50,9 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     ])
     m.add_data(db, 'InstallUISequence', rows)
 
-    def page(name, title, first, default, cancel='Cancel', modeless=False, keep=False):
+    def page(name, title, first, default, cancel='Cancel', modeless=False, keep=False, caption='[WizardWindowTitle]'):
         attrs = (1 if modeless else 3) | (16 if keep else 0)
-        d = m.Dialog(db, name, 50, 50, 370, 270, attrs, '[ProductName] 安装程序', first, default, cancel)
+        d = m.Dialog(db, name, 50, 50, 370, 270, attrs, caption, first, default, cancel)
         d.control('Banner', 'Bitmap', 0, 0, 370, 56, 1, None, 'InstallerHeader', None, None)
         d.text('Heading', 22, 16, 286, 24, 65539, r'{\UiTitle}'+title)
         d.control('Icon', 'Bitmap', 322, 12, 30, 30, 1, None, 'InstallerIcon', None, None)
@@ -58,8 +70,10 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
         return button(d, 'Cancel', '取消(&C)', 304, next_name, 'EndDialog', 'Exit')
 
     welcome = page('WelcomeDlg', 'Enco Lite 安装向导', 'Next', 'Next')
-    welcome.text('Version', 20, 71, 330, 18, 3, '版本 [ProductRelease]')
-    welcome.text('Intro', 20, 107, 330, 44, 3, '此向导将引导你完成 Enco Lite 的安装。')
+    welcome.control('ProductIcon','Bitmap',20,77,44,44,1,None,'InstallerIcon',None,None)
+    welcome.text('Product',82,78,250,22,3,r'{\UiTitle}Enco Lite')
+    welcome.text('Version',82,104,250,18,3,'版本 [ProductRelease]')
+    welcome.text('Intro',20,145,330,32,3,'将 Enco Lite 安装到此电脑。')
     welcome.pushbutton('License', 20, 188, 70, 18, 3, '许可证(&L)', 'Next').event('SpawnDialog', 'LicenseDlg', '1', 1)
     button(welcome, 'Next', '下一步(&N)', 236, 'Cancel', 'NewDialog', 'OptionsDlg')
     cancel(welcome, 'License')
@@ -91,7 +105,7 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     ok.event('EndDialog', 'Return', '1', 2)
     button(folder, 'Cancel', '取消', 304, 'Folders', 'EndDialog', 'Return')
 
-    maintenance = page('MaintenanceDlg', '维护 Enco Lite', 'Repair', 'Repair')
+    maintenance = page('MaintenanceDlg', '更改 Enco Lite', 'Repair', 'Repair',caption='[ProductName] 更改安装')
     repair = button(maintenance, 'Repair', '修复(&R)', 20, 'Remove', y=78, width=80)
     maintenance.text('RepairText', 116, 78, 234, 34, 3, '重新安装缺失或损坏的程序文件。')
     repair.event('[REMOVE]', '{}', '1', 1)
@@ -104,9 +118,12 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     maintenance.text('RemoveText', 116, 137, 234, 34, 3, '从此电脑移除 Enco Lite。')
     button(maintenance, 'Cancel', '关闭(&C)', 304, 'Repair', 'EndDialog', 'Exit')
 
-    remove = page('RemoveDlg', '卸载 Enco Lite', 'Cancel', 'Cancel')
-    remove.text('Intro', 20, 77, 330, 34, 3, '确定要卸载 Enco Lite 吗？')
-    remove.text('Settings', 20, 122, 330, 24, 3, '个人设置将保留。')
+    remove = page('RemoveDlg', '卸载 Enco Lite', 'Cancel', 'Cancel',caption='[ProductName] 卸载程序')
+    remove.control('ProductIcon','Bitmap',20,77,44,44,1,None,'InstallerIcon',None,None)
+    remove.text('Product',82,78,250,22,3,r'{\UiTitle}Enco Lite')
+    remove.text('Version',82,104,250,18,3,'版本 [ProductRelease]')
+    remove.text('Intro',20,145,330,22,3,'将从此电脑卸载 Enco Lite。')
+    remove.text('Settings',20,177,330,40,3,'个人设置和耳机配对将保留。\r\n开机自启动项将一并移除。')
     back = button(remove, 'Back', '上一步(&B)', 180, 'Remove')
     back.event('[REMOVE]', '{}', '1', 1)
     back.event('NewDialog', 'MaintenanceDlg', '1', 2)
@@ -116,7 +133,8 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     uninstall.event('[LAUNCH_AFTER_INSTALL]', '{}', '1', 3)
     uninstall.event('[WizardProgressTitle]', '正在卸载', '1', 4)
     uninstall.event('[WizardFinishTitle]', '卸载完成', '1', 5)
-    uninstall.event('EndDialog', 'Return', '1', 6)
+    uninstall.event('[WizardWindowTitle]', 'Enco Lite 卸载程序', '1', 6)
+    uninstall.event('EndDialog', 'Return', '1', 7)
     cancel(remove, 'Back')
 
     progress = page('ProgressDlg', '[WizardProgressTitle]', 'Cancel', 'Cancel', modeless=True)
@@ -136,7 +154,7 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     finish.event('EndDialog', 'Return', '1', 3)
 
     for name, title, body in [
-        ('FatalError', '安装失败', '未能完成安装。请重试，或查看安装日志。\r\n\r\n[MsiLogFileLocation]'),
+        ('FatalError', '操作未完成', '未能完成操作。请重试，或查看日志。\r\n\r\n[MsiLogFileLocation]'),
         ('UserExit', '已取消', '操作未完成。'),
     ]:
         d = page(name, title, 'Close', 'Close', 'Close')
@@ -155,7 +173,7 @@ def add_wizard(db, root: Path, entry_point: str, arguments: str):
     cancel(in_use, 'Retry')
 
     rm = page('MsiRMFilesInUse', '关闭正在使用的程序', 'Options', 'OK', keep=True)
-    rm.text('Intro', 20, 65, 330, 28, 3, '以下程序正在使用需要更新的文件。')
+    rm.text('Intro', 20, 65, 330, 28, 3, '以下程序正在使用 Enco Lite 文件。')
     rm.control('List', 'ListBox', 20, 99, 330, 69, 7, 'FileInUseProcess', None, None, None)
     rm.control('Options', 'RadioButtonGroup', 20, 177, 330, 43, 3, 'RMCHOICE', None, 'OK', None)
     m.add_data(db, 'RadioButton', [
