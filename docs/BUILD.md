@@ -1,6 +1,6 @@
 # Qt Windows 构建
 
-0.5.0-preview.21 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
+0.5.0-preview.24 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
 
 ## 准备依赖
 
@@ -74,3 +74,5 @@ preview.12 使用 Windows Installer 自身的 Dialog / Control / InstallUISequen
 后台连接回归：`python tools/verify_background_connection.py` 使用自有隐藏托盘窗口、实际 Windows 蓝牙通知注册和模拟控制握手，验证无 Qt 窗口时的唤醒、断连、重连提示。`python tools/verify_qt_battery.py` 检查三个窗口深浅色下的 0/19/20/21/100% 和未知电量，不操作真实耳机。
 
 窗口外观回归：`tools/verify_qt_chrome.py` 使用自有纯色背景测量投影范围、淡出残留、标题区像素及设置分组；`tools/verify_qt_motion.py` 观察真实中间帧和整面像素 alpha，截图不参与逐帧采样，避免测量本身阻塞动画。
+
+使用 Python 3.12 运行 `tools/verify_msi_upgrade.py --full --local-programs` 检查完整包跨版本升级。默认不传强制重装参数；旧打包器快照随源码放在 `tools/fixtures/msi_preview21.py`，用于重现历史无版本字段包。测试不覆盖正式安装。

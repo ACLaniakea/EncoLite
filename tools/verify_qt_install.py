@@ -41,7 +41,7 @@ def uninstall():
 def install(stage):
  # Windows Installer expects quotes around a property's value, rather than
  # the entire NAME=value argument produced by subprocess.list2cmdline.
- p=subprocess.run(f'"{EXE}" /i "{MSI}" /qn /norestart INSTALLDIR="{TARGET}" CREATE_DESKTOP_SHORTCUT=0 REINSTALLMODE=amus /L*v "{OUT/(stage+".log")}"',timeout=120)
+ p=subprocess.run(f'"{EXE}" /i "{MSI}" /qn /norestart INSTALLDIR="{TARGET}" CREATE_DESKTOP_SHORTCUT=0 /L*v "{OUT/(stage+".log")}"',timeout=120)
  assert p.returncode in (0,3010),p.returncode
  assert location() and location().resolve()==TARGET.resolve(),str(location())
 def ui(stage):

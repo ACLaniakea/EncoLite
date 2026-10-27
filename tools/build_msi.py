@@ -11,8 +11,8 @@ import msilib as m
 from msilib import schema, sequence
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='0.5.0-preview.21'
-MSI_VERSION='0.5.21'
+VERSION='0.5.0-preview.24'
+MSI_VERSION='0.5.24'
 APP_NAME='Enco Lite'
 UPGRADE='{A0A57009-2B4F-490E-AB44-80C02964E3DD}'
 PRODUCT='{'+str(uuid.uuid5(uuid.UUID(UPGRADE),VERSION)).upper()+'}'
@@ -24,6 +24,27 @@ def stable_id(prefix,path):
 
 def component_guid(path):
     return '{'+str(uuid.uuid5(uuid.UUID(UPGRADE),str(path))).upper()+'}'
+
+def file_version(path,api):
+    """Author PE file versions accurately; an unversioned MSI row ranks lower.
+
+    Omitting a DLL/EXE's real version lets costing disallow that component when
+    upgrading. Early old-product removal then leaves the skipped binary missing.
+    https://learn.microsoft.com/windows/win32/api/msi/nf-msi-msigetfileversionw
+    """
+    if path.suffix.lower() not in ('.exe','.dll','.pyd'):return None,None
+    capacity=256
+    while capacity<=16384:
+        version=C.create_unicode_buffer(capacity);language=C.create_unicode_buffer(capacity)
+        version_size=C.c_uint32(capacity);language_size=C.c_uint32(capacity)
+        status=api.MsiGetFileVersionW(str(path),version,C.byref(version_size),language,C.byref(language_size))
+        if status==1006:return None,None  # ERROR_FILE_INVALID: no version resource.
+        if status==234:
+            capacity=max(capacity*2,version_size.value+1,language_size.value+1)
+            continue
+        if status:raise OSError(status,'Cannot read installer file version: '+str(path))
+        return version.value or None,language.value or None
+    raise ValueError('Installer file version resource is too large: '+str(path))
 
 def build():
     from prepare_installer_assets import prepare
@@ -40,6 +61,8 @@ def build():
     api.MsiDatabaseImportW.argtypes=[C.c_uint32,C.c_wchar_p,C.c_wchar_p]
     api.MsiDatabaseCommit.argtypes=[C.c_uint32]
     api.MsiCloseHandle.argtypes=[C.c_uint32]
+    api.MsiGetFileVersionW.argtypes=[C.c_wchar_p,C.c_wchar_p,C.POINTER(C.c_uint32),C.c_wchar_p,C.POINTER(C.c_uint32)]
+    api.MsiGetFileVersionW.restype=C.c_uint32
     handle=C.c_uint32()
     assert api.MsiOpenDatabaseW(str(OUTPUT),C.c_void_p(1),C.byref(handle))==0
     try:
@@ -54,10 +77,16 @@ def build():
     summary.SetProperty(m.PID_CODEPAGE,936)
     summary.SetProperty(m.PID_TEMPLATE,'x64;2052')
     summary.SetProperty(m.PID_PAGECOUNT,500)
+    # Compressed, strictly per-user package: no administrator privilege is
+    # required for our LocalAppData files and HKCU registrations.
+    summary.SetProperty(m.PID_WORDCOUNT,2|8)
     summary.Persist()
     # Use Windows Installer's native wizard; no bootstrap executable.
     execute_sequence=list(sequence.InstallExecuteSequence)
     m.change_sequence(execute_sequence,'LaunchConditions',450)
+    # Standard transactional major upgrade: remove the older product after
+    # InstallInitialize and before copying files. Accurate PE versions above
+    # ensure costing selects the binaries that early removal will remove.
     m.add_data(db,'InstallExecuteSequence',execute_sequence)
     view=db.OpenView("UPDATE `InstallExecuteSequence` SET `Sequence`=1510 WHERE `Action`='RemoveExistingProducts'")
     view.Execute(None);view.Close()
@@ -93,6 +122,7 @@ def build():
     m.Feature(db,'Main','Enco Lite','OPPO earphone control',1,directory='INSTALLDIR').set_current()
     dirs={Path('.'):install}
     files={}
+    file_versions={}
     for path in sorted(BUNDLE.rglob('*')):
         relative=path.relative_to(BUNDLE)
         if path.is_dir():
@@ -102,7 +132,9 @@ def build():
             directory=dirs[relative.parent]
             component=stable_id('C',relative)
             directory.start_component(component,flags=0,keyfile=path.name,uuid=component_guid(relative))
-            file_id=directory.add_file(path.name)
+            version,language=file_version(path,api)
+            file_id=directory.add_file(path.name,version=version,language=language)
+            if version:file_versions[relative.as_posix()]={'version':version,'language':language}
             files[relative.as_posix()]=(file_id,component)
     manifest_path=BUNDLE/'runtime-manifest.json'
     runtime_manifest=json.loads(manifest_path.read_text('utf-8')) if manifest_path.exists() else {}
@@ -115,7 +147,7 @@ def build():
         cleanup=launch_arguments+' --remove-autostart --startup-folder "[StartupFolder]."'
         m.add_data(db,'CustomAction',[('RemoveAutostart',1106,exe,cleanup)])
         m.add_data(db,'InstallExecuteSequence',[
-            ('RemoveAutostart','Installed AND REMOVE~="ALL" AND NOT UPGRADINGPRODUCTCODE',3450)])
+            ('RemoveAutostart','Installed AND REMOVE~="ALL" AND NOT UPGRADINGPRODUCTCODE AND ?'+exe_component+'=3',3450)])
     m.add_data(db,'Directory',[
         ('ProgramMenuFolder','TARGETDIR','.'),('AppMenu','ProgramMenuFolder','ENCOLI~1|'+APP_NAME),
         ('DesktopFolder','TARGETDIR','.')])
@@ -155,9 +187,10 @@ def build():
     cab.commit(db)
     db.Commit()
     manifest={'version':VERSION,'msi_version':MSI_VERSION,'product_code':PRODUCT,'upgrade_code':UPGRADE,'file_count':len(files),
+              'versioned_file_count':len(file_versions),'file_versions':file_versions,
               'arp_key':arp_key,'uninstall_command':uninstall_command}
     (ROOT/'build/msi-manifest.json').write_text(json.dumps(manifest,indent=2),'utf-8')
-    print(json.dumps(manifest),flush=True)
+    print(json.dumps({key:value for key,value in manifest.items() if key!='file_versions'}),flush=True)
     return OUTPUT
 
 if __name__=='__main__':
