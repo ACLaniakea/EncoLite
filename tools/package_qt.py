@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'.build-deps'))
 import pefile
 DEST=ROOT/'dist/EncoLite-qt'
-VERSION='0.5.0-preview.24'
+VERSION='0.5.0-preview.25'
 PYTHON_VERSION='3.13.17'
 PYTHON_SHA256='9e35319bffedab8b36ad44d8f377cb4f1733bcec257a0b6d04d94f01486ddb38'
 QT_VERSION='6.12.0'

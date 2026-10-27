@@ -6,6 +6,9 @@ RowLayout {
     property string title: ""
     property string detail: ""
     property int controlWidth: 200
+    property int minimumRowHeight: 0
+    Layout.minimumHeight: minimumRowHeight > 0 ? Math.max(minimumRowHeight, labels.implicitHeight + 12, control.childrenRect.height + 12) : 0
+    Layout.maximumHeight: minimumRowHeight > 0 ? Layout.minimumHeight : Number.POSITIVE_INFINITY
     default property alias controls: control.data
     spacing: 16
     implicitHeight: Math.max(labels.implicitHeight,control.childrenRect.height)+12

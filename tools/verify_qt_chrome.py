@@ -97,7 +97,16 @@ def layout(win):
         p=group.mapToScene(QPointF(0,0));rects.append((p.x(),p.y(),group.width(),group.height()))
         assert group.width()>400 and group.height()>40,rects
     assert all(rects[i][1]+rects[i][3]+15<=rects[i+1][1] for i in range(4)),rects
-    check('settings groups use consistent positive spacing and do not overlap')
+    assert all(abs(rects[i+1][1]-rects[i][1]-rects[i][3]-24)<=1 for i in range(4)),rects
+    row_geometry=[]
+    for item in items(win):
+        if item.isVisible() and (item.property('minimumRowHeight') or item.objectName()=='accentPalette'):
+            point=item.mapToScene(QPointF(0,0))
+            row_geometry.append({'title':item.property('title') or 'accentPalette','y':point.y(),'height':item.height()})
+            assert abs(item.height()-52)<=1,row_geometry[-1]
+    assert len(row_geometry)>=14,row_geometry
+    report['settings_rows']=row_geometry
+    check('settings groups have equal 24 DIP gaps and all regular setting rows use a consistent 52 DIP height')
     assert named(win,'glassTransparencySlider').isVisible()
     state['glass_effect']=False;publish();later(100,lambda:dependent(win))
 def dependent(win):

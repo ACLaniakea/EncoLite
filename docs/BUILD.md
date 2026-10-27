@@ -1,6 +1,6 @@
 # Qt Windows 构建
 
-0.5.0-preview.24 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
+0.5.0-preview.25 的后台入口为 `desktop_entry.py`，仅使用 Python 标准库和 Win32；按需启动 `qt_entry.py`。图形使用 Qt Quick / PySide6 6.12.0 和统一的自定义 Basic 控件，后台通过有界 UTF-8 JSON 管道传送状态，图形不直接访问蓝牙。默认关闭最后一个窗口后退出图形进程；显式开启快速唤出时保留界面进程，保留托盘与连接。
 
 ## 准备依赖
 
