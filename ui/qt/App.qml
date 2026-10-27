@@ -11,19 +11,21 @@ Window {
     property bool nativeGlass: false
     property bool systemFrame: false
     property real displayOpacity: 1
-    opacity: systemFrame?1:displayOpacity
+    opacity: 1
+    property bool surfaceReady: !Theme.motion
+    property real glassMix: Theme.motion?0:1
     property bool materialChanging: false
     property bool restoreMaximized: false
     property bool closingUi: false
     property bool presented: false
     property real reveal: 0
-    property int openDuration: 320
-    property int closeDuration: 220
-    readonly property bool transitioning: openAnimation.running||closeAnimation.running
-    readonly property real surfaceScale: Theme.motion&&!systemFrame?1-(kind==='main'?0.02:0.05)*(1-reveal):1
-    readonly property real surfaceOffset: Theme.motion&&!systemFrame?(1-reveal)*Math.min(kind==='main'?6:kind==='quick'?8:4,height*(kind==='main'?0.02:0.05)*0.45):0
-    readonly property real contentScale: systemFrame&&Theme.motion?1-0.015*(1-reveal):1
-    readonly property real contentOffset: systemFrame&&Theme.motion?(1-reveal)*Math.min(4,(height-2)*0.015*0.45):0
+    property int openDuration: 190
+    property int closeDuration: 140
+    readonly property bool transitioning: openAnimation.running||closeAnimation.running||glassAnimation.running
+    readonly property real surfaceScale: Theme.motion?1-(kind==='main'?0.005:0.01)*(1-reveal):1
+    readonly property real surfaceOffset: Theme.motion?Math.min(2,height*0.002)*(1-reveal):0
+    readonly property real contentScale: 1
+    readonly property real contentOffset: 0
     readonly property bool quickMenuOpen:quickSound.menuOpen
     property bool maximized: visibility===Window.Maximized
     readonly property int sectionPage: page===5?1:page
@@ -50,20 +52,20 @@ Window {
         // Duplicate tray/show requests must not snap an in-flight entrance.
         if(openAnimation.running&&!animate)return;
         if(animate&&Theme.motion){
-            if(minimized){displayOpacity=0.01;reveal=0;}
-            openDuration=Math.max(90,Math.round((kind==='main'?320:280)*(1-reveal)));
-            openAnimation.restart();
-        }else{openAnimation.stop();displayOpacity=1;reveal=1;}
+            if(minimized){surfaceReady=false;glassMix=0;displayOpacity=0;reveal=0;}
+            if(surfaceReady&&reveal===1){glassAnimation.restart();}
+            else{openDuration=Math.max(70,Math.round((kind==='main'?190:170)*(1-reveal)));openAnimation.restart();}
+        }else if(!openAnimation.running){displayOpacity=1;reveal=1;surfaceReady=true;if(!glassAnimation.running)glassMix=1;}
         presented=true;
     }
     function dismiss() {
-        openAnimation.stop();closingUi=true;closeMenus();confirmPopup.close();hotkeyPopup.close();
-        if(Theme.motion){closeDuration=Math.max(90,Math.round((kind==='main'?220:200)*reveal));closeAnimation.restart();}
+        openAnimation.stop();glassAnimation.stop();closingUi=true;closeMenus();confirmPopup.close();hotkeyPopup.close();
+        if(Theme.motion){closeDuration=Math.max(70,Math.round(140*reveal));closeAnimation.restart();}
         else finishedClosing();
     }
     function finishStalledEntrance() {
         if(presented&&!closingUi&&openAnimation.running&&reveal===0){
-            openAnimation.stop();displayOpacity=1;reveal=1;
+            openAnimation.stop();displayOpacity=1;reveal=1;surfaceReady=true;glassMix=1;
         }
     }
     function navigate(index) { closeMenus();if(index!==page){page=index;} }
@@ -77,18 +79,24 @@ Window {
     }
     ParallelAnimation {
         id:openAnimation
-        NumberAnimation{target:win;property:'displayOpacity';to:1;duration:win.openDuration;easing.type:Easing.OutQuad}
+        NumberAnimation{target:win;property:'displayOpacity';to:1;duration:win.openDuration;easing.type:Easing.OutCubic}
         NumberAnimation{target:win;property:'reveal';to:1;duration:win.openDuration;easing.type:Easing.OutCubic}
+        onFinished:{win.surfaceReady=true;if(Theme.motion&&win.nativeGlass)glassAnimation.restart();else win.glassMix=1;}
     }
-    ParallelAnimation {
+    NumberAnimation { id:glassAnimation;target:win;property:'glassMix';to:1;duration:100;easing.type:Easing.OutQuad }
+    SequentialAnimation {
         id:closeAnimation
-        NumberAnimation{target:win;property:'displayOpacity';to:0;duration:win.closeDuration;easing.type:Easing.InQuad}
-        NumberAnimation{target:win;property:'reveal';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
+        NumberAnimation{target:win;property:'glassMix';to:0;duration:win.nativeGlass?65:0;easing.type:Easing.InOutQuad}
+        ScriptAction{script:win.surfaceReady=false}
+        ParallelAnimation {
+            NumberAnimation{target:win;property:'displayOpacity';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
+            NumberAnimation{target:win;property:'reveal';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
+        }
         onFinished:win.finishedClosing()
     }
     Connections {
         target:Theme
-        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();closeAnimation.stop();win.displayOpacity=1;win.reveal=1;if(win.closingUi)win.finishedClosing();}}
+        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();glassAnimation.stop();closeAnimation.stop();win.displayOpacity=1;win.reveal=1;win.surfaceReady=true;win.glassMix=1;if(win.closingUi)win.finishedClosing();}}
     }
     Connections {
         target:backend
@@ -103,17 +111,16 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame?0:12;color:Theme.material(Theme.bg,Math.max(0.08,1-backend.glassTransparency/100),win);antialiasing:true
+        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame&&win.surfaceReady?0:win.systemFrame?4:12;color:Theme.material(Theme.bg,Math.max(0.08,1-backend.glassTransparency/100),win);antialiasing:true
+        opacity:win.displayOpacity
         objectName:'windowSurface'
         transform:[
             Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
             Translate{y:win.surfaceOffset}
         ]
-        Behavior on color {enabled:!win.materialChanging;ColorAnimation{duration:Theme.motion?150:0}}
+        Behavior on color {enabled:!win.materialChanging&&!win.transitioning;ColorAnimation{duration:Theme.motion?150:0}}
         ColumnLayout {
             id:windowContent;objectName:'windowContent';anchors.fill:parent;anchors.margins:1;spacing:0
-            opacity:win.systemFrame?win.displayOpacity:1
-            transform:[Scale{origin.x:windowContent.width/2;origin.y:windowContent.height/2;xScale:win.contentScale;yScale:xScale},Translate{y:win.contentOffset}]
             Item {
                 id:titleBar;Layout.fillWidth:true;Layout.preferredHeight:39
                 DragHandler {target:null;acceptedButtons:Qt.LeftButton;onActiveChanged:if(active)win.startSystemMove()}

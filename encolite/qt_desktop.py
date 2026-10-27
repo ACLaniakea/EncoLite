@@ -184,6 +184,11 @@ class MaterialEvents(QAbstractNativeEventFilter):
             if msg.message==0x83 and msg.hWnd in self.desktop.material_handles.values():
                 self.desktop.material.native.full_client(msg.hWnd,msg.lParam)
                 return True,0
+            if msg.hWnd in self.desktop.material_handles.values():
+                if msg.message in (0x85,0xae,0xaf):  # Suppress legacy nonclient caption/frame painting.
+                    return True,0
+                if msg.message==0x86:  # WM_NCACTIVATE: preserve activation without painting a caption.
+                    return True,1
         return False,0
 
 
@@ -191,6 +196,9 @@ class Desktop(QObject):
     incoming = Signal(dict)
     eof = Signal()
     def __init__(self, root, *, read_pipe=True):
+        # Use elapsed time for multi-window animation, rather than assuming a
+        # continuously advancing vsync clock while tools are shown/hidden.
+        os.environ.setdefault('QSG_USE_SIMPLE_ANIMATION_DRIVER','1')
         QQuickWindow.setDefaultAlphaBuffer(True)
         self.app = QGuiApplication.instance() or QGuiApplication(sys.argv)
         super().__init__()
@@ -241,12 +249,13 @@ class Desktop(QObject):
             hwnd=int(window.winId());old=self.material_handles.get(kind)
             if old and old!=hwnd:self.material.forget(old)
             self.material_handles[kind]=hwnd
-            requested=self.bridge.glassAllowed
+            requested=self.bridge.glassAllowed and bool(window.property('surfaceReady'))
             changing=bool(window.property('nativeGlass'))!=requested
             if changing:window.setProperty('materialChanging',True)
             active=self.material.apply(hwnd,requested,self.bridge.state.get('dark',False),force=force)
             window.setProperty('systemFrame',self.material.frames.get(hwnd,False))
             window.setProperty('nativeGlass',active)
+            self.material.decorate(hwnd,bool(window.property('surfaceReady')),force=force)
             if changing:
                 QTimer.singleShot(0,lambda w=window,k=kind:w.setProperty('materialChanging',False) if self.windows.get(k) is w else None)
 
@@ -373,6 +382,8 @@ class Desktop(QObject):
         window = self.component.createWithInitialProperties({'kind': kind,'systemFrame':self.material.supported})
         if window is None: raise RuntimeError('\n'.join(error.toString() for error in self.component.errors()))
         self.windows[kind] = window
+        window.surfaceReadyChanged.connect(self.update_materials)
+        window.closingUiChanged.connect(self.update_materials)
         window.installEventFilter(self)
         window.flagsChanged.connect(lambda *_:QTimer.singleShot(0,lambda:self.update_materials(force=True)))
         if kind == 'quick':
@@ -423,17 +434,8 @@ class Desktop(QObject):
         if window.windowState() == Qt.WindowMinimized: window.showNormal()
         window.show()
         if sys.platform == 'win32':
-            import ctypes as C
             from . import windows_shell as s
             hwnd = int(window.winId())
-            try:
-                fn = s.api(C.WinDLL('dwmapi'), 'DwmSetWindowAttribute', C.c_long, C.c_void_p, C.c_uint, C.c_void_p, C.c_uint)
-                # Win11 owns background and contour on one native surface;
-                # older systems keep the existing QML alpha contour.
-                corner = C.c_int(2 if window.property('systemFrame') else 1)
-                border = C.c_uint(0xffffffff if window.property('systemFrame') else 0xfffffffe)
-                fn(hwnd, 33, C.byref(corner), C.sizeof(corner)); fn(hwnd, 34, C.byref(border), C.sizeof(border))
-            except OSError: pass
             if kind != 'notice': s.activate_window(hwnd)
         elif kind != 'notice': window.raise_(); window.requestActivate()
         if kind == 'notice':

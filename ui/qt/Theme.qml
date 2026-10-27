@@ -6,7 +6,8 @@ QtObject {
         return !!value && value !== '—' && Number(backend.state[key + '_level']) <= 0.20;
     }
     function material(color, opacity, window) {
-        return window && window.nativeGlass ? Qt.rgba(color.r,color.g,color.b,opacity) : color;
+        var mix=window && window.nativeGlass ? window.glassMix : 0;
+        return mix>0 ? Qt.rgba(color.r,color.g,color.b,1-(1-opacity)*mix) : color;
     }
     function surface(color, role, window) {
         var alpha = role === 'menu' ? (dark ? 0.76 : 0.70)

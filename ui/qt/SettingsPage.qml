@@ -5,17 +5,16 @@ import "."
 ColumnLayout {
     id: root
     property var host
-    spacing:17
-    Text { text:'外观';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
-    Card {
-        Layout.topMargin:-7
+    spacing:24
+    SettingsGroup {
+        title:'外观'
         objectName:'appearanceSettings'
         Layout.fillWidth:true
         SettingRow { title:'深浅外观';Layout.fillWidth:true
             UiSelect { accessibleName:'深浅外观';width:parent.width; options:[{value:'system',label:'跟随系统'},{value:'light',label:'浅色'},{value:'dark',label:'深色'}];value:backend.state.theme_mode||'system';onChosen:function(value){backend.action('change_theme_mode',[value]);} }
         }
         SettingRow { title:'玻璃效果';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'glassSwitch';value:backend.glassAllowed;enabled:backend.glassAvailable&&!backend.state.fast_mode&&backend.state.system_transparency!==false;Accessible.name:'玻璃效果';onTriggered:function(value){backend.action('change_glass_effect',[value]);}} }
-        SettingRow { title:'透明度';visible:backend.glassAvailable;Layout.fillWidth:true
+        SettingRow { title:'透明度';visible:backend.glassAllowed;Layout.fillWidth:true
             RowLayout {width:parent.width;spacing:10;enabled:backend.glassAllowed
                 Slider {id:glassSlider;objectName:'glassTransparencySlider';Layout.fillWidth:true;from:0;to:100;stepSize:1
                     Accessible.name:'玻璃透明度'
@@ -48,15 +47,14 @@ ColumnLayout {
             UiButton{text:'更多颜色';implicitWidth:88;onClicked:colorPicker.open()}
         }
     }
-    Text { Layout.topMargin:7;text:'快捷控制';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
-    Card {
-        Layout.topMargin:-7
+    SettingsGroup {
+        title:'窗口与提醒'
         objectName:'quickSettings'
         Layout.fillWidth:true
-        SettingRow { title:'始终置顶';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:backend.state.quick_topmost!==false;Accessible.name:'快捷控制置顶';onTriggered:function(value){backend.action('change_quick_topmost',[value]);}} }
-        SettingRow { title:'闲置后自动收起';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'quickAutoHide';value:!!backend.state.quick_auto_hide;Accessible.name:'快捷控制自动收起';onTriggered:function(value){backend.action('change_quick_auto_hide',[value]);}} }
+        SettingRow { title:'快捷控制置顶';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:backend.state.quick_topmost!==false;Accessible.name:'快捷控制置顶';onTriggered:function(value){backend.action('change_quick_topmost',[value]);}} }
+        SettingRow { title:'快捷控制自动收起';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'quickAutoHide';value:!!backend.state.quick_auto_hide;Accessible.name:'快捷控制自动收起';onTriggered:function(value){backend.action('change_quick_auto_hide',[value]);}} }
         SettingRow {
-            visible:!!backend.state.quick_auto_hide;title:'闲置时长';detail:'5–3600 秒';controlWidth:100;Layout.fillWidth:true
+            visible:!!backend.state.quick_auto_hide;title:'收起等待时间';controlWidth:100;Layout.fillWidth:true
             RowLayout {
                 width:parent.width;spacing:6
                 TextField {
@@ -76,23 +74,21 @@ ColumnLayout {
         }
         SettingRow { title:'连接时弹出提示';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.connection_popup;Accessible.name:'连接提示';onTriggered:function(value){backend.action('change_connection_popup',[value]);}} }
     }
-    Text { Layout.topMargin:7;text:'启动与性能';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
-    Card {
-        Layout.topMargin:-7
+    SettingsGroup {
+        title:'启动与性能'
         objectName:'performanceSettings'
         Layout.fillWidth:true
         SettingRow { title:'开机自启动';detail:backend.state.autostart_error||'登录 Windows 后在托盘运行';controlWidth:42;Layout.fillWidth:true;UiSwitch{objectName:'autostartSwitch';value:!!backend.state.autostart_enabled;enabled:backend.state.autostart_available===true;Accessible.name:'开机自启动';onTriggered:function(value){backend.action('change_autostart',[value]);}} }
-        SettingRow { title:'极速模式';detail:'关闭动画、玻璃效果和阴影';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_mode;Accessible.name:'极速模式';onTriggered:function(value){backend.action('change_fast_mode',[value]);}} }
-        SettingRow { title:'快速唤出';detail:'保留界面进程，更快打开，占用更多内存';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_launch;Accessible.name:'快速唤出';onTriggered:function(value){backend.action('change_fast_launch',[value]);}} }
+        SettingRow { title:'极速模式';detail:'关闭动画和玻璃效果';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_mode;Accessible.name:'极速模式';onTriggered:function(value){backend.action('change_fast_mode',[value]);}} }
+        SettingRow { title:'快速唤出';detail:'加快开窗，增加后台内存';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.state.fast_launch;Accessible.name:'快速唤出';onTriggered:function(value){backend.action('change_fast_launch',[value]);}} }
     }
-    Text { Layout.topMargin:7;text:'快捷键';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
-    Card {
-        Layout.topMargin:-7
+    SettingsGroup {
+        title:'快捷键'
         objectName:'hotkeySettings'
         Layout.fillWidth:true
-        SettingRow { title:'启用全局快捷键';detail:'在托盘运行时也可使用';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.hotkeys.enabled;enabled:!backend.hotkeys.capturing;Accessible.name:'启用全局快捷键';onTriggered:function(value){backend.action('set_hotkeys_enabled',[value]);}} }
+        SettingRow { title:'启用全局快捷键';controlWidth:42;Layout.fillWidth:true;UiSwitch{value:!!backend.hotkeys.enabled;enabled:!backend.hotkeys.capturing;Accessible.name:'启用全局快捷键';onTriggered:function(value){backend.action('set_hotkeys_enabled',[value]);}} }
         Repeater {
-            model:backend.hotkeys.items||[]
+            model:backend.hotkeys.enabled?(backend.hotkeys.items||[]):[]
             SettingRow {
                 required property var modelData
                 title:modelData.title; detail:modelData.error||'';controlWidth:224;Layout.fillWidth:true
@@ -104,12 +100,11 @@ ColumnLayout {
             }
         }
     }
-    Text { Layout.topMargin:7;text:'关于';font.pixelSize:14;font.weight:Font.DemiBold;color:Theme.text }
-    Card {
-        Layout.topMargin:-7
+    SettingsGroup {
+        title:'关于'
         objectName:'aboutSettings'
         Layout.fillWidth:true
-        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.20';font.pixelSize:13;color:Theme.muted}}
+        SettingRow{title:'Enco Lite';Layout.fillWidth:true;Text{text:'0.5.0-preview.21';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'开源许可';Layout.fillWidth:true;Text{text:'GPL-3.0-or-later';font.pixelSize:13;color:Theme.muted}}
         SettingRow{title:'协议来源';Layout.fillWidth:true;Text{text:'OppoPodsManager';font.pixelSize:13;color:Theme.muted}}
     }

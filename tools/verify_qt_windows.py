@@ -41,11 +41,11 @@ def opening(win):
  until(lambda:win.property('displayOpacity')==1,lambda:opened(win),'opening animation completes')
 def opened(win):
  assert win.property('displayOpacity')==1
- app.close_view('main',exiting=False);later(45,lambda:closing(win))
+ app.close_view('main',exiting=False);until(lambda:not win.property('surfaceReady') and .08<win.property('displayOpacity')<.95,lambda:closing(win),'complete-surface fade after glass cover')
 def closing(win):
  row=capture(win,'close-mid');assert 0<row['opacity']<1,row
- if row['native_alpha'] is not None:assert 0<row['native_alpha']<255,row
- check('content opacity changes during close while native corners remain stable')
+ assert row['native_alpha'] is None,row
+ check('complete surface opacity changes during close without a native shadow halo')
  app.show('main');later(250,lambda:cancelled(win))
 def cancelled(win):
  assert app.windows['main'] is win and win.property('displayOpacity')==1 and not win.property('closingUi')

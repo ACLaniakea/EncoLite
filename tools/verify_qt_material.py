@@ -34,7 +34,7 @@ def cycle(index=0):
  kind=('main','quick','notice')[index%3];state['dark']=index>=3;publish();app.show(kind)
  def shown():
   win=app.windows[kind];row=sample(win);report['frames'].append(row)
-  assert row['native'] and row['backdrop'] is True and row['corner']==2,row
+  assert row['native'] and row['backdrop'] is True and row['corner']==3,row
   assert 0.1<row['alpha']<.9 and row['radius']==0,row
   image=win.screen().grabWindow(int(win.winId()));assert not image.isNull()
   image.save(str(OUT/(kind+('-dark' if state['dark'] else '-light')+'.png')))
@@ -90,7 +90,7 @@ def moving():
 def shape_check():
  from encolite import windows_shell as shell
  win=app.windows['main'];hwnd=int(win.winId())
- assert win.property('systemFrame') and attr(win,1)==1 and attr(win,33)==2
+ assert win.property('systemFrame') and attr(win,1)==0 and attr(win,33)==3
  assert not shell.GetWindowLong(hwnd,-20)&0x80000,'layered windows cannot use the native rounded contour'
  region=C.windll.gdi32.CreateRectRgn;region.argtypes=[C.c_int]*4;region.restype=C.c_void_p
  handle=region(0,0,0,0)

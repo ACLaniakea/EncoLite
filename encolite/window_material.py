@@ -50,14 +50,19 @@ class DwmApi:
 
     def prepare_frame(self,hwnd):
         from . import windows_shell as s
-        # Keep the native nonclient surface, but let WM_NCCALCSIZE extend our
-        # content across the caption. Layering/regions prevent DWM rounding.
+        # Keep native sizing/contour styles; Qt owns the full client and caption
+        # painting. Layering/regions would prevent DWM rounding.
         style=s.GetWindowLong(hwnd,-16);exstyle=s.GetWindowLong(hwnd,-20)
+        # Avoid adding a classic class shadow on top of the compact DWM contour.
+        get_class=self.user.GetClassLongPtrW;get_class.argtypes=[C.c_void_p,C.c_int];get_class.restype=C.c_size_t
+        set_class=self.user.SetClassLongPtrW;set_class.argtypes=[C.c_void_p,C.c_int,C.c_ssize_t];set_class.restype=C.c_size_t
+        class_style=get_class(hwnd,-26)
+        if class_style&0x20000:set_class(hwnd,-26,class_style&~0x20000)
         region=self.user.SetWindowRgn;region.argtypes=[C.c_void_p,C.c_void_p,C.c_int];region.restype=C.c_int
         region(hwnd,None,1)
         s.SetWindowLong(hwnd,-20,exstyle&~0x80000)
         s.SetWindowLong(hwnd,-16,style|0x00c40000)
-        ready=self.attribute(hwnd,2,2) and self.attribute(hwnd,33,2)
+        ready=self.attribute(hwnd,2,1) and self.attribute(hwnd,33,3)
         self.attribute(hwnd,34,0xffffffff)
         if not ready:
             s.SetWindowLong(hwnd,-16,style);s.SetWindowLong(hwnd,-20,exstyle)
@@ -88,11 +93,15 @@ class DwmApi:
             if s.GetMonitorInfo(s.MonitorFromWindow(hwnd,2),C.byref(info)):return abs(point.y-info.work.top)<=1
         return abs(point.y-rect.top)<=1
 
+    def refresh_frame(self,hwnd):
+        from . import windows_shell as s
+        s.SetWindowPos(hwnd,None,0,0,0,0,0x37)
+
 
 class WindowMaterial:
     def __init__(self,native=None):
         self.native=native if native is not None else DwmApi()
-        self.supported=self.native.supported;self.states={};self.frames={};self.updates=0
+        self.supported=self.native.supported;self.states={};self.frames={};self.decorations={};self.updates=0
 
     def apply(self,hwnd,enabled,dark=False,*,force=False):
         if not self.supported:return False
@@ -112,4 +121,17 @@ class WindowMaterial:
         return active
 
     def forget(self,hwnd):
-        self.states.pop(hwnd,None);self.frames.pop(hwnd,None)
+        self.states.pop(hwnd,None);self.frames.pop(hwnd,None);self.decorations.pop(hwnd,None)
+
+    def decorate(self,hwnd,visible,*,force=False):
+        if not self.frames.get(hwnd):return
+        if not force and self.decorations.get(hwnd)==visible:return
+        # Keep legacy caption painting disabled even after the fade. On Win11,
+        # re-enabling NC rendering can paint a second title behind translucent Qt.
+        self.native.attribute(hwnd,2,1)
+        self.native.attribute(hwnd,34,0xffffffff if visible else 0xfffffffe)
+        # Small native corners also use Windows' compact popup shadow. During
+        # the client-surface fade, QML supplies the contour without a DWM halo.
+        self.native.attribute(hwnd,33,3 if visible else 1)
+        self.native.refresh_frame(hwnd)
+        self.decorations[hwnd]=visible

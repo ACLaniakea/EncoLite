@@ -26,7 +26,7 @@ def verify(win,label,rounded=True):
     image=win.screen().grabWindow(int(win.winId())) if win.property('systemFrame') else win.grabWindow();image.save(str(OUT/(tag+'-'+label+'.png')))
     dpr=image.width()/win.width();report['pixel_ratios'].append(dpr)
     native=C.c_int();result=get(int(win.winId()),33,C.byref(native),C.sizeof(native))
-    if result==0:assert native.value==(2 if win.property('systemFrame') else 1),'only one owner may draw the outer contour'
+    if result==0:assert native.value==(3 if win.property('systemFrame') else 1),'only one owner may draw the outer contour'
     if win.property('systemFrame'):
         from encolite import windows_shell as shell
         assert not shell.GetWindowLong(int(win.winId()),-20)&0x80000

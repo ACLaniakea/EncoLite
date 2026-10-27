@@ -15,6 +15,7 @@ class FakeDwm:
         return not(name==38 and value==3 and self.reject)
     def accent(self,hwnd,enabled,dark):self.calls.append(('accent',hwnd,enabled,dark));return not(enabled and self.reject)
     def frame(self,hwnd,extended):self.calls.append(('frame',hwnd,extended));return True
+    def refresh_frame(self,hwnd):self.calls.append(('refresh_frame',hwnd))
 
 
 class WindowMaterialTests(unittest.TestCase):
@@ -42,6 +43,17 @@ class WindowMaterialTests(unittest.TestCase):
     def test_unsupported_platform_uses_no_native_calls(self):
         api=FakeDwm();api.supported=False;material=WindowMaterial(api)
         self.assertFalse(material.apply(1,True));self.assertFalse(api.calls)
+
+    def test_motion_hides_native_halo_and_restores_compact_frame_once(self):
+        api=FakeDwm();material=WindowMaterial(api)
+        material.apply(5,False)
+        material.decorate(5,False)
+        self.assertIn(('attribute',5,33,1),api.calls)
+        self.assertIn(('attribute',5,34,0xfffffffe),api.calls)
+        count=len(api.calls);material.decorate(5,False);self.assertEqual(len(api.calls),count)
+        material.decorate(5,True)
+        self.assertIn(('attribute',5,33,3),api.calls)
+        material.forget(5);self.assertFalse(material.decorations)
 
     def test_opaque_windows_keep_the_system_frame_without_glass(self):
         api=FakeDwm();material=WindowMaterial(api)

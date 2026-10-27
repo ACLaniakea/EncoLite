@@ -1,6 +1,6 @@
 """Check real Acrylic pixels against owned stripes, then exercise its slider."""
 from pathlib import Path
-import sys,json,traceback
+import sys,json,traceback,ctypes as C
 ROOT=Path(__file__).resolve().parents[1];TARGET=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else ROOT
 sys.path[:0]=[str(TARGET),str(TARGET/'qt' if TARGET!=ROOT else ROOT/'.tools/qt-probe/packages')];sys.dont_write_bytecode=True
 sys.stdout.reconfigure(encoding='utf-8')
@@ -21,9 +21,12 @@ def later(ms,fn):
 def check(text):report['checks'].append(text);print('PASS',text,flush=True)
 publish();component=QQmlComponent(app.engine)
 component.setData(b'''import QtQuick
-Window {color:'#174f98';flags:Qt.Window|Qt.FramelessWindowHint;Repeater{model:30;Rectangle{required property int index;x:index*120;width:60;height:parent.height;color:'#f1b24a'}}}''',QUrl())
+Window {color:'#174f98';flags:Qt.Tool|Qt.FramelessWindowHint|Qt.WindowStaysOnTopHint;Repeater{model:30;Rectangle{required property int index;x:index*120;width:60;height:parent.height;color:'#f1b24a'}}}''',QUrl())
 bg=component.create();assert bg
 app.show('main');win=app.windows['main'];bg.setGeometry(win.geometry());bg.show();win.setTransientParent(bg);app.activate(win,'main')
+from encolite import windows_shell as shell
+shell.SetWindowPos(int(bg.winId()),C.c_void_p(-1),0,0,0,0,0x13)
+shell.SetWindowPos(int(win.winId()),C.c_void_p(-1),0,0,0,0,0x13)
 def sample(label):
  raw=win.grabWindow();surface=win.findChild(QQuickItem,'windowSurface');print('STATE',label,app.bridge.glassTransparency,surface.property('color').alphaF(),raw.pixelColor(raw.width()-50,raw.height()*4//5).alpha(),win.isExposed(),flush=True)
  box=win.frameGeometry();image=win.screen().grabWindow(0,box.x(),box.y(),box.width(),box.height()).toImage();assert not image.isNull();image.save(str(OUT/(label+'.png')))

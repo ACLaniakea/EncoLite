@@ -1,19 +1,22 @@
-# Windows 玻璃背景
+# Windows 玻璃背景与窗口过渡
 
-Windows 11 22H2+ 保留原生非客户区表面，DWM 统一处理圆角、描边与阴影。WM_NCCALCSIZE 将内容延伸到标题栏，不显示第二套系统标题栏。移除分层标志与手工窗口区域；QML 不再重复画外圆角或描边。最大化使用屏幕工作区，旧系统使用实色和原有 QML 轮廓。
+Windows 11 22H2+ 保留用于原生轮廓和调整大小的窗口样式，由 DWM 处理小圆角、细描边和轻投影。WM_NCCALCSIZE 将整个窗口交给 Qt；原生非客户区绘制保持关闭，并拦截旧式框架与激活绘制，避免玻璃后出现第二套标题和内框。最大化使用屏幕工作区。旧系统使用实色和 QML 轮廓。
 
-Acrylic 使用任务栏式 Accent Policy，固定轻量底色，在稳定的原生轮廓内合成。此前官方系统背景属性虽然设置成功，用户仍看到实色；这次加入蓝橙条纹对照，已验证能透出背景且边缘被模糊，用户确认“现在可以”。不以 API 成功作为可见效果的证明。
+原生小圆角使用更紧的系统投影，代替此前延伸较远的底部阴影。淡入和淡出期间隐藏原生背景与投影，由整张 Qt 表面共同过渡；初次呈现后再启用 Acrylic，并用覆盖色平滑显出玻璃。关闭时先覆盖玻璃，再让整面淡出。不对 HWND 设置整体透明度，不启用分层窗口或手工窗口区域，不截图实现动画。
 
-“设置 → 外观 → 透明度”支持 0–100%。拖动通过 Qt 背景覆盖层实时调整，松手后只提交一次偏好，不反复重建原生材质，不改变文字与图标透明度。0% 为实色，100% 为最高透明度，仍保留 Acrylic 的模糊与底色。极速模式禁用玻璃与滑块，保留所选数值，退出后恢复。跟随系统透明策略和高对比度设置。
+Acrylic 使用任务栏式 Accent Policy，固定轻量底色。此前官方系统背景属性虽然设置成功，用户仍看到实色；已有蓝橙条纹对照验证真实透出和模糊，用户确认“现在可以”。当前版本继续通过最终屏幕合成像素检查保留模糊，不以 API 成功代替可见效果。
 
-卡片、电量、普通按钮、输入框和菜单采用统一色层。内容动画在固定外轮廓内运行，避免整体窗口 opacity 再次触发分层；极速模式关闭过渡。没有新增图形库或着色器，也没有持续截图和后台图形进程常驻。
+“设置 → 外观 → 透明度”支持 0–100%。拖动只改变 Qt 覆盖层，不反复重建材质，松手保存一次；文字和图标保持清晰。关闭玻璃、开启极速模式或系统关闭透明效果时隐藏滑块，保留原值。0% 为实色，100% 为最高透明度，仍保留 Acrylic 的模糊与底色。
 
-验证工具 `tools/verify_qt_composition.py` 使用自有背景与窗口范围的最终屏幕合成像素，检查透出、模糊和 0% 实色，并检查实际滑块预览与松手保存。窗口 DC 可能返回旧的重定向缓存图，不能用于判断透明度变化。测试截图只在显式运行验证时生成，正式客户端不截图。
+主窗整面淡入约 190ms，快捷窗和连接提示约 170ms，随后显出玻璃 100ms；关闭时覆盖玻璃约 65ms，整面淡出约 140ms。连续开关保留当前进度，关闭动画有独立释放保障。使用 Qt 的实际时间动画驱动，避免多窗口显示切换时依赖停顿的显示同步时钟；没有新增常驻图形进程、定时装饰动画、图形库或着色器。
 
-参考：
+`tools/verify_qt_chrome.py` 使用自有纯色背景测量阴影、圆角外露和意外标题像素；`tools/verify_qt_motion.py` 检查实际中间帧、整面像素 alpha、反向动画与减少动画；`tools/verify_qt_composition.py` 使用自有条纹背景验证模糊和透明度。取样时仅将自有测试窗口临时置顶，避免其他应用遮挡，结束即销毁。窗口 DC 可能返回旧缓存，不能用于判断最终透明度。正式客户端不截图。
+
+参考实现与文档：
 
 - [QWindowKit 原生窗体](https://github.com/stdware/qwindowkit/blob/main/src/core/contexts/win32windowcontext.cpp)
-- [PyQt-Frameless-Window 窗口效果](https://github.com/zhiyiYo/PyQt-Frameless-Window/blob/master/qframelesswindow/windows/window_effect.py)
+- [PyQt-Frameless-Window 窗口效果](https://github.com/zhiyiYo/PyQt-Frameless-Window/blob/PySide6/qframelesswindow/windows/window_effect.py)
+- [Qt 动画驱动与场景图](https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph.html)
 - [Qt Windows 分层处理](https://github.com/qt/qtbase/blob/6.12/src/plugins/platforms/windows/qwindowswindow.cpp)
 - [Microsoft 圆角限制](https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-rounded-corners)
 

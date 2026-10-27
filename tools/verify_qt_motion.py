@@ -34,17 +34,18 @@ def until(predicate,fn,label):
         elif time.monotonic()>deadline:raise TimeoutError(label)
         else:later(8,poll)
     later(0,poll)
-def sample(win,phase):
+def sample(win,phase,pixels=False):
     color=W.DWORD();alpha=C.c_ubyte();flags=W.DWORD()
     ok=native_alpha(int(win.winId()),C.byref(color),C.byref(alpha),C.byref(flags))
-    surface=win.findChild(QQuickItem,'windowContent' if win.property('systemFrame') else 'windowSurface')
+    surface=win.findChild(QQuickItem,'windowSurface')
     top=surface.mapToScene(QPointF(0,0));bottom=surface.mapToScene(QPointF(surface.width(),surface.height()))
+    image=win.grabWindow() if pixels else None
     return {'phase':phase,'opacity':win.property('displayOpacity'),'reveal':win.property('reveal'),
-            'scale':win.property('contentScale' if win.property('systemFrame') else 'surfaceScale'),'offset':win.property('contentOffset' if win.property('systemFrame') else 'surfaceOffset'),
+            'scale':win.property('surfaceScale'),'offset':win.property('surfaceOffset'),
             'surface_bounds':[top.x(),top.y(),bottom.x(),bottom.y()],
-            'native_alpha':alpha.value if ok else None,
+            'native_alpha':alpha.value if ok else None,'surface_ready':win.property('surfaceReady'),'glass':win.property('nativeGlass'),'glass_mix':win.property('glassMix'),'render_alpha':image.pixelColor(image.width()//2,40).alphaF() if image is not None else None,
             'bounds':[win.x(),win.y(),win.width(),win.height()]}
-def settled(win):return win.property('displayOpacity')==1 and win.property('reveal')==1 and not win.property('transitioning')
+def settled(win):return win.property('displayOpacity')==1 and win.property('reveal')==1 and not win.property('transitioning') and win.property('glassMix')==1
 def track(win,key):
     # Observe completed scene-graph frames, leaving production methods untouched.
     began=time.monotonic();rows=report['frames'][key]=[]
@@ -58,28 +59,29 @@ def cycle(index=0):
     app.show(kind);win=app.windows[kind];geometry=sample(win,'created')['bounds']
     observer=track(win,kind+'-open')
     def mid():
-        row=sample(win,'open-mid')
+        row=sample(win,'open-mid',pixels=True)
         assert 0<row['opacity']<1 and 0<row['reveal']<1,row
         assert .94<row['scale']<1 and row['offset']>0,row
         left,top,right,bottom=row['surface_bounds']
         assert 0<left<right<win.width() and 0<top<bottom<=win.height(),row
-        if row['native_alpha'] is not None:assert 0<row['native_alpha']<255,row
+        assert row['native_alpha'] is None and not row['glass'],row
+        assert abs(row['render_alpha']-row['opacity'])<.035,row
         win.grabWindow().save(str(OUT/(kind+'-opening.png')))
         before=(win.property('displayOpacity'),win.property('reveal'));app.show(kind)
         assert (win.property('displayOpacity'),win.property('reveal'))==before
-        check(kind+': content fade, scale and rise progress together without changing the native contour; repeated show preserves progress')
+        check(kind+': the complete surface fades and moves before native glass is enabled; repeated show preserves progress')
         until(lambda:settled(win),opened,kind+' open completes')
     def opened():
         win.frameSwapped.disconnect(observer)
         rows=report['frames'][kind+'-open']
         assert len([r for r in rows if 0<r['reveal']<1])>=3,rows
         assert all(r['bounds']==geometry for r in rows)
-        assert win.property('surfaceScale')==1 and win.property('surfaceOffset')==0
-        assert sample(win,'settled')['surface_bounds']==([1,1,win.width()-1,win.height()-1] if win.property('systemFrame') else [0,0,win.width(),win.height()])
+        assert win.property('surfaceScale')==1 and win.property('surfaceOffset')==0 and win.opacity()==1
+        assert sample(win,'settled')['surface_bounds']==[0,0,win.width(),win.height()]
         assert app.material.native.caption_hidden(int(win.winId())) if win.property('systemFrame') else not shell.GetWindowLong(int(win.winId()),-16)&0x00C00000
         win.grabWindow().save(str(OUT/(kind+'-opened.png')))
         check(kind+': several actual intermediate frames, unchanged placement and full-size caption-free endpoint')
-        app.close_view(kind,exiting=False);later(65,closing)
+        app.close_view(kind,exiting=False);until(lambda:not win.property('surfaceReady') and .08<win.property('displayOpacity')<.95,closing,kind+' fading after glass cover')
     def closing():
         row=sample(win,'close-mid')
         assert 0<row['opacity']<1 and 0<row['reveal']<1,row
