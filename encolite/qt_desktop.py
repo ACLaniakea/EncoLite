@@ -8,7 +8,7 @@ import traceback
 
 from PySide6.QtCore import (QObject, Property, Signal, Slot, Qt, QTimer, QUrl, QEvent,
                            QAbstractListModel, QModelIndex, QMetaObject, QAbstractNativeEventFilter)
-from PySide6.QtGui import QGuiApplication, QFont, QIcon
+from PySide6.QtGui import QGuiApplication, QFont, QIcon, QPlatformSurfaceEvent
 from PySide6.QtQml import QQmlApplicationEngine, QQmlComponent
 from PySide6.QtQuickControls2 import QQuickStyle
 from PySide6.QtQuick import QQuickWindow
@@ -226,8 +226,14 @@ class Desktop(QObject):
         self.quick_idle_config = (False, 30); self.quick_touch_down = False
 
     def eventFilter(self, watched, event):
-        if self.material.supported and event.type() in (QEvent.PlatformSurface,QEvent.WindowStateChange):
-            QTimer.singleShot(0,lambda:self.update_materials(force=True))
+        if self.material.supported:
+            if (event.type()==QEvent.PlatformSurface
+                    and event.surfaceEventType()==QPlatformSurfaceEvent.SurfaceCreated):
+                # A new HWND is detected by update_materials. Do not rebuild
+                # an existing native frame during minimize/restore animations.
+                QTimer.singleShot(0,self.update_materials)
+            elif event.type()==QEvent.WindowStateChange:
+                QTimer.singleShot(0,self.update_materials)
         if self.quick_idle_config[0] and watched is self.windows.get('quick'):
             kind = event.type()
             if kind == QEvent.TouchBegin: self.quick_touch_down = True
@@ -249,13 +255,15 @@ class Desktop(QObject):
             hwnd=int(window.winId());old=self.material_handles.get(kind)
             if old and old!=hwnd:self.material.forget(old)
             self.material_handles[kind]=hwnd
-            requested=self.bridge.glassAllowed and bool(window.property('surfaceReady'))
+            # Acrylic belongs to the HWND lifetime, not the content reveal.
+            # Toggling it around each fade produces a visible opaque flash.
+            requested=self.bridge.glassAllowed
             changing=bool(window.property('nativeGlass'))!=requested
             if changing:window.setProperty('materialChanging',True)
             active=self.material.apply(hwnd,requested,self.bridge.state.get('dark',False),force=force)
             window.setProperty('systemFrame',self.material.frames.get(hwnd,False))
             window.setProperty('nativeGlass',active)
-            self.material.decorate(hwnd,bool(window.property('surfaceReady')),force=force)
+            self.material.decorate(hwnd,True,force=force)
             if changing:
                 QTimer.singleShot(0,lambda w=window,k=kind:w.setProperty('materialChanging',False) if self.windows.get(k) is w else None)
 
@@ -382,8 +390,6 @@ class Desktop(QObject):
         window = self.component.createWithInitialProperties({'kind': kind,'systemFrame':self.material.supported})
         if window is None: raise RuntimeError('\n'.join(error.toString() for error in self.component.errors()))
         self.windows[kind] = window
-        window.surfaceReadyChanged.connect(self.update_materials)
-        window.closingUiChanged.connect(self.update_materials)
         window.installEventFilter(self)
         window.flagsChanged.connect(lambda *_:QTimer.singleShot(0,lambda:self.update_materials(force=True)))
         if kind == 'quick':
@@ -409,6 +415,9 @@ class Desktop(QObject):
     def first_frame(self, kind, window):
         if self.windows.get(kind) is not window or kind in self.ready: return
         self.ready.add(kind)
+        # Qt can install a region while creating the platform window. Clear it
+        # once after the first frame so DWM keeps ownership of the contour;
+        # Acrylic stays enabled throughout this initialization.
         self.update_materials(force=True)
         window.frameSwapped.disconnect(window._first_frame)
         # Closing may precede the first frame (including its delayed fallback).

@@ -6,7 +6,7 @@
 
 Windows 通过系统已配对设备 API 发现 OPPO/Enco，使用 Winsock RFCOMM。优先查询 Melody 服务 `0000079A-D102-11E1-9B23-00025B00A5A5`，裸通道 1/15 是有界兼容回退，必须通过产品 ID 与能力握手。没有主动配对、注册表写入或常驻 PowerShell/.NET 辅助进程。
 
-帧为 `AA length 00 00 commandLE F0 payloadLengthLE payload`，`length=7+payloadLength`，最大负载 248 字节。增量解码器处理分包、粘包、噪声及异常长度，残余缓冲区有界。正常响应命令为请求命令加 `0x8000`，状态 0 成功。
+帧为 `AA length 00 00 commandLE sequence payloadLengthLE payload`，`length=7+payloadLength`，最大负载 248 字节。本客户端请求默认使用序号 `F0`，它不是固定帧标记；X3 官方真机回包已确认响应回显请求序号、主动通知使用变化序号。增量解码器处理分包、粘包、噪声及异常长度，残余缓冲区有界。正常响应命令为请求命令加 `0x8000`，状态 0 成功。
 
 一个读取线程、一个串行工作队列。读线程只解析和更新状态，不发起请求。协议没有事务 ID，等待超时后关闭连接，防止迟到响应被误认为新请求结果。重连退避为 2～60 秒，手动断开停止重连；代次检查隔离旧连接通知。
 

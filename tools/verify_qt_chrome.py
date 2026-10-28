@@ -73,12 +73,13 @@ def compact(win):
     assert bright==0,'a native white caption was drawn behind the translucent title area'
     check('compact native corners eliminate the large lower shadow without an exposed corner or duplicate native caption')
     app.close_view('quick',exiting=False)
-    until(lambda:not win.property('surfaceReady') and .1<win.property('displayOpacity')<.95,lambda:fading(win))
+    until(lambda:win.property('closingUi') and .1<win.property('displayOpacity')<.95,lambda:fading(win))
 def fading(win):
     samples,_=pixels(win,'closing-no-halo')
-    assert all(distance(color,background)<=2 for color in samples.values()),report['pixels']
-    assert not win.property('nativeGlass') and win.opacity()==1
-    check('the full surface fades without an Acrylic rectangle, native halo or layered-window alpha')
+    assert all(distance(samples[offset],background)<=2 for offset in (24,32)),report['pixels']
+    assert win.property('nativeGlass') and win.opacity()==1
+    assert win.findChild(QQuickItem,'windowSurface').opacity()==1
+    check('content fades over stable Acrylic while the compact contour keeps the distant lower shadow clear')
     until(lambda:'quick' not in app.windows,settings)
 def items(win):
     def walk(item):

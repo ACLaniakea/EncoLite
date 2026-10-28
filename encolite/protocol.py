@@ -58,7 +58,10 @@ class Decoder:
                 if len(self.buffer) < 9:
                     break
                 length = int.from_bytes(self.buffer[7:9], "little")
-                if self.buffer[6] != 0xF0 or length != total - 9:
+                # Byte 6 is a transaction/event sequence, not a fixed marker.
+                # Official X3 captures use changing values for notifications
+                # and echo the request sequence in replies.
+                if self.buffer[2:4] != b"\x00\x00" or length != total - 9:
                     del self.buffer[0]
                     continue
                 if len(self.buffer) < total:

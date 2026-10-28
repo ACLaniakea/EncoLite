@@ -26,14 +26,27 @@ class CodecTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             encode(0x1234, b"x"*249)
 
-    def test_invalid_length_and_marker_recover(self):
+    def test_invalid_length_and_reserved_header_recover(self):
         bad = bytearray(encode(0x0106))
-        bad[6] = 0
+        bad[2] = 1
         decoder = Decoder()
         self.assertEqual(decoder.feed(b"junk\xaa\x00"+bad+encode(0x0106)), [Frame(0x0106,b"")])
         malformed = bytearray(encode(0x0106, b"abc"))
         malformed[7] = 250
         self.assertEqual(Decoder().feed(malformed+encode(0x0106)), [Frame(0x0106,b"")])
+
+    def test_variable_sequence_replies_and_notifications_at_every_fragment_boundary(self):
+        # Exact non-motion frames observed on the owned X3 official session.
+        reply = bytes.fromhex('aa0800000d84d5010000')
+        notice = bytes.fromhex('aa0a00000a05580300010101')
+        expected = [Frame(0x840D,b'\x00'),Frame(0x050A,b'\x01\x01\x01')]
+        packet = reply+notice
+        for split in range(len(packet)+1):
+            decoder = Decoder()
+            self.assertEqual(decoder.feed(packet[:split])+decoder.feed(packet[split:]),expected)
+        zero_sequence = bytearray(reply)
+        zero_sequence[6] = 0
+        self.assertEqual(Decoder().feed(zero_sequence),expected[:1])
 
     def test_unfinished_and_noise_buffer_is_bounded(self):
         decoder = Decoder()

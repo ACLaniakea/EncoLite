@@ -38,14 +38,18 @@ def sample(win,phase,pixels=False):
     color=W.DWORD();alpha=C.c_ubyte();flags=W.DWORD()
     ok=native_alpha(int(win.winId()),C.byref(color),C.byref(alpha),C.byref(flags))
     surface=win.findChild(QQuickItem,'windowSurface')
+    content=win.findChild(QQuickItem,'windowContent')
     top=surface.mapToScene(QPointF(0,0));bottom=surface.mapToScene(QPointF(surface.width(),surface.height()))
+    content_top=content.mapToScene(QPointF(0,0));content_bottom=content.mapToScene(QPointF(content.width(),content.height()))
     image=win.grabWindow() if pixels else None
     return {'phase':phase,'opacity':win.property('displayOpacity'),'reveal':win.property('reveal'),
             'scale':win.property('surfaceScale'),'offset':win.property('surfaceOffset'),
             'surface_bounds':[top.x(),top.y(),bottom.x(),bottom.y()],
-            'native_alpha':alpha.value if ok else None,'surface_ready':win.property('surfaceReady'),'glass':win.property('nativeGlass'),'glass_mix':win.property('glassMix'),'render_alpha':image.pixelColor(image.width()//2,40).alphaF() if image is not None else None,
+            'content_bounds':[content_top.x(),content_top.y(),content_bottom.x(),content_bottom.y()],
+            'surface_opacity':surface.opacity(),'surface_alpha':surface.property('color').alphaF(),
+            'native_alpha':alpha.value if ok else None,'surface_ready':win.property('surfaceReady'),'glass':win.property('nativeGlass'),'render_alpha':image.pixelColor(image.width()//2,40).alphaF() if image is not None else None,
             'bounds':[win.x(),win.y(),win.width(),win.height()]}
-def settled(win):return win.property('displayOpacity')==1 and win.property('reveal')==1 and not win.property('transitioning') and win.property('glassMix')==1
+def settled(win):return win.property('displayOpacity')==1 and win.property('reveal')==1 and not win.property('transitioning')
 def track(win,key):
     # Observe completed scene-graph frames, leaving production methods untouched.
     began=time.monotonic();rows=report['frames'][key]=[]
@@ -62,14 +66,15 @@ def cycle(index=0):
         row=sample(win,'open-mid',pixels=True)
         assert 0<row['opacity']<1 and 0<row['reveal']<1,row
         assert .94<row['scale']<1 and row['offset']>0,row
-        left,top,right,bottom=row['surface_bounds']
+        left,top,right,bottom=row['content_bounds']
         assert 0<left<right<win.width() and 0<top<bottom<=win.height(),row
-        assert row['native_alpha'] is None and not row['glass'],row
-        assert abs(row['render_alpha']-row['opacity'])<.035,row
+        assert row['surface_bounds']==[0,0,win.width(),win.height()],row
+        assert row['surface_opacity']==1 and row['native_alpha'] is None and row['glass'],row
+        assert row['render_alpha']>=row['surface_alpha']-.035,row
         win.grabWindow().save(str(OUT/(kind+'-opening.png')))
         before=(win.property('displayOpacity'),win.property('reveal'));app.show(kind)
         assert (win.property('displayOpacity'),win.property('reveal'))==before
-        check(kind+': the complete surface fades and moves before native glass is enabled; repeated show preserves progress')
+        check(kind+': content fades and moves over stable native glass; repeated show preserves progress')
         until(lambda:settled(win),opened,kind+' open completes')
     def opened():
         win.frameSwapped.disconnect(observer)
@@ -81,12 +86,13 @@ def cycle(index=0):
         assert app.material.native.caption_hidden(int(win.winId())) if win.property('systemFrame') else not shell.GetWindowLong(int(win.winId()),-16)&0x00C00000
         win.grabWindow().save(str(OUT/(kind+'-opened.png')))
         check(kind+': several actual intermediate frames, unchanged placement and full-size caption-free endpoint')
-        app.close_view(kind,exiting=False);until(lambda:not win.property('surfaceReady') and .08<win.property('displayOpacity')<.95,closing,kind+' fading after glass cover')
+        app.close_view(kind,exiting=False);until(lambda:win.property('closingUi') and .08<win.property('displayOpacity')<.95,closing,kind+' content fading over glass')
     def closing():
         row=sample(win,'close-mid')
         assert 0<row['opacity']<1 and 0<row['reveal']<1,row
         assert row['scale']<1 and row['offset']>0 and row['bounds']==geometry,row
-        assert row['surface_bounds'][0]>0 and row['surface_bounds'][1]>0,row
+        assert row['content_bounds'][0]>0 and row['content_bounds'][1]>0,row
+        assert row['glass'] and row['surface_opacity']==1 and row['surface_bounds']==[0,0,win.width(),win.height()],row
         win.grabWindow().save(str(OUT/(kind+'-closing.png')))
         if kind=='notice':
             # Only an automatic notice timeout is allowed to reverse on hover.

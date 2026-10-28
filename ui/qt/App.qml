@@ -13,15 +13,14 @@ Window {
     property real displayOpacity: 1
     opacity: 1
     property bool surfaceReady: !Theme.motion
-    property real glassMix: Theme.motion?0:1
     property bool materialChanging: false
     property bool restoreMaximized: false
     property bool closingUi: false
     property bool presented: false
-    property real reveal: 0
+    property real reveal: Theme.motion?0:1
     property int openDuration: 190
     property int closeDuration: 140
-    readonly property bool transitioning: openAnimation.running||closeAnimation.running||glassAnimation.running
+    readonly property bool transitioning: openAnimation.running||closeAnimation.running
     readonly property real surfaceScale: Theme.motion?1-(kind==='main'?0.005:0.01)*(1-reveal):1
     readonly property real surfaceOffset: Theme.motion?Math.min(2,height*0.002)*(1-reveal):0
     readonly property real contentScale: 1
@@ -52,20 +51,19 @@ Window {
         // Duplicate tray/show requests must not snap an in-flight entrance.
         if(openAnimation.running&&!animate)return;
         if(animate&&Theme.motion){
-            if(minimized){surfaceReady=false;glassMix=0;displayOpacity=0;reveal=0;}
-            if(surfaceReady&&reveal===1){glassAnimation.restart();}
-            else{openDuration=Math.max(70,Math.round((kind==='main'?190:170)*(1-reveal)));openAnimation.restart();}
-        }else if(!openAnimation.running){displayOpacity=1;reveal=1;surfaceReady=true;if(!glassAnimation.running)glassMix=1;}
+            if(minimized){surfaceReady=false;displayOpacity=0;reveal=0;}
+            openDuration=Math.max(70,Math.round((kind==='main'?190:170)*(1-reveal)));openAnimation.restart();
+        }else if(!openAnimation.running){displayOpacity=1;reveal=1;surfaceReady=true;}
         presented=true;
     }
     function dismiss() {
-        openAnimation.stop();glassAnimation.stop();closingUi=true;closeMenus();confirmPopup.close();hotkeyPopup.close();
+        openAnimation.stop();closingUi=true;closeMenus();confirmPopup.close();hotkeyPopup.close();
         if(Theme.motion){closeDuration=Math.max(70,Math.round(140*reveal));closeAnimation.restart();}
         else finishedClosing();
     }
     function finishStalledEntrance() {
         if(presented&&!closingUi&&openAnimation.running&&reveal===0){
-            openAnimation.stop();displayOpacity=1;reveal=1;surfaceReady=true;glassMix=1;
+            openAnimation.stop();displayOpacity=1;reveal=1;surfaceReady=true;
         }
     }
     function navigate(index) { closeMenus();if(index!==page){page=index;} }
@@ -81,22 +79,17 @@ Window {
         id:openAnimation
         NumberAnimation{target:win;property:'displayOpacity';to:1;duration:win.openDuration;easing.type:Easing.OutCubic}
         NumberAnimation{target:win;property:'reveal';to:1;duration:win.openDuration;easing.type:Easing.OutCubic}
-        onFinished:{win.surfaceReady=true;if(Theme.motion&&win.nativeGlass)glassAnimation.restart();else win.glassMix=1;}
+        onFinished:win.surfaceReady=true
     }
-    NumberAnimation { id:glassAnimation;target:win;property:'glassMix';to:1;duration:100;easing.type:Easing.OutQuad }
-    SequentialAnimation {
+    ParallelAnimation {
         id:closeAnimation
-        NumberAnimation{target:win;property:'glassMix';to:0;duration:win.nativeGlass?65:0;easing.type:Easing.InOutQuad}
-        ScriptAction{script:win.surfaceReady=false}
-        ParallelAnimation {
-            NumberAnimation{target:win;property:'displayOpacity';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
-            NumberAnimation{target:win;property:'reveal';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
-        }
-        onFinished:win.finishedClosing()
+        NumberAnimation{target:win;property:'displayOpacity';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
+        NumberAnimation{target:win;property:'reveal';to:0;duration:win.closeDuration;easing.type:Easing.InCubic}
+        onFinished:{win.surfaceReady=false;win.finishedClosing();}
     }
     Connections {
         target:Theme
-        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();glassAnimation.stop();closeAnimation.stop();win.displayOpacity=1;win.reveal=1;win.surfaceReady=true;win.glassMix=1;if(win.closingUi)win.finishedClosing();}}
+        function onMotionChanged(){if(!Theme.motion){openAnimation.stop();closeAnimation.stop();win.displayOpacity=1;win.reveal=1;win.surfaceReady=true;if(win.closingUi)win.finishedClosing();}}
     }
     Connections {
         target:backend
@@ -111,16 +104,16 @@ Window {
     }
 
     Rectangle {
-        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame&&win.surfaceReady?0:win.systemFrame?4:12;color:Theme.material(Theme.bg,Math.max(0.08,1-backend.glassTransparency/100),win);antialiasing:true
-        opacity:win.displayOpacity
+        id:frame;anchors.fill:parent;radius:win.maximized||win.systemFrame?0:12;color:Theme.material(Theme.bg,Math.max(0.08,1-backend.glassTransparency/100),win);antialiasing:true
         objectName:'windowSurface'
-        transform:[
-            Scale{origin.x:frame.width/2;origin.y:frame.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
-            Translate{y:win.surfaceOffset}
-        ]
         Behavior on color {enabled:!win.materialChanging&&!win.transitioning;ColorAnimation{duration:Theme.motion?150:0}}
         ColumnLayout {
             id:windowContent;objectName:'windowContent';anchors.fill:parent;anchors.margins:1;spacing:0
+            opacity:win.displayOpacity
+            transform:[
+                Scale{origin.x:windowContent.width/2;origin.y:windowContent.height/2;xScale:win.surfaceScale;yScale:win.surfaceScale},
+                Translate{y:win.surfaceOffset}
+            ]
             Item {
                 id:titleBar;Layout.fillWidth:true;Layout.preferredHeight:39
                 DragHandler {target:null;acceptedButtons:Qt.LeftButton;onActiveChanged:if(active)win.startSystemMove()}
